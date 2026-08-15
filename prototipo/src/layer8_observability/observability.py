@@ -1,0 +1,75 @@
+"""
+Camada 8 — Observabilidade e Proveniência (Maia et al., 2026, Seção 8).
+
+Responsabilidade segundo a arquitetura conceitual: registrar, para cada
+interação, o que fundamentou a resposta — normativo(s) usados, classificação
+da Camada 3, e se a Camada 7 sinalizou citação não verificada — para
+rastreabilidade/auditoria completa.
+
+Decisão de projeto (ver docs/decisoes_arquitetura.md): registro estruturado
+em JSON Lines, um objeto por interação, anexado a um arquivo em disco
+(`logs/interacoes.jsonl`) — ao contrário da Camada 6 (memória em processo,
+sem persistência), aqui a persistência é o propósito da camada. As fontes
+normativas usadas são extraídas do texto já formatado que a Camada 4
+(`buscar_normativo`) produz ("Fonte: título (url)"), via regex
+determinístico — mesmo padrão de parsing já usado na Camada 7 — em vez de
+alterar a assinatura de `buscar_normativo` para retornar dados estruturados,
+sem um segundo consumidor que justifique essa mudança.
+"""
+import json
+import re
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+
+LOG_DIR = Path(__file__).resolve().parents[2] / "logs"
+LOG_FILE = LOG_DIR / "interacoes.jsonl"
+
+_FONTE_REGEX = re.compile(r"^Fonte:\s*(.+?)\s*\((https?://[^\s)]+)\)", re.MULTILINE)
+
+
+@dataclass
+class RegistroInteracao:
+    timestamp: str
+    pergunta: str
+    tipo_classificacao: str
+    fontes_normativas: list[dict] = field(default_factory=list)
+    aviso_citacao_nao_verificada: bool = False
+    resposta_final: str = ""
+
+
+def _extrair_fontes(normativo: str) -> list[dict]:
+    # dedup preservando ordem: vários trechos retornados pela Camada 5 podem
+    # vir do mesmo normativo (top_k > 1 trechos de um único documento), e a
+    # proveniência deve listar quais documentos embasaram a resposta, não
+    # quantos trechos foram usados.
+    vistos: set[tuple[str, str]] = set()
+    fontes = []
+    for titulo, url in _FONTE_REGEX.findall(normativo):
+        chave = (titulo, url)
+        if chave not in vistos:
+            vistos.add(chave)
+            fontes.append({"titulo": titulo, "url_oficial": url})
+    return fontes
+
+
+def registrar_interacao(
+    pergunta: str,
+    tipo_classificacao: str,
+    resposta_final: str,
+    normativo: str = "",
+    arquivo: Path | None = None,
+) -> RegistroInteracao:
+    registro = RegistroInteracao(
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        pergunta=pergunta,
+        tipo_classificacao=tipo_classificacao,
+        fontes_normativas=_extrair_fontes(normativo),
+        aviso_citacao_nao_verificada="Aviso:" in resposta_final,
+        resposta_final=resposta_final,
+    )
+    destino = arquivo or LOG_FILE
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    with destino.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(asdict(registro), ensure_ascii=False) + "\n")
+    return registro

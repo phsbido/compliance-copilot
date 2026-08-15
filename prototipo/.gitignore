@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+.env
+data/normativos/*.pdf
+data/normativos/*.html
+logs/
+.DS_Store
