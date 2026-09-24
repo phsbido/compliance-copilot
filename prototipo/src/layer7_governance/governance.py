@@ -141,8 +141,11 @@ _ARTIGO_REGEX = re.compile(
 # "Não foi encontrado…", "Não estou com… disponíveis" e "não é possível
 # determinar…" no benchmark v3 (ver docs/evidencias_empiricas.md). Negar
 # algo sobre o conteúdo ("a norma X não exige Y") continua sendo citação.
+# "forneça (mais informações)" = pedido ao usuário, frase não afirmativa
+# (benchmark v4); "por favor" sozinho não basta ("Por favor, note que a norma
+# X exige…" é afirmação).
 _AUSENCIA_EXPLICITA = re.compile(
-    r"aus[êe]ncia|ausente|indispon[ií]ve|fora\s+do\s+(?:corpus|contexto)", re.IGNORECASE
+    r"aus[êe]ncia|ausente|indispon[ií]ve|fora\s+do\s+(?:corpus|contexto)|\bforne[çc]a\b", re.IGNORECASE
 )
 _NEGACAO = re.compile(r"\b(?:n[ãa]o|nenhum|nenhuma)\b", re.IGNORECASE)
 _DISPONIBILIDADE = re.compile(

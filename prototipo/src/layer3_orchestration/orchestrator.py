@@ -22,6 +22,7 @@ sem base. Decisões registradas em docs/decisoes_arquitetura.md.
 """
 from dataclasses import dataclass
 
+from src.config import ParametrosAmostragem, settings
 from src.layer2_llm_core.core import LLMCore
 from src.layer4_tools.tools import NENHUM_TRECHO_ENCONTRADO, buscar_normativo
 from src.layer6_memory.memory import Memoria
@@ -52,8 +53,17 @@ class Interpretacao:
 
 
 class Orchestrator:
-    def __init__(self, llm: LLMCore | None = None, memoria: Memoria | None = None):
+    def __init__(
+        self,
+        llm: LLMCore | None = None,
+        memoria: Memoria | None = None,
+        amostragem: ParametrosAmostragem | None = None,
+    ):
         self.llm = llm or LLMCore()
+        # Temperaturas de classificação e de síntese e seed (v4). Padrão:
+        # os valores do .env (src/config.py); o benchmark passa outros para
+        # a análise de sensibilidade.
+        self.amostragem = amostragem or settings.amostragem
         self.memoria = memoria or Memoria()
         # Registro de proveniência (Camada 8) da última chamada a
         # responder() — exposto para camadas superiores (ex: Camada 1)
@@ -73,7 +83,8 @@ class Orchestrator:
             resposta = _RECUSAS[interpretacao.tipo]()
             self.memoria.adicionar(pergunta, resposta)
             self.ultimo_registro = registrar_interacao(
-                pergunta, interpretacao.tipo, resposta, desfecho=f"recusa_{interpretacao.tipo}"
+                pergunta, interpretacao.tipo, resposta,
+                parametros_llm=self._parametros_llm(), desfecho=f"recusa_{interpretacao.tipo}"
             )
             return resposta
 
@@ -83,7 +94,8 @@ class Orchestrator:
             resposta = recusar_sem_base()
             self.memoria.adicionar(pergunta, resposta)
             self.ultimo_registro = registrar_interacao(
-                pergunta, interpretacao.tipo, resposta, desfecho="recusa_sem_base"
+                pergunta, interpretacao.tipo, resposta,
+                parametros_llm=self._parametros_llm(), desfecho="recusa_sem_base"
             )
             return resposta
 
@@ -98,7 +110,7 @@ class Orchestrator:
         validacao = self._validar_resposta(resposta_sintetizada, normativo)
         self.ultimo_registro = registrar_interacao(
             pergunta, interpretacao.tipo, validacao.texto_final, normativo,
-            validacao=validacao.categorias(),
+            validacao=validacao.categorias(), parametros_llm=self._parametros_llm(),
         )
         return validacao.texto_final
 
@@ -111,7 +123,10 @@ class Orchestrator:
             "jurídica definitiva sobre um caso concreto), ou 'fora_de_escopo' "
             "(não é sobre Open Finance/PJ)."
         )
-        tipo = self.llm.generate(prompt=pergunta, system=system).strip().lower()
+        tipo = self.llm.generate(
+            prompt=pergunta, system=system,
+            options=self.amostragem.opcoes(self.amostragem.temperatura_classificacao),
+        ).strip().lower()
         if tipo not in TIPOS_INTERPRETACAO:
             tipo = "normativo"  # fallback conservador
         return Interpretacao(pergunta_original=pergunta, tipo=tipo)
@@ -131,7 +146,15 @@ class Orchestrator:
         partes.append(f"Contexto normativo: {normativo}")
         partes.append(f"Pergunta: {pergunta}")
         prompt = "\n\n".join(partes)
-        return self.llm.generate(prompt=prompt, system=system)
+        return self.llm.generate(
+            prompt=prompt, system=system,
+            options=self.amostragem.opcoes(self.amostragem.temperatura_sintese),
+        )
+
+    def _parametros_llm(self) -> dict:
+        # Proveniência (Camada 8): com que modelo e parâmetros a resposta
+        # foi gerada.
+        return {**self.llm.identificacao(), **self.amostragem.como_dict()}
 
     def _validar_resposta(self, resposta: str, normativo: str) -> ResultadoValidacao:
         return validar_resposta(resposta, normativo)

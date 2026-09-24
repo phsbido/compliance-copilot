@@ -42,6 +42,51 @@ custo computacional local)*
 **Adaptação necessária**: nenhuma até o momento (estágio inicial, apenas
 geração de texto simples).
 
+### Parâmetros de amostragem explícitos (v4, 2026-09-24)
+
+**Decisão**: temperatura e seed deixam de ser o padrão implícito do Ollama
+(temperatura 0,8, seed aleatória — o que o protótipo usava da v1 à v3.1 sem
+que isso tivesse sido decidido) e passam a ser configuração explícita
+(`.env`, `src/config.py`), com valores diferentes por tipo de chamada:
+
+- **classificação** (`_interpretar`: normativo / parecer jurídico / fora de
+  escopo): **temperatura 0** — é uma decisão de governança, e a mesma
+  pergunta não pode ser recusada numa vez e respondida em outra;
+- **síntese** (`_sintetizar_resposta`): **temperatura 0,1** — quase
+  determinística (fidelidade ao texto normativo, não variedade), com margem
+  mínima contra laços de repetição do modo guloso;
+- **seed 42** — reprodutibilidade e auditoria.
+
+`LLMCore.generate` aceita opções por chamada; a Camada 3 passa a
+temperatura de cada etapa. A Camada 8 registra, em cada interação, modelo,
+ID do modelo (digest, via `ollama.list()`), temperaturas e seed. O
+benchmark passa a ter o modo `producao` (a configuração do `.env`, padrão) e
+o modo `sensibilidade` (0,8 nas duas chamadas, seed aleatória), no lugar de
+`livre`/`deterministico`.
+
+**Motivação**: (1) o benchmark deve medir a configuração que o usuário usa —
+até a v3.1, o modo "livre" media 0,8 porque esse era o padrão, e o modo
+"determinístico" media uma configuração que ninguém usava; (2) os dados do
+projeto mostram que temperatura baixa dá **consistência, não correção**: na
+v2, o modo determinístico errou o limite de clientes 5 de 5 vezes ("3
+milhões"), contra 1 de 5 no livre — o erro virou sistemático. Quem eliminou
+o número inventado foi a política da Camada 7 (v3), não a temperatura.
+Fixar a temperatura é, portanto, uma decisão de estabilidade e auditoria, e
+não substitui a governança.
+
+**Ambiguidade/lacuna observada**: Maia et al. atribuem à Camada 2
+"interpretar a intenção" e "sintetizar respostas", mas não tratam do
+controle de aleatoriedade do modelo, que aqui se mostrou uma decisão com
+efeito de governança (a classificação decide se há recusa) e de
+observabilidade (sem registrar parâmetros e ID do modelo, uma resposta não
+pode ser reproduzida nem auditada). A decisão ficou distribuída: a Camada 2
+executa, `config.py` define, a Camada 3 escolhe por etapa, a Camada 8
+registra.
+
+**Limite**: temperatura 0 com seed fixa só garante saída idêntica no mesmo
+ambiente (versão do Ollama, ID do modelo, hardware); em outra máquina,
+espera-se reproduzir as taxas, não necessariamente o texto.
+
 ---
 
 ## Camada 1 — Interação com o Usuário

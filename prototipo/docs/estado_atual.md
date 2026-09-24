@@ -1,8 +1,7 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-09-24 (Camada 7 v2 — governança revisada,
-benchmark v3; ver seção "Camada 7 v2" abaixo. Antes, no mesmo dia: Camada 5
-v2 com Gold + BM25).
+**Última atualização**: 2026-09-24 (v4 — temperatura e seed explícitas,
+benchmark nos modos produção e sensibilidade; ver seção "v4" abaixo).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -240,9 +239,13 @@ Detalhes em `docs/decisoes_arquitetura.md` (Camada 7, "Camada 7 v2") e
 - v3.1 (tag `v3.1-monografia`): regra 3 reescrita — 0 cabeçalhos copiados;
   detecção de ausência ampliada ("informação", "existência") após novo falso
   positivo; correção: invenções da Res. 32 na v1 livre são 2/5, não 3/5.
-- **Aprovado, a planejar**: v4 — temperatura/seed explícitas em `.env`
-  (classificação 0, síntese baixa), registradas na Camada 8; benchmark com
-  modo "produção" + sensibilidade a 0,8.
+- v4 (tag `v4.0-monografia`): `.env` com `OLLAMA_TEMPERATURA_CLASSIFICACAO=0`,
+  `OLLAMA_TEMPERATURA_SINTESE=0.1`, `OLLAMA_SEED=42` (`src/config.py`,
+  `ParametrosAmostragem`); Camada 8 registra `parametros_llm` (modelo, ID,
+  temperaturas, seed). Benchmark: `--modo producao` (padrão) e
+  `--modo sensibilidade` (0,8, seed aleatória). Produção: 0 avisos, número
+  inventado 0/5; sensibilidade: 2/5 números inventados, pegos pela Camada 7.
+  Limite: com 0,1 a 1ª execução de cada prompt difere das seguintes.
 - **Próximo (aprovado pelo usuário)**: busca híbrida BM25 + densa + RRF na
   Camada 5, *com avaliação*: montar conjunto rotulado (~25 perguntas com o
   artigo esperado), medir Recall@3/MRR e só adotar se melhorar. Trazer o

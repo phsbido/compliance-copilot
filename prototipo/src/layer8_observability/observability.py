@@ -21,6 +21,10 @@ interação (resposta ou qual recusa) e as categorias da validação da Camada 7
 (`validacao`: normas/artigos/valores não verificados, normas declaradas
 ausentes). `aviso_citacao_nao_verificada` continua existindo com o critério
 da v1/v2, para comparar versões com a mesma régua.
+
+v4 (2026-09-24): `parametros_llm` registra modelo, ID do modelo (digest),
+temperaturas de classificação e de síntese e seed — sem isso, não é possível
+saber depois com que configuração uma resposta foi gerada.
 """
 import json
 import re
@@ -44,6 +48,7 @@ class RegistroInteracao:
     resposta_final: str = ""
     desfecho: str = "resposta"  # "resposta" | "recusa_parecer_juridico" | "recusa_fora_de_escopo" | "recusa_sem_base"
     validacao: dict = field(default_factory=dict)
+    parametros_llm: dict = field(default_factory=dict)
 
 
 def _extrair_fontes(normativo: str) -> list[dict]:
@@ -69,6 +74,7 @@ def registrar_interacao(
     arquivo: Path | None = None,
     validacao: dict | None = None,
     desfecho: str = "resposta",
+    parametros_llm: dict | None = None,
 ) -> RegistroInteracao:
     registro = RegistroInteracao(
         timestamp=datetime.now(timezone.utc).isoformat(),
@@ -81,6 +87,7 @@ def registrar_interacao(
         resposta_final=resposta_final,
         desfecho=desfecho,
         validacao=validacao or {},
+        parametros_llm=parametros_llm or {},
     )
     destino = arquivo or LOG_FILE
     destino.parent.mkdir(parents=True, exist_ok=True)

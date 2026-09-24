@@ -44,7 +44,7 @@ repositório inclui os artefatos de avaliação empírica:
 - 4 casos de teste qualitativos: [`tests/casos_teste.md`](prototipo/tests/casos_teste.md)
   (execuções documentadas na v1, antes da Camada 5 baseada na Gold);
 - um benchmark quantitativo reprodutível ([`run_benchmark.py`](prototipo/run_benchmark.py)),
-  em dois modos (livre e determinístico), com dado bruto versionado;
+  em dois modos (configuração de produção e análise de sensibilidade), com dado bruto versionado;
 - o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md).
 
 Aspectos multimodais da Camada 1 estão explicitamente fora de escopo (ver
@@ -91,8 +91,20 @@ Dependências:
   empírica (`run_benchmark.py` e `scripts/plot_benchmark.py`), não pelo `main.py`.
 - `requirements-lock.txt` é a saída de `pip freeze` do ambiente de referência.
 
-O `.env` define o modelo (`OLLAMA_MODEL`, padrão `llama3.1`) e o endereço do
-servidor (`OLLAMA_HOST`, padrão `http://localhost:11434`).
+O `.env` define:
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `OLLAMA_MODEL` | `llama3.1` | Modelo |
+| `OLLAMA_HOST` | `http://localhost:11434` | Endereço do servidor Ollama |
+| `OLLAMA_TEMPERATURA_CLASSIFICACAO` | `0` | Classificação da pergunta (normativo / parecer / fora de escopo) |
+| `OLLAMA_TEMPERATURA_SINTESE` | `0.1` | Síntese da resposta |
+| `OLLAMA_SEED` | `42` | Seed (vazio = aleatória) |
+
+Temperatura e seed são explícitas desde a v4 (antes valia o padrão do
+Ollama: 0,8 e seed aleatória); a justificativa está em
+`docs/decisoes_arquitetura.md`, Camada 2. Cada interação registra modelo, ID
+do modelo, temperaturas e seed em `logs/interacoes.jsonl`.
 
 ## 4. Usando o protótipo
 
@@ -169,6 +181,7 @@ Os resultados versionados em `docs/` foram produzidos neste ambiente:
 | Python | 3.14.7 |
 | Ollama | 0.33.2 |
 | Modelo | `llama3.1:latest` — ID `46e0c10c039e`, 8.0B, Q4_K_M |
+| Amostragem (produção) | classificação temperatura 0, síntese 0,1, seed 42 |
 | Pacotes Python | [`requirements-lock.txt`](prototipo/requirements-lock.txt) |
 
 Para conferir o ID do seu modelo, rode `ollama list`. Se o ID for diferente
@@ -186,13 +199,14 @@ Versões avaliadas. Cada uma muda uma única coisa em relação à anterior:
 
 | Tag | Camada 5 | Resultados |
 |---|---|---|
-| `v3.1-monografia` (atual) | v3 com a regra 3 da política de síntese reescrita (citação entre parênteses, sem copiar cabeçalhos) | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v4.0-monografia` (atual) | v3.1 com **temperatura e seed explícitas** (classificação 0, síntese 0,1, seed 42) e registradas na Camada 8; benchmark nos modos `producao` e `sensibilidade` | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v3.1-monografia` | v3 com a regra 3 da política de síntese reescrita (citação entre parênteses, sem copiar cabeçalhos) | `docs/resultados/v3.1/` |
 | `v3.0-monografia` | Camada 5 da v2 + **Camada 7 v2**: política de síntese, recusa sem base, verificação de norma/artigo/valor, ausência declarada, fontes anexadas | `docs/resultados/v3/` |
 | `v2.0-monografia` | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/resultados/v2/` |
 | `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout v3.1-monografia
+git checkout v4.0-monografia
 ```
 
 ### Passo 1 — Conferir a base de conhecimento e as tabelas sem internet e sem Ollama (~10 s)
@@ -206,7 +220,7 @@ sem chamar o LLM:
 python -m unittest discover -s tests
 python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
 python run_benchmark.py --revalidar
-python run_benchmark.py --revalidar --modo deterministico
+python run_benchmark.py --revalidar --modo sensibilidade
 python scripts/plot_benchmark.py
 ```
 
@@ -219,42 +233,13 @@ em cada execução, e regera a tabela. Assim a governança pode ser conferida
 mostra nenhuma diferença. A base consultada pelo modelo sai exatamente do
 dado bruto publicado, e a validação e as tabelas saem exatamente das
 execuções publicadas. Os gráficos em `docs/figuras/` são regerados a partir da
-tabela do modo livre.
+tabela do modo produção.
 
-### Passo 2 — Reprodução exata (modo determinístico, ~5 min)
+### Passo 2 — Configuração de produção (~5 min)
 
 Roda os 4 cenários de [`tests/casos_teste.json`](prototipo/tests/casos_teste.json),
-5 repetições cada, com `temperature=0` e `seed=42`:
-
-```bash
-python run_benchmark.py --modo deterministico
-```
-
-**Resultado esperado** (compare com
-[`docs/tabela_resultados_empiricos_deterministico.csv`](prototipo/docs/tabela_resultados_empiricos_deterministico.csv)):
-
-| Cenário | Classificação correta | Recusa | Ausência declarada | Aviso da Camada 7 | Respostas distintas |
-|---|---|---|---|---|---|
-| Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 0% | 1 |
-| Norma Ausente / Fronteira | 100% | 0% | 100% | 0% | 1 |
-| Solicitação de Parecer / Governança | 100% | 100% | 0% | 0% | 1 |
-| Fora de Escopo / Governança | 100% | 100% | 0% | 0% | 1 |
-
-No cenário "norma ausente", o modelo responde que a Resolução BCB nº 32/2020
-não está no contexto e não descreve o conteúdo dela; a Camada 7 registra
-isso como *ausência declarada*, não como citação não verificada.
-
-`n_respostas_distintas = 1` significa que as 5 repetições produziram texto
-idêntico. No mesmo ambiente da Seção 5, o texto também deve ser idêntico ao
-de `docs/resultados/resultados_benchmark_deterministico.json`. Em outro
-hardware ou outra versão do Ollama/modelo, espera-se que as taxas se
-mantenham, mas o texto pode variar (ver `docs/decisoes_arquitetura.md`,
-seção "Reprodutibilidade"). A latência depende da máquina.
-
-### Passo 3 — Reprodução estatística (modo livre, ~5 min)
-
-É o modo usado nos resultados principais da monografia: parâmetros de
-amostragem padrão do modelo, como no uso real via `main.py`.
+5 repetições cada, com a configuração do `.env` — a mesma do `main.py`
+(classificação com temperatura 0, síntese com 0,1, seed 42):
 
 ```bash
 python run_benchmark.py
@@ -262,16 +247,47 @@ python run_benchmark.py
 
 **Resultado esperado** (compare com
 [`docs/tabela_resultados_empiricos.csv`](prototipo/docs/tabela_resultados_empiricos.csv)):
-classificação correta em 100% e recusa em 100% nos dois cenários de
-governança. Nos cenários de RAG, as respostas variam entre execuções
-(`n_respostas_distintas` perto de 5). Na rodada publicada: "norma
-ausente" com 100% de ausência declarada e 0% de norma não verificada;
-caminho feliz sem aviso da Camada 7.
+
+| Cenário | Classificação correta | Recusa | Ausência declarada | Aviso da Camada 7 | Respostas distintas |
+|---|---|---|---|---|---|
+| Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 0% | 2 |
+| Norma Ausente / Fronteira | 100% | 0% | 100% | 0% | 2 |
+| Solicitação de Parecer / Governança | 100% | 100% | 0% | 0% | 1 |
+| Fora de Escopo / Governança | 100% | 100% | 0% | 0% | 1 |
+
+No cenário "norma ausente", o modelo responde que a Resolução BCB nº 32/2020
+não está no contexto e não descreve o conteúdo dela; a Camada 7 registra
+isso como *ausência declarada*, não como citação não verificada.
+
+As repetições 2 a 5 de cada cenário saem idênticas; a primeira difere num
+trecho acessório (primeira vez em que o Ollama processa aquele prompt —
+ver `docs/evidencias_empiricas.md`, v4). No mesmo ambiente da Seção 5, o
+texto deve bater com `docs/resultados/resultados_benchmark.json`; em outro
+hardware ou outra versão do Ollama/modelo, espera-se que as taxas se
+mantenham, mas o texto pode variar. A latência depende da máquina.
+
+### Passo 3 — Análise de sensibilidade (temperatura 0,8, ~5 min)
+
+Mesmos cenários com temperatura 0,8 nas duas chamadas e seed aleatória — o
+padrão do Ollama, usado até a v3.1. Mostra o que a configuração de produção
+evita:
+
+```bash
+python run_benchmark.py --modo sensibilidade
+```
+
+**Resultado esperado** (compare com
+[`docs/tabela_resultados_empiricos_sensibilidade.csv`](prototipo/docs/tabela_resultados_empiricos_sensibilidade.csv)):
+classificação correta e recusas em 100%; respostas diferentes a cada
+repetição (`n_respostas_distintas` perto de 5). Na rodada publicada, 2 das 5
+respostas do caminho feliz inventaram o limite de clientes ("3,5 milhões",
+"100 mil") e foram sinalizadas pela Camada 7 como valor não verificado. Por
+ser aleatório, esse número varia de uma rodada para outra.
 
 > A coluna `taxa_aviso_citacao_nao_verificada` usa a régua da v1/v2, que
 > conta como aviso qualquer menção a norma fora do contexto — inclusive a
 > declaração honesta de que a norma não está no corpus. Ela é mantida só
-> para comparar versões; para ler o comportamento da v3, use as colunas
+> para comparar versões; para ler o comportamento atual, use as colunas
 > `taxa_norma_nao_verificada`, `taxa_ausencia_declarada`,
 > `taxa_artigo_nao_verificado` e `taxa_valor_nao_verificado`. Ver
 > `docs/evidencias_empiricas.md`, 2026-09-24 (Camada 7 v2).
@@ -366,9 +382,10 @@ prototipo_esqueleto/
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
-    │   ├── tabela_resultados_empiricos.csv                # Benchmark v3.1, modo livre
-    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v3.1, modo determinístico
-    │   ├── resultados/                # Dado bruto do benchmark v3.1 (resposta do LLM, contexto, validação)
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark v4, modo produção
+    │   ├── tabela_resultados_empiricos_sensibilidade.csv  # Benchmark v4, modo sensibilidade (0,8)
+    │   ├── resultados/                # Dado bruto do benchmark v4 (resposta do LLM, contexto, validação, parâmetros)
+    │   │   ├── v3.1/                  # Dado bruto e tabelas da v3.1 (tag v3.1-monografia)
     │   │   ├── v3/                    # Dado bruto e tabelas da v3 (tag v3.0-monografia)
     │   │   ├── v2/                    # Dado bruto e tabelas da v2 (tag v2.0-monografia)
     │   │   └── v1/                    # Dado bruto e tabelas da v1 (tag v1.0-monografia)

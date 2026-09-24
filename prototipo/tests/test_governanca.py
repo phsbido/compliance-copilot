@@ -107,6 +107,9 @@ class TestNormaAusente(unittest.TestCase):
             "Não há menção à Resolução BCB nº 32/2020 no contexto fornecido.",
             # benchmark v3.1 (livre, rep. 4)
             "Além disso, não há informações sobre a existência de uma Resolução BCB nº 32/2020.",
+            # benchmark v4 (sensibilidade, rep. 1): pedido ao usuário, não citação
+            "Por favor, forneça mais informações sobre o contexto ou o conteúdo específico "
+            "da Resolução BCB nº 32/2020 que você gostaria de saber sobre.",
         ):
             r = validar_resposta(resposta, self.contexto)
             self.assertEqual(r.normas_nao_verificadas, [], resposta)
@@ -115,6 +118,10 @@ class TestNormaAusente(unittest.TestCase):
     def test_negacao_sobre_conteudo_nao_e_ausencia(self):
         # Negar algo sobre o conteúdo da norma é usá-la como fonte.
         r = validar_resposta("A Resolução BCB nº 32/2020 não exige certificação das interfaces.", self.contexto)
+        self.assertIn("Resolução BCB nº 32", r.normas_nao_verificadas)
+
+    def test_por_favor_nao_basta_para_ser_ausencia(self):
+        r = validar_resposta("Por favor, note que a Resolução BCB nº 32/2020 exige interfaces padronizadas.", self.contexto)
         self.assertIn("Resolução BCB nº 32", r.normas_nao_verificadas)
 
     def test_metrica_legada_continua_igual_a_v1(self):

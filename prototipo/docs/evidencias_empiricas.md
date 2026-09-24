@@ -565,3 +565,65 @@ um erro do validador que as taxas não mostravam. A validação lexical
 precisa de uma rotina de auditoria por amostragem das próprias decisões — e
 guardar resposta e contexto de cada execução é o que torna essa auditoria
 barata (`--revalidar`, sem nova geração).
+
+---
+
+## 2026-09-24 — v4: temperatura e seed explícitas (modo produção e sensibilidade)
+
+**Contexto**: até a v3.1, o protótipo usava o padrão implícito do Ollama
+(temperatura 0,8, seed aleatória). Na v4, a configuração é explícita (ver
+`docs/decisoes_arquitetura.md`, Camada 2): classificação com temperatura 0,
+síntese com 0,1, seed 42, registradas na Camada 8 junto com o ID do modelo
+(`46e0c10c039e`). O benchmark passa a ter o modo `producao` (essa
+configuração) e o modo `sensibilidade` (0,8 nas duas chamadas, seed
+aleatória — o antigo "livre"). v3.1 arquivada em `docs/resultados/v3.1/`.
+
+| Cenário | Métrica | Produção (0 / 0,1, seed 42) | Sensibilidade (0,8, seed aleatória) |
+|---|---|---|---|
+| Caminho Feliz | valor numérico não verificado | 0/5 | 2/5 ("3,5 milhões", "100 mil") |
+| Caminho Feliz | respostas distintas | 2 | 5 |
+| Caminho Feliz | latência média | 14,0 s (dp 1,7 s) | 7,6 s (dp 2,2 s) |
+| Norma Ausente | ausência declarada / norma não verificada | 100% / 0% | 100% / 0% |
+| Norma Ausente | latência média | 1,6 s | 2,5 s |
+| Parecer / Fora de escopo | classificação e recusa | 100% | 100% |
+
+**Observação 1 — a temperatura alta reintroduz número inventado, e a
+Camada 7 o pega**: na sensibilidade, 2 das 5 respostas do caminho feliz
+inventaram o limite de clientes ("3,5 milhões de clientes PJ", "100 mil"),
+com a mesma política de síntese e o mesmo contexto da produção — que não
+tem o número. As duas foram sinalizadas como valor não verificado. Na v3.1
+livre, com a mesma configuração (0,8), foram 0/5: a 0,8 o erro é esporádico
+e varia de uma rodada para outra, o que também justifica a produção em
+temperatura baixa.
+
+**Observação 2 — seed fixa com temperatura 0,1 não garantiu texto idêntico
+na primeira execução de cada pergunta**: nos dois cenários normativos, a
+repetição 1 difere das repetições 2 a 5, que são idênticas entre si. O
+contexto é o mesmo nas 5; no caminho feliz, o texto diverge só no caractere
+1.715, num trecho acessório ("…caso seja dispensada da exigência de
+participação obrigatória"), com o mesmo conteúdo normativo e sem aviso nas
+duas versões. Hipótese: na primeira vez em que o Ollama processa um prompt,
+o cálculo segue um caminho numérico diferente das vezes seguintes (prompt já
+em cache); com temperatura 0,1, uma diferença mínima nos valores pode mudar a
+palavra sorteada, enquanto com temperatura 0 (v3.1 determinística) as 5
+repetições foram idênticas. Consequência prática: a seed fixa dá
+reprodutibilidade "a partir da segunda chamada" no mesmo processo; para
+reprodução exata do texto, temperatura 0 é mais robusta. Não invalida a
+escolha de 0,1 (o conteúdo não mudou), mas é um limite a declarar.
+
+**Observação 3 — mais um falso positivo do validador, corrigido com
+`--revalidar`**: na sensibilidade, "Por favor, forneça mais informações sobre
+… a Resolução BCB nº 32/2020" (pedido ao usuário) foi marcado como norma não
+verificada. Frases com "forneça" passaram a ser tratadas como não
+afirmativas; "por favor" sozinho, não ("Por favor, note que a norma X
+exige…" é afirmação — virou teste). Reconferido que a v1 continua com 2/5
+(livre) e 5/5 (determinístico) invenções sinalizadas. Uma segunda suspeita
+("5 milhões" não sinalizado) era erro da minha conferência: o texto era
+"3,5 milhões", extraído e sinalizado corretamente.
+
+**Relevância para a pesquisa**: a temperatura é um parâmetro de governança,
+não só de estilo: a 0,8, o mesmo sistema passa a inventar números de forma
+esporádica. Mas a temperatura baixa sozinha não resolve (v2 determinística
+errou 5/5); o que funcionou foi a combinação temperatura baixa + política de
+síntese + validação pós-geração, com a Camada 8 registrando os parâmetros
+para que cada resposta possa ser atribuída à sua configuração.

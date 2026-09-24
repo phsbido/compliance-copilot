@@ -15,24 +15,27 @@ o objetivo aqui é medir o comportamento por pergunta isolada, não o efeito de
 histórico de conversa (esse já foi exercitado separadamente, ver Caso 2 de
 tests/casos_teste.md).
 
-Dois modos de execução (ver docs/decisoes_arquitetura.md,
-"Reprodutibilidade"):
+Dois modos de execução (v4; ver docs/decisoes_arquitetura.md, Camada 2):
 
-  - livre (padrão): parâmetros de amostragem default do modelo — o mesmo
-    comportamento de main.py; mede o protótipo como um usuário o usaria.
-  - deterministico: temperature=0 e seed fixa (OPCOES_DETERMINISTICAS),
-    repassados à Camada 2 — mede o quanto a variação observada no modo livre
-    vem da amostragem do LLM, e permite a terceiros reproduzir as respostas.
+  - producao (padrão): os parâmetros de amostragem do .env (src/config.py) —
+    classificação com temperatura 0, síntese com 0,1, seed 42 —, os mesmos
+    de main.py; mede o protótipo como ele é usado.
+  - sensibilidade: temperatura 0,8 nas duas chamadas e seed aleatória (o
+    padrão implícito do Ollama, usado até a v3.1 no antigo modo "livre") —
+    mostra o que muda com amostragem alta e justifica a escolha da produção.
 
-Gera dois artefatos por modo (sufixo "_deterministico" no modo determinístico):
-  - docs/resultados/resultados_benchmark[_deterministico].json: um registro
+Até a v3.1 os modos eram "livre" (padrão do Ollama) e "deterministico"
+(temperatura 0, seed 42); esses resultados estão em docs/resultados/v1..v3.1.
+
+Gera dois artefatos por modo (sufixo "_sensibilidade" no modo de sensibilidade):
+  - docs/resultados/resultados_benchmark[_sensibilidade].json: um registro
     por execução (dado bruto, versionado).
-  - docs/tabela_resultados_empiricos[_deterministico].csv: estatísticas
+  - docs/tabela_resultados_empiricos[_sensibilidade].csv: estatísticas
     agregadas por cenário (via pandas), para uso direto na monografia.
 
 Uso:
-    python run_benchmark.py                        # modo livre
-    python run_benchmark.py --modo deterministico  # temperature=0, seed fixa
+    python run_benchmark.py                        # modo produção
+    python run_benchmark.py --modo sensibilidade   # temperatura 0,8, seed aleatória
     python run_benchmark.py --somente-tabela [--modo ...]
         # não chama o LLM: regera o CSV a partir do JSON bruto já salvo
     python run_benchmark.py --revalidar [--modo ...]
@@ -54,7 +57,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.layer2_llm_core.core import LLMCore
+from src.config import ParametrosAmostragem, settings
 from src.layer3_orchestration.orchestrator import Orchestrator
 from src.layer7_governance.governance import validar_resposta
 
@@ -64,11 +67,17 @@ RESULTADOS_DIR = RAIZ / "docs" / "resultados"
 
 N_REPETICOES = 5
 
-OPCOES_DETERMINISTICAS = {"temperature": 0, "seed": 42}
+AMOSTRAGEM_SENSIBILIDADE = ParametrosAmostragem(
+    temperatura_classificacao=0.8, temperatura_sintese=0.8, seed=None
+)
+
+
+def amostragem_do_modo(modo: str) -> ParametrosAmostragem:
+    return AMOSTRAGEM_SENSIBILIDADE if modo == "sensibilidade" else settings.amostragem
 
 
 def caminhos_saida(modo: str) -> tuple[Path, Path]:
-    sufixo = "" if modo == "livre" else f"_{modo}"
+    sufixo = "" if modo == "producao" else f"_{modo}"
     return (
         RESULTADOS_DIR / f"resultados_benchmark{sufixo}.json",
         RAIZ / "docs" / f"tabela_resultados_empiricos{sufixo}.csv",
@@ -100,8 +109,7 @@ def carregar_casos() -> list[dict]:
 
 
 def rodar_caso(caso: dict, repeticao: int, modo: str) -> dict:
-    opcoes = OPCOES_DETERMINISTICAS if modo == "deterministico" else None
-    orchestrator = Orchestrator(llm=LLMCore(options=opcoes))
+    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo))
 
     inicio = time.perf_counter()
     resposta = orchestrator.responder(caso["pergunta"])
@@ -123,6 +131,7 @@ def rodar_caso(caso: dict, repeticao: int, modo: str) -> dict:
         "aviso_citacao_nao_verificada": bool(registro.aviso_citacao_nao_verificada) if registro else False,
         **colunas_validacao(registro.validacao if registro else {}),
         "validacao": registro.validacao if registro else {},
+        "parametros_llm": registro.parametros_llm if registro else {},
         "num_fontes_normativas": len(registro.fontes_normativas) if registro else 0,
         "latencia_ms": round(latencia_ms, 1),
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -190,7 +199,7 @@ def exportar_tabela_csv(resultados: list[dict], destino: Path) -> pd.DataFrame:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Benchmark empírico do protótipo.")
-    parser.add_argument("--modo", choices=["livre", "deterministico"], default="livre")
+    parser.add_argument("--modo", choices=["producao", "sensibilidade"], default="producao")
     parser.add_argument(
         "--somente-tabela",
         action="store_true",
@@ -214,8 +223,7 @@ if __name__ == "__main__":
             print(f"Camada 7 reaplicada a {n} registro(s); JSON bruto atualizado.")
     else:
         casos = carregar_casos()
-        opcoes = OPCOES_DETERMINISTICAS if args.modo == "deterministico" else "default do modelo"
-        print(f"Modo: {args.modo} (opções do LLM: {opcoes})")
+        print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()})")
         print(f"Carregados {len(casos)} cenários de {CASOS_FILE}, {N_REPETICOES} repetições cada "
               f"({len(casos) * N_REPETICOES} execuções no total).\n")
 

@@ -5,11 +5,15 @@ Responsabilidade segundo a arquitetura conceitual: interpretar a intenção do
 usuário, sintetizar artefatos intermediários de raciocínio e produzir saídas
 estruturadas (respostas, planos, chamadas de ferramenta).
 
-Estágio atual: implementação mínima — apenas geração de texto simples, sem
-tool calling e sem integração com as demais camadas. Serve para validar a
-base (Estágio 1 do plano de construção) antes de acrescentar complexidade.
+Implementação: wrapper fino sobre o cliente Python do Ollama. Faz geração de
+texto (sem tool calling — a busca normativa é acionada pela Camada 3, não
+pelo modelo). Cada chamada pode receber seus próprios parâmetros de
+amostragem, porque a Camada 3 usa temperaturas diferentes para classificar
+a pergunta e para sintetizar a resposta (ver `src/config.py`). Também expõe
+a identificação exata do modelo (nome e ID/digest), que a Camada 8 registra
+em cada interação.
 
-Decisão de projeto registrada em docs/decisoes_arquitetura.md.
+Decisões registradas em docs/decisoes_arquitetura.md, Camada 2.
 """
 import ollama
 from src.config import settings
@@ -17,27 +21,38 @@ from src.config import settings
 
 class LLMCore:
     def __init__(self, model: str | None = None, options: dict | None = None):
-        """`options` é repassado ao Ollama sem alteração (ex:
-        {"temperature": 0, "seed": 42}). Padrão None = parâmetros de
-        amostragem default do modelo — é o modo usado por main.py e pelo
-        benchmark "livre". O modo "deterministico" do run_benchmark.py fixa
-        temperatura e seed para avaliar reprodutibilidade (ver
-        docs/decisoes_arquitetura.md, "Reprodutibilidade")."""
+        """`options` são opções padrão repassadas ao Ollama em toda chamada
+        (ex: {"temperature": 0, "seed": 42}); as opções passadas a
+        `generate` têm precedência sobre elas."""
         self.model = model or settings.ollama_model
         self.options = options
+        self._identificacao: dict | None = None
 
-    def generate(self, prompt: str, system: str | None = None) -> str:
-        """Envia uma única mensagem ao modelo e retorna a resposta em texto.
-
-        Esta é a operação mínima da camada — ainda sem decomposição de
-        tarefas, sem chamadas de ferramenta e sem uso de contexto/memória
-        (essas responsabilidades pertencem às Camadas 3, 4 e 6,
-        respectivamente, e serão integradas nos próximos estágios).
-        """
+    def generate(self, prompt: str, system: str | None = None, options: dict | None = None) -> str:
+        """Envia uma única mensagem ao modelo e retorna a resposta em texto."""
         messages = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
-        response = ollama.chat(model=self.model, messages=messages, options=self.options)
+        opcoes = {**(self.options or {}), **(options or {})} or None
+        response = ollama.chat(model=self.model, messages=messages, options=opcoes)
         return response["message"]["content"]
+
+    def identificacao(self) -> dict:
+        """{"modelo": nome, "id_modelo": digest de 12 caracteres} — o ID
+        muda quando a tag (ex: "latest") passa a apontar para outro modelo,
+        então é o que permite saber com que modelo cada resposta foi gerada.
+        Consultado uma vez por instância."""
+        if self._identificacao is None:
+            id_modelo = "desconhecido"
+            nomes = {self.model, f"{self.model}:latest"}
+            try:
+                for m in ollama.list().models:
+                    if m.model in nomes:
+                        id_modelo = m.digest[:12]
+                        break
+            except Exception:  # Ollama indisponível: a geração falhará de qualquer forma
+                pass
+            self._identificacao = {"modelo": self.model, "id_modelo": id_modelo}
+        return self._identificacao
