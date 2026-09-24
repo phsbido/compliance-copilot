@@ -1,9 +1,8 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-09-24 (preparação para publicação no GitHub:
-benchmark em modo determinístico, ingestão por URL oficial, dado bruto
-versionado, versões fixadas, README movido para a raiz do repositório — ver
-seção "Reprodutibilidade e publicação" abaixo).
+**Última atualização**: 2026-09-24 (Camada 5 revisada: runtime passa a ler
+a camada Gold do pipeline Bronze/Silver/Gold, ingerido por URL oficial, com
+busca BM25 — ver seção "Camada 5 v2" abaixo).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -200,6 +199,26 @@ Detalhes em `docs/decisoes_arquitetura.md` ("Reprodutibilidade") e
   `*.rar`/`*.zip`; `_openfinance_limpo.md` movido para fora do repositório.
 - `README.md` passou para a raiz do repositório, com tutorial de
   reprodução passo a passo.
+
+## Camada 5 v2 — Gold + BM25 (2026-09-24)
+
+Detalhes em `docs/decisoes_arquitetura.md` (Camada 5, "Revisão da Camada 5")
+e `docs/evidencias_empiricas.md` (2026-09-24, Camada 5 v2).
+
+- `fontes_url.json` lista 4 normas por URL; 3 no runtime (Res. Conjunta
+  1/2020, Circular 4.015/2020, IN BCB 759/2026); Pix só no pipeline.
+- Bronze = JSON da página + PDF consolidado mais recente (normas pré-2021:
+  o HTML da página é a redação ORIGINAL). Silver = texto vigente limpo por
+  artigo/seção. Gold = trechos ≤2.500 caracteres com cabeçalho de contexto
+  + `indice_bm25.json`. `KnowledgeBase` lê só a Gold (interface inalterada).
+- `.md` curados removidos do runtime (estavam desatualizados: RC1 v7→v9,
+  Circ. 4.015 v3→v5). `pypdf` de volta às dependências.
+- Resultados v1 arquivados em `docs/resultados/v1/`; v2 nos caminhos
+  padrão. Tag planejada: `v2.0-monografia`.
+- **Pendência para decisão (Camada 7)**: o aviso de norma não verificada
+  dispara também quando o modelo diz corretamente que a Resolução BCB 32 não
+  está no corpus — a taxa de aviso do cenário "norma ausente" mistura
+  alucinação com recusa honesta.
 
 ## Próximo passo sugerido
 

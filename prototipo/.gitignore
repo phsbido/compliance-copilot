@@ -4,6 +4,5 @@ __pycache__/
 .env
 data/normativos/*.pdf
 data/normativos/*.html
-data/normativos/1_bronze_raw/*.pdf
 logs/
 .DS_Store

@@ -333,3 +333,100 @@ saída é fixa** (desvio padrão de 5,4s para 0,6s no cenário "norma ausente"),
 o que confirma a explicação dada em 2026-09-22 de que o tamanho variável da
 resposta domina a variação de tempo. A primeira execução do caminho feliz
 (16,4s) inclui o carregamento do modelo na memória.
+
+---
+
+## 2026-09-24 — Camada 5 v2 (Gold + BM25): teste de recuperação e achados da ingestão
+
+**Contexto**: a Camada 5 passou a ler a camada Gold do pipeline
+Bronze/Silver/Gold, ingerido pelas URLs oficiais do BCB, com busca BM25 (ver
+`docs/decisoes_arquitetura.md`, "Revisão da Camada 5"). Antes de rodar o
+LLM, a recuperação foi comparada isoladamente com a v1 (`.md` curados +
+contagem de palavras em comum, recuperada da tag `v1.0-monografia`).
+
+**Achado 1 — o HTML da página não é o texto vigente para normas antigas**:
+para a Resolução Conjunta nº 1/2020 e a Circular nº 4.015/2020, o campo
+`Texto` da página do BCB traz a redação original de 2020 ("Open Banking");
+o texto consolidado só existe nos PDFs listados no campo `Documentos`. E o
+corpus curado da v1 já estava desatualizado: Resolução Conjunta nº 1 na v7
+(vigente: v9), Circular nº 4.015 na v3 (vigente: v5).
+
+**Achado 2 — recuperação por pergunta (top 3)**:
+
+| Pergunta | v1 (palavras em comum) | v2 (Gold + BM25) |
+|---|---|---|
+| Requisitos para instituição PJ participar do Open Finance (cenário "caminho feliz") | RC1 Arts. 5º, 6º, 51 | RC1 Arts. 7º, 6º; IN 759 Art. 1º |
+| Instituições que participam de forma obrigatória | RC1 Arts. 5º, 6º, 44 | RC1 Art. 6º (partes 1 e 2); IN 759 Art. 1º |
+| Dados cadastrais de pessoa jurídica | Circ. Art. 4º; RC1 Arts. 2º, 36 | Circ. Art. 6º-A; IN 759 seções 4.2 (Pessoa jurídica) e 3.1 |
+| Consentimento e prazo de validade | RC1 Arts. 5º, 2º, 6º | RC1 Arts. 13-A, 14; IN 759 seção 6.1.3 |
+
+Na v1, os artigos mais longos (Arts. 5º e 6º, com mais de 4 mil caracteres)
+apareciam em quase toda pergunta, porque a contagem de palavras em comum
+favorece trecho grande. O BM25 normaliza pelo tamanho e pondera palavras
+raras, e a v2 passa a trazer o dispositivo específico (consentimento →
+seção "Do Consentimento"). O contexto enviado ao LLM também encolheu: trechos
+de até ~2,5 mil caracteres, contra até ~6 mil na v1.
+
+**Achado 3 — dois ajustes de tokenização vieram do próprio teste**:
+(a) com redução só de plural, a pergunta do caminho feliz trazia artigos do
+"CAPÍTULO IV DOS REQUISITOS…" (a palavra "requisitos" do cabeçalho), e não a
+seção "Da Participação": "participar", "participação" e "participantes"
+eram tokens diferentes. Com radical (`particip`), o Art. 6º voltou ao topo.
+(b) com radical, "Como funciona a autenticação…" passou a trazer o Art. 1º
+("autorizadas a funcionar"), porque `funcion` é raro no corpus e tem peso
+alto. "Funciona" é moldura da pergunta, como "quais" e "como", e virou
+stopword junto com verbos análogos. Testado também indexar sem o cabeçalho
+de contexto: a recuperação piorou, e o cabeçalho foi mantido.
+
+**Relevância para a pesquisa**: a Camada 5 de Maia et al. não prescreve a
+preparação do conhecimento. Aqui, a preparação (qual representação da fonte
+é a vigente, limpeza, granularidade do trecho, contexto no trecho) mudou
+mais a qualidade da recuperação do que a fórmula de ranqueamento em si. E
+cada ajuste da busca foi motivado por um caso observável, o que o mantém
+explicável e rastreável.
+
+**Achado 4 — benchmark v2 (mesmos 4 cenários × 5 repetições, dois modos)**.
+Dado bruto em `docs/resultados/`; v1 arquivada em `docs/resultados/v1/`.
+
+| Cenário | Métrica | v1 livre | v2 livre | v1 determ. | v2 determ. |
+|---|---|---|---|---|---|
+| Caminho Feliz | latência média | 11,1 s | 9,5 s | 11,5 s | 10,8 s |
+| Caminho Feliz | desvio padrão | 2,7 s | 1,3 s | 2,9 s | 0,8 s |
+| Norma Ausente | aviso de citação | 60% | 80% | 100% | 100% |
+| Norma Ausente | latência média | 11,1 s | 10,6 s | 13,1 s | 18,0 s |
+| Parecer / Fora de escopo | classificação e recusa | 100% | 100% | 100% | 100% |
+
+Classificação correta: 100% em todas as 80 execuções (v1 + v2). Modo
+determinístico: 1 resposta distinta por cenário nas duas versões.
+
+**Leitura qualitativa (o que as taxas não mostram)**:
+
+- *Caminho feliz*: a v2 estrutura a resposta em participação obrigatória e
+  voluntária, a partir dos Arts. 6º e 7º (seção "Da Participação"), em vez
+  dos Arts. 5º, 6º e 51 da v1. Mas o erro numérico persiste nas duas
+  versões, com o trecho correto no contexto: o Art. 6º diz "número de
+  clientes superior a cinco milhões"; a v1 determinística respondeu "mais de
+  100 mil contas" e a v2 determinística "3 milhões de clientes". Mesma classe
+  de erro registrada em 2026-08-14 (distorção de fato com contexto correto),
+  e a Camada 7 não a detecta porque só confere números de artigo e de norma.
+- *Norma ausente*: a taxa de aviso subiu (60% → 80% no livre), mas o
+  comportamento melhorou. A v1 determinística **inventou** o conteúdo da
+  Resolução BCB nº 32/2020 ("De acordo com a Resolução BCB nº 32/2020, os
+  requisitos técnicos … incluem: 1. … interface aberta …"). A v2 determinística
+  começa com "Não encontrei a Resolução BCB nº 32/2020" e responde com o que
+  o corpus tem (Art. 46 da Resolução Conjunta nº 1). No modo livre, a v2
+  declara a ausência em 4 de 5 respostas. Todos os avisos, nas duas versões,
+  são do tipo "a resposta cita Resolução BCB nº 32, que não consta no
+  trecho": o validador da Camada 7 dispara também quando o modelo nomeia a
+  norma para dizer que ela não está disponível. **A taxa de aviso desse
+  cenário mistura alucinação com recusa honesta e não deve ser lida como
+  taxa de erro.** A resposta mais longa da v2 determinística (3,8 mil contra
+  2,2 mil caracteres) explica a latência maior nesse cenário.
+
+**Relevância para a pesquisa**: melhorar a Camada 5 (recuperação mais
+precisa, contexto menor e rotulado) reduziu latência e variância e mudou o
+comportamento diante de norma ausente, mas não corrigiu a distorção de
+números, que depende do Núcleo de Raciocínio (Camada 2) e de uma
+verificação que a Camada 7 ainda não faz. As camadas se compensam só
+parcialmente, e a métrica automática da Camada 7 precisa de leitura
+qualitativa para não ser mal interpretada.

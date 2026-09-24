@@ -1,6 +1,9 @@
 {
+  "arquivo": "resolucao_bcb_1_2020",
   "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1",
-  "obtido_em": "2026-09-24T11:52:03.106585+00:00",
+  "corpus_runtime": false,
+  "obtido_em": "2026-09-24T12:25:31.221152+00:00",
+  "pdf_consolidado": null,
   "resposta_api": {
     "navegacao": null,
     "view": "views/exibenormativo.aspx",

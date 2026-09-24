@@ -21,17 +21,32 @@ Capítulo 1, Seção 3 — Objetivo).
 
 ## Status
 
-Recorte inicial em andamento. Indexados com texto integral:
+O corpus é montado pelo pipeline `src/layer5_knowledge/ingest_normativos.py`
+a partir das URLs oficiais listadas em `fontes_url.json` (ver
+`docs/decisoes_arquitetura.md`, Camada 5, "Ingestão por URL e consumo da
+Gold"):
 
-- `resolucao_conjunta_1_2020.md` — Resolução Conjunta nº 1/2020 (marco
-  regulatório do Open Finance)
-- `circular_4015_2020.md` — Circular nº 4.015/2020 (escopo de dados e
-  serviços)
+| Normativo | Texto usado | Em runtime |
+|---|---|---|
+| Resolução Conjunta nº 1/2020 (marco regulatório do Open Finance) | PDF consolidado v9 listado na página | sim |
+| Circular nº 4.015/2020 (escopo de dados e serviços) | PDF consolidado v5 listado na página | sim |
+| Instrução Normativa BCB nº 759/2026 (Manual de Escopo de Dados e Serviços do Open Finance, v8.0) | HTML da página | sim |
+| Resolução BCB nº 1/2020 (Pix) | HTML da página (texto tachado removido) | não — só pipeline |
+
+Camadas geradas:
+
+- `1_bronze_raw/`: resposta JSON da página do BCB e, quando existe, o PDF
+  consolidado mais recente — dado bruto, sem alteração.
+- `2_silver_cleaned/`: texto vigente limpo e estruturado por artigo / seção
+  de anexo, com as anotações de alteração separadas do texto.
+- `3_gold_indexed/`: trechos prontos para a busca (cabeçalho de contexto +
+  frequência de tokens) e `indice_bm25.json`. É a única camada lida por
+  `src/layer5_knowledge/knowledge_base.py` em runtime.
 
 Pendentes (ver `PENDENTES.md`): Resolução BCB nº 339/2023 (duplicata
-escritural) e Resolução BCB nº 32/2020 (requisitos técnicos) — ementa e
-citação confirmadas, texto oficial ainda não localizado com segurança.
+escritural) e Resolução BCB nº 32/2020 (requisitos técnicos). A Resolução
+BCB nº 32/2020 fica deliberadamente fora do corpus: é a norma ausente do
+cenário "Norma Ausente / Fronteira" do benchmark.
 
-Cada arquivo indexado segue o formato: cabeçalho de metadados (título,
-ementa, URL oficial, data, versão) + texto integral, consumido por
-`src/layer5_knowledge/knowledge_base.py`.
+Para incluir um normativo: adicionar a URL da página em `fontes_url.json`
+e rodar `python -m src.layer5_knowledge.ingest_normativos`.

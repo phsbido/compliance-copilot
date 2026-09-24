@@ -246,6 +246,73 @@ aprovadas) é uma adaptação temporária, documentada e rastreável via
 `PENDENTES.md`, seguindo o mesmo padrão de transparência dos stubs da
 Camada 3.
 
+### Revisão da Camada 5: ingestão por URL e consumo da Gold (2026-09-24)
+
+Plano aprovado pelo usuário antes da implementação, com duas escolhas
+explícitas: corpus de runtime = 3 normas de Open Finance (Pix fica só no
+pipeline) e busca BM25 lexical (em vez de embeddings ou híbrido).
+
+**Decisão**: o pipeline Bronze/Silver/Gold (`ingest_normativos.py`), até
+aqui um artefato ilustrativo paralelo, passa a ser **a** fonte da Camada 5.
+A `KnowledgeBase` lê somente a Gold; os `.md` curados manualmente saíram do
+runtime (ficam no histórico do git, tag `v1.0-monografia`). Entrada única:
+`data/normativos/fontes_url.json`, com a URL oficial da página de cada norma.
+
+- **Bronze**: resposta JSON da página (endpoint que a própria página
+  consome) e, quando a página lista versões consolidadas, o PDF "limpo" de
+  maior versão (`_vN_L.pdf`), sem alteração.
+- **Silver**: texto vigente, estruturado. Descarta texto tachado do HTML
+  (redações revogadas), rodapés de página e artefatos de espaçamento do PDF;
+  reconstrói parágrafos (HTML e PDF quebram linhas no meio da frase); separa
+  as anotações de alteração ("(Redação dada pela…)") do texto, guardando-as
+  como metadado; estrutura por artigo (com capítulo/seção como contexto) ou,
+  em anexos sem artigos, por seção numerada; marca unidades revogadas;
+  para ao encontrar a nota técnica/voto que a página publica após a norma.
+- **Gold**: trechos de até 2.500 caracteres, cada um com cabeçalho de
+  contexto no próprio texto ("Resolução Conjunta nº 1/2020 — CAPÍTULO III
+  … — Seção II Da Participação no Open Finance — Art. 6º"), frequência de
+  tokens pré-calculada, e `indice_bm25.json` com as estatísticas do corpus
+  de runtime.
+- **Busca**: BM25 (k1 = 1,5; b = 0,75) sobre a Gold, com tokenização
+  compartilhada entre ingestão e consulta (`texto.py`): sem acento, sem
+  stopwords, radical por remoção de sufixos (tabela curta inspirada no
+  RSLP). A interface `buscar()` -> `Documento(titulo, ementa, url_oficial,
+  trecho)` não mudou; Camadas 4, 7 e 8 intactas.
+
+**Motivação**: (1) reprodutibilidade — qualquer pessoa regera o corpus a
+partir de URLs públicas, e a Bronze versionada permite regerar Silver/Gold
+offline (`--a-partir-da-bronze`); (2) atualidade — ver achado abaixo;
+(3) qualidade do contexto entregue ao LLM — trechos menores, limpos e
+rotulados com norma e artigo, em vez de artigos inteiros de até 8.000
+caracteres com anotações de alteração misturadas ao texto.
+
+**Ambiguidade/lacuna observada (achado)**: para normas anteriores a 2021,
+o campo `Texto` da página do BCB é a **redação original**, não a vigente —
+a Resolução Conjunta nº 1/2020 ainda diz "Open Banking" no HTML. O texto
+consolidado só existe nos PDFs listados no campo `Documentos` da mesma
+página. Consequência lateral: o corpus curado usado na v1 também estava
+desatualizado (Resolução Conjunta nº 1 na v7, vigente v9; Circular nº 4.015
+na v3, vigente v5). "Ingerir da página" exige, portanto, saber qual das
+representações que a página oferece é a vigente — mais um exemplo de que
+fontes governamentais não são machine-readable de forma uniforme (ver
+lacuna original desta camada, acima).
+
+**Adaptações necessárias**:
+- `pypdf` volta a ser dependência (agora do pipeline, que também é quem
+  gera a base de runtime).
+- Reconhecimento de seções do anexo da IN BCB nº 759 (manual em HTML sem
+  marcação semântica): o título vem colado ao conteúdo ou com o número em
+  linha própria; células de tabela como "3. NIF" ou "90. Formato numérico"
+  imitam seções. Resolvido com regra de sequência plausível (a seção só é
+  aceita se o número de topo é o atual ou o seguinte) e com seções que são
+  só título virando contexto das subseções.
+- Ajustes da busca derivados de um teste de recuperação com 8 perguntas
+  (resultado detalhado em `docs/evidencias_empiricas.md`, 2026-09-24):
+  radical em vez de só plural ("participar"/"participação"/"participantes"
+  -> `particip`), e verbos que só emolduram a pergunta ("funciona",
+  "existe", "significa"…) como stopwords. Cabeçalho de contexto mantido no
+  índice: testado sem ele, a recuperação piorou.
+
 ---
 
 ## Camada 6 — Contexto e Memória
@@ -586,6 +653,11 @@ fluxo inteiro.
 para `docs/resultados/`, versionado, e `run_benchmark.py --somente-tabela`
 regera a tabela agregada a partir dele sem chamar o LLM — a orientadora pode
 conferir a agregação sem Ollama instalado.
+
+> **Atualização (mesmo dia)**: o item 4 abaixo foi superado pela "Revisão da
+> Camada 5: ingestão por URL e consumo da Gold" (seção Camada 5): o pipeline
+> deixou de ser ilustrativo e passou a alimentar o runtime, e as normas
+> curadas também passaram a ser ingeridas por URL.
 
 **4. Pipeline ilustrativo de ingestão passa a usar URL oficial em vez de
 PDF local.** A versão anterior de `ingest_normativos.py` lia PDFs baixados

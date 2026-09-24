@@ -1,13 +1,25 @@
 {
-  "_descricao": "Normativos ingeridos a partir da URL oficial do BCB por src/layer5_knowledge/ingest_normativos.py. 'arquivo' é o nome-base dos artefatos gerados em 1_bronze_raw/, 2_silver_cleaned/ e 3_gold_indexed/.",
+  "_descricao": "Normativos ingeridos a partir da URL oficial do BCB por src/layer5_knowledge/ingest_normativos.py. 'arquivo' é o nome-base dos artefatos gerados em 1_bronze_raw/, 2_silver_cleaned/ e 3_gold_indexed/. 'corpus_runtime' indica se o normativo entra no índice de busca consultado pela Camada 5 em runtime (false = só passa pelo pipeline).",
   "fontes": [
     {
-      "arquivo": "resolucao_bcb_1_2020",
-      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1"
+      "arquivo": "resolucao_conjunta_1_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20Conjunta&numero=1",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "circular_4015_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Circular&numero=4015",
+      "corpus_runtime": true
     },
     {
       "arquivo": "instrucao_normativa_bcb_759_2026",
-      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759"
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_1_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1",
+      "corpus_runtime": false
     }
   ]
 }

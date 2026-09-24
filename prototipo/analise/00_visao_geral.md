@@ -1,6 +1,6 @@
 # Visão Geral — Copiloto de Compliance Regulatório (Open Finance / Contas PJ)
 
-> **Nota (2026-09-24):** esta pasta `analise/` é um retrato do código em 2026-09-23. Depois dela: o pipeline `ingest_normativos.py` passou a ingerir por URL oficial do BCB (`data/normativos/fontes_url.json`) em vez de PDFs locais (os artefatos `normativoPix*`/`normativoOpenFinance*` viraram `resolucao_bcb_1_2020*`/`instrucao_normativa_bcb_759_2026*`); `_openfinance_limpo.md` foi removido do repositório (papel coberto pela camada silver); o benchmark ganhou o modo determinístico e o dado bruto passou para `docs/resultados/`. Ver `docs/decisoes_arquitetura.md`, seção "Reprodutibilidade".
+> **Nota (2026-09-24):** esta pasta `analise/` é um retrato do código em 2026-09-23. Depois dela: o pipeline `ingest_normativos.py` passou a ingerir por URL oficial do BCB (`data/normativos/fontes_url.json`) em vez de PDFs locais (os artefatos `normativoPix*`/`normativoOpenFinance*` viraram `resolucao_bcb_1_2020*`/`instrucao_normativa_bcb_759_2026*`); `_openfinance_limpo.md` foi removido do repositório (papel coberto pela camada silver); o benchmark ganhou o modo determinístico e o dado bruto passou para `docs/resultados/`. Ver `docs/decisoes_arquitetura.md`, seção "Reprodutibilidade". Também em 2026-09-24, a Camada 5 foi refeita (runtime lê a camada Gold com BM25; os `.md` curados saíram de `data/normativos/`): tudo o que esta pasta descreve sobre `knowledge_base.py` refere-se à v1 (tag `v1.0-monografia`).
 
 ## O que é, em uma frase
 

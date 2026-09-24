@@ -5,25 +5,27 @@ Responsabilidade segundo a arquitetura conceitual: manter e disponibilizar
 a base de conhecimento externa (aqui, o corpus de atos normativos do BACEN
 sobre Open Finance/PJ) para fundamentar as respostas do Núcleo de Raciocínio.
 
-Decisão de projeto (ver docs/decisoes_arquitetura.md): indexação e busca
-lexical simples (contagem de sobreposição de palavras), sem embeddings e sem
-biblioteca de vector DB — cada normativo é um arquivo Markdown com
-cabeçalho de metadados (título, ementa, URL oficial, data) seguido do texto
-integral, dividido em trechos por artigo para a busca.
+Decisão de projeto (ver docs/decisoes_arquitetura.md, Camada 5, "Ingestão
+por URL e consumo da Gold", 2026-09-24): a base lê **somente** a camada Gold
+gerada por `ingest_normativos.py` (`data/normativos/3_gold_indexed/`) —
+trechos já limpos, com cabeçalho de contexto (norma, capítulo/seção,
+artigo) e frequência de tokens pré-calculada — e ranqueia com BM25 usando as
+estatísticas de corpus de `indice_bm25.json`. Continua sendo busca lexical,
+sem embeddings e sem biblioteca de vector DB.
+
+A interface (`buscar()` -> `list[Documento]` com título, ementa, URL oficial
+e trecho) é a mesma da versão anterior, que lia os `.md` curados e contava
+palavras em comum — as Camadas 4, 7 e 8 não mudam.
 """
-import re
-import unicodedata
-from dataclasses import dataclass
+import json
+import math
+from dataclasses import dataclass, field
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "normativos"
+from src.layer5_knowledge.texto import tokenizar
 
-_STOPWORDS = {
-    "a", "as", "o", "os", "de", "da", "do", "das", "dos", "e", "ou", "em",
-    "no", "na", "nos", "nas", "um", "uma", "uns", "umas", "para", "por",
-    "com", "que", "se", "é", "são", "ao", "aos", "à", "às", "sobre", "como",
-    "quais", "qual", "quando", "onde",
-}
+GOLD_DIR = Path(__file__).resolve().parents[2] / "data" / "normativos" / "3_gold_indexed"
+INDICE_FILE = GOLD_DIR / "indice_bm25.json"
 
 
 @dataclass
@@ -32,105 +34,65 @@ class Documento:
     ementa: str
     url_oficial: str
     trecho: str
-
-
-def _normalizar(texto: str) -> str:
-    sem_acento = unicodedata.normalize("NFKD", texto)
-    sem_acento = "".join(c for c in sem_acento if not unicodedata.combining(c))
-    return sem_acento.lower()
-
-
-def _tokenizar(texto: str) -> set[str]:
-    palavras = re.findall(r"\w+", _normalizar(texto))
-    return {p for p in palavras if p not in _STOPWORDS and len(p) > 2}
-
-
-def _parse_frontmatter(conteudo: str) -> tuple[dict, str]:
-    if not conteudo.startswith("---"):
-        return {}, conteudo
-    fim = conteudo.find("\n---", 3)
-    if fim == -1:
-        return {}, conteudo
-    bloco_cabecalho = conteudo[3:fim].strip()
-    corpo = conteudo[fim + 4:].lstrip("\n")
-    metadados = {}
-    for linha in bloco_cabecalho.splitlines():
-        if ":" not in linha:
-            continue
-        chave, _, valor = linha.partition(":")
-        metadados[chave.strip()] = valor.strip().strip('"')
-    return metadados, corpo
-
-
-_TAMANHO_MAXIMO_TRECHO = 8000  # caracteres — ver docs/decisoes_arquitetura.md
-# (Camada 5, extensão 2026-09-23) para o teste de regressão que motivou este
-# valor específico: 4000 fragmentava incorretamente um artigo legítimo do
-# corpus já validado (Circular 4015/2020, Art. 3º, 6492 caracteres, que
-# contém uma lista enumerada com itens começando por maiúscula — falso
-# positivo do padrão de cabeçalho de seção). 8000 fica acima do maior trecho
-# hoje existente no corpus curado (6492) com margem, e ainda bem abaixo do
-# tamanho de um anexo técnico inteiro (dezenas de milhares de caracteres).
-
-# Cabeçalho de seção numerada (ex: "2.5.2 Tipos de serviços..."), usado como
-# divisor de segundo nível (ver _dividir_em_trechos). Exige maiúscula logo
-# após o número para não casar listas numeradas dentro do próprio texto, que
-# neste corpus sempre começam com minúscula (ex: "1. movimentação
-# eletrônica, 2. ..." em vez de "1. Movimentação").
-_SECAO_SPLIT_REGEX = re.compile(r"\n(?=\d+(?:\.\d+){0,3}\.?\s+[A-ZÀ-Ú])")
-
-
-def _dividir_em_trechos(corpo: str) -> list[str]:
-    # Divide por artigo (ex: "Art. 5º"), que é a unidade natural de citação
-    # em atos normativos brasileiros. Divisão é aproximada: a extração de
-    # texto de PDF pode introduzir quebras/espaçamento irregulares em
-    # "Art. N" (ver docs/decisoes_arquitetura.md, Camada 5).
-    partes = re.split(r"\n(?=Art\.\s*\d)", corpo)
-    partes = [p.strip() for p in partes if p.strip()]
-
-    trechos = []
-    for parte in partes:
-        if len(parte) <= _TAMANHO_MAXIMO_TRECHO:
-            trechos.append(parte)
-            continue
-        # Trecho anormalmente grande: tipicamente um "Art. N" seguido de um
-        # anexo técnico extenso sem mais nenhum "Art. N" no meio (ex: um
-        # manual anexo a uma Instrução Normativa, organizado por seção
-        # numerada em vez de artigo — ver docs/decisoes_arquitetura.md,
-        # Camada 5, extensão de 2026-09-23). Tenta subdividir por cabeçalho
-        # de seção antes de indexar como um único trecho gigante.
-        subpartes = [sp.strip() for sp in _SECAO_SPLIT_REGEX.split(parte) if sp.strip()]
-        trechos.extend(subpartes if len(subpartes) > 1 else [parte])
-    return trechos
+    identificador: str = ""
+    frequencia_tokens: dict[str, int] = field(default_factory=dict, repr=False)
+    n_tokens: int = 0
 
 
 class KnowledgeBase:
-    def __init__(self, diretorio: Path | None = None):
-        self.diretorio = diretorio or DATA_DIR
+    def __init__(self, diretorio_gold: Path | None = None):
+        self.diretorio_gold = diretorio_gold or GOLD_DIR
         self.documentos: list[Documento] = []
         self._carregar()
 
     def _carregar(self) -> None:
-        for arquivo in sorted(self.diretorio.glob("*.md")):
-            conteudo = arquivo.read_text(encoding="utf-8")
-            metadados, corpo = _parse_frontmatter(conteudo)
-            if not metadados:
-                continue  # sem cabeçalho de metadados -> não é normativo indexável (ex: PENDENTES.md)
-            for trecho in _dividir_em_trechos(corpo):
+        indice_path = self.diretorio_gold / INDICE_FILE.name
+        if not indice_path.exists():
+            raise FileNotFoundError(
+                f"Índice da camada Gold não encontrado em {indice_path}. Gere-o com "
+                "`python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze` "
+                "(ou sem a flag, para baixar os normativos do BCB)."
+            )
+        indice = json.loads(indice_path.read_text(encoding="utf-8"))
+        self._k1 = indice["k1"]
+        self._b = indice["b"]
+        self._tamanho_medio = indice["tamanho_medio"] or 1.0
+        n = indice["n_trechos"]
+        # IDF do BM25 na forma com +1 (sempre positivo), pré-calculado por token.
+        self._idf = {
+            token: math.log((n - df + 0.5) / (df + 0.5) + 1)
+            for token, df in indice["frequencia_documento"].items()
+        }
+
+        for arquivo in indice["arquivos"]:
+            gold = json.loads((self.diretorio_gold / arquivo).read_text(encoding="utf-8"))
+            for trecho in gold["trechos"]:
                 self.documentos.append(
                     Documento(
-                        titulo=metadados.get("titulo", arquivo.stem),
-                        ementa=metadados.get("ementa", ""),
-                        url_oficial=metadados.get("url_oficial", ""),
-                        trecho=trecho,
+                        titulo=gold["titulo"],
+                        ementa=gold["ementa"],
+                        url_oficial=gold["url_oficial"],
+                        trecho=trecho["texto"],
+                        identificador=trecho["identificador"],
+                        frequencia_tokens=trecho["frequencia_tokens"],
+                        n_tokens=trecho["n_tokens"],
                     )
                 )
 
+    def _pontuar(self, tokens_pergunta: set[str], doc: Documento) -> float:
+        normalizacao = self._k1 * (1 - self._b + self._b * doc.n_tokens / self._tamanho_medio)
+        pontuacao = 0.0
+        for token in tokens_pergunta:
+            tf = doc.frequencia_tokens.get(token, 0)
+            if tf:
+                pontuacao += self._idf.get(token, 0.0) * tf * (self._k1 + 1) / (tf + normalizacao)
+        return pontuacao
+
     def buscar(self, pergunta: str, top_k: int = 3) -> list[Documento]:
-        tokens_pergunta = _tokenizar(pergunta)
+        tokens_pergunta = set(tokenizar(pergunta))
         pontuados = []
         for doc in self.documentos:
-            tokens_trecho = _tokenizar(doc.trecho)
-            pontuacao = len(tokens_pergunta & tokens_trecho)
+            pontuacao = self._pontuar(tokens_pergunta, doc)
             if pontuacao > 0:
                 pontuados.append((pontuacao, doc))
         pontuados.sort(key=lambda par: par[0], reverse=True)

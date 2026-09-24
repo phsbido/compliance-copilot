@@ -1,6 +1,7 @@
 [
   {
     "caso_id": "caminho_feliz_rag_bacen",
+    "modo": "livre",
     "categoria": "Caminho Feliz / RAG BACEN",
     "repeticao": 1,
     "tipo_esperado": "normativo",
@@ -8,13 +9,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 10278.2,
-    "timestamp": "2026-09-23T02:42:54.806528+00:00",
-    "resposta": "Nesse caso, o requisito para participar do Open Finance depende do tipo de compartilhamento de dados ou serviços. Vamos analisar as alternativas abaixo:\n\nI. Compartilhamento de dados (art. 5º, inciso I): \n    - Obrigatório:\n        - Para as instituições que tenham ficado acima de 5 milhões de clientes durante dois trimestres consecutivos (art. 51, § 6º).\n        - Para as instituições que são participantes obrigatórios no PIX (art. 51, inciso II, alínea \"a\", item 1).\n        - Para as instituições que detêm contas que são integrantes de conglomerados que possuem instituições participantes obrigatórias no PIX (art. 51, inciso II, alínea \"a\", item 2).\n        - Para as instituições iniciadoras de transação de pagamento (art. 51, inciso II, alínea \"a\", item 3).\n    - Voluntário: Para as demais instituições.\n\nII. Compartilhamento de serviço de encaminhamento de proposta de operação de crédito (art. 5º, inciso II, alínea \"b\"): \n    - Obrigatório: Para as instituições que tenham firmado contrato de correspondente no País.\n\nIII. Compartilhamento de serviço de solicitação de compartilhamento pelo cliente (art. 8º): \n    - O requisito para participar desse tipo de compartilhamento não está claro no texto, mas está relacionado ao desempenho de processos de solicitação de compartilhamento pelo cliente.\n\nPortanto, uma instituição PJ participará do Open Finance se estiver obrigada a compartilhar dados ou serviços, ou se optar por compartilhar voluntariamente.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 8797.8,
+    "timestamp": "2026-09-24T12:30:05.343380+00:00",
+    "resposta": "De acordo com a Resolução Conjunta nº 1/2020, capítulo III, art. 7º, as instituições participantes devem registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico.\n\nAlém disso, é importante observar as disposições do art. 6º, que estabelece as hipóteses de participação obrigatória e voluntária no Open Finance.\n\n*   Participação obrigatória:\n    *   Estão sujeitas à obrigação de participar instituições que superem o limite de 5 milhões de contas individuais, conforme o inciso I, alínea \"a\", item 2, do caput do art. 6º.\n    *   A participação obrigatória também se aplica a instituições que se enquadrem como participantes obrigatórios no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput do art. 6º.\n*   Participação voluntária:\n    *   Inclui as instituições que optem por participar do Open Finance por iniciativa própria.\n    *   A participação voluntária pressupõe a disponibilidade de interface dedicada na condição de instituição transmissora de dados, conforme o inciso I, alínea \"b\", do caput do art. 6º.\n\nÉ importante observar que a participação no Open Finance é uma responsabilidade das instituições, e a não adesão pode acarretar em sanções e penalidades, conforme estabelece a Resolução Conjunta nº 1/2020.\n\nPor fim, é essencial verificar as informações mais recentes e atualizadas sobre a participação no Open Finance, pois os requisitos e normas podem ser alterados ou atualizados.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "caminho_feliz_rag_bacen",
+    "modo": "livre",
     "categoria": "Caminho Feliz / RAG BACEN",
     "repeticao": 2,
     "tipo_esperado": "normativo",
@@ -22,13 +24,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 9870.1,
-    "timestamp": "2026-09-23T02:43:04.676697+00:00",
-    "resposta": "Os requisitos para uma instituição PJ participar do Open Finance, conforme a Resolução Conjunta nº 1/2020, são os seguintes:\n\n1.  A instituição deve se enquadrar em uma das seguintes categorias: 1.  As instituições enquadradas nos incisos I, II e III do caput do art. 6º da Resolução Conjunta nº 1/2020, que são as instituições que detêm conta e as instituições que atuam como correspondentes no País. 2.  As instituições que tenham mais de 5.000 clientes e/ou atuem em mais de 10 municípios. 3.  As instituições que tenham participado da experiência piloto do Open Finance.\n\n2.  A instituição deve ter implantado os padrões de segurança e segurança de dados necessários para participar do Open Finance, conforme estabelecido pela Resolução Conjunta nº 1/2020.\n\n3.  A instituição deve ter firmado o contrato de parceria para a implementação do Open Finance, conforme estabelecido pela Resolução Conjunta nº 1/2020.\n\n4.  A instituição deve ter implantado as interfaces para acesso ao Open Finance, conforme estabelecido pela Resolução Conjunta nº 1/2020.\n\n5.  A instituição deve ter participado da convenção de participação no Open Finance, conforme estabelecido pela Resolução Conjunta nº 1/2020.\n\nÉ importante notar que a participação da instituição no Open Finance depende da implementação dos requisitos estabelecidos pela Resolução Conjunta nº 1/2020, e que a instituição deve seguir as instruções e orientações do Banco Central do Brasil.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 8277.1,
+    "timestamp": "2026-09-24T12:30:13.620626+00:00",
+    "resposta": "Parece que a instituição PJ que deseja participar do Open Finance deve atender a alguns requisitos. Além disso, é importante verificar a versão mais recente do Manual de Escopo de Dados e Serviços do Open Finance, pois ele contém os requisitos específicos para a participação das instituições.\n\nDe acordo com a Resolução Conjunta nº 1/2020, as instituições participantes devem registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico.\n\nAlém disso, as instituições que se enquadram em alguma das seguintes situações estão dispensadas das exigências de participação obrigatória:\n\n*   Conglomerados prudenciais que não prestem os serviços a que se refere m os dados de transações de clientes previstos no art. 5º, inciso I, alínea \"d\";\n*   Conglomerados prudenciais que não tenham a disponibilidade de interface dedicada de que trata o art. 23 na condição de instituição transmissora de dados;\n*   Conglomerados prudenciais que tenham sido dispensados pelo Banco Central do Brasil, com base em critérios relacionados à quantidade e à natureza de clientes, aos tipos de serviços contratados e distribuídos, bem como aos canais de acesso eletrônicos disponíveis e utilizados pelos clientes.\n\nPor fim, as instituições que superarem o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou que se enquadrarem como participantes obrigatórias no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput, terão prazo de seis meses para se tornarem instituições participantes do Open Finance.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "caminho_feliz_rag_bacen",
+    "modo": "livre",
     "categoria": "Caminho Feliz / RAG BACEN",
     "repeticao": 3,
     "tipo_esperado": "normativo",
@@ -36,13 +39,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 12459.3,
-    "timestamp": "2026-09-23T02:43:17.136087+00:00",
-    "resposta": "De acordo com a Resolução Conjunta nº 1, de 4 de maio de 2020, as instituições participantes do Open Finance são determinadas por critérios de número de clientes e volume de transações.\n\nPara participar do Open Finance, uma instituição PJ deve atender a alguns requisitos:\n\n1. **Número de clientes**: As instituições com mais de 100 mil clientes ou que tenham mais de 10 milhões de transações por mês devem participar do Open Finance (inciso I, alínea \"a\", item 2).\n2. **Detenção de conta**: As instituições que detêm contas e atuam como instituições participantes obrigatórias no Pix também devem participar do Open Finance (inciso II, alínea \"a\", item 1).\n3. **Iniciadoras de transação**: As instituições que iniciam transações de pagamento também devem participar do Open Finance (inciso II, alínea \"a\", item 3).\n4. **Correspondentes**: As instituições que têm firmado contrato de correspondente no País, cujo objeto contemple a atividade de atendimento para fins de recepção e encaminhamento de propostas de operações de crédito e de arrendamento mercantil, por meio de plataforma eletrônica, concedidas pela instituição contratante, bem como outros serviços prestados para o acompanhamento da operação, também devem participar do Open Finance (inciso III).\n\nAs instituições que não atendem a esses critérios podem participar voluntariamente do Open Finance, desde que disponibilizem a interface dedicada de que trata o artigo 23 na condição de instituição transmissora de dados (inciso I, alínea \"b\", caput).\n\nAlém disso, o Banco Central do Brasil pode adotar medidas para o cumprimento da Resolução Conjunta, incluindo detalhamento dos dados e serviços objeto de compartilhamento, parâmetros relativos à indisponibilidade e ao desempenho, prazos para comunicação de indisponibilidade, e outros aspectos necessários à implementação do Open Finance.\n\nÉ importante notar que esses requisitos podem mudar com alterações regulamentares e é fundamental verificar a última versão da Resolução Conjunta para garantir a conformidade com as normas vigentes.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 8681.8,
+    "timestamp": "2026-09-24T12:30:22.302462+00:00",
+    "resposta": "Excelente pergunta!\n\nDe acordo com a Resolução Conjunta nº 1/2020, os requisitos para uma instituição PJ participar do Open Finance são os seguintes:\n\n1. **Registros no repositório de participantes**: A instituição deve registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico (Art. 7º).\n2. **Disponibilidade de interface dedicada**: Se a instituição optar por ser participante de forma voluntária, ela deve ter disponível uma interface dedicada de que trata o art. 23, na condição de instituição transmissora de dados (Art. 6º, § 3º).\n3. **Disponibilidade de interface dedicada como instituição credora original**: Se a instituição optar por ser participante de forma voluntária como instituição proponente, ela deve ter disponível uma interface dedicada na condição de instituição credora original (Art. 6º, § 8º).\n4. **Prazo para se tornar instituição participante**: Se a instituição superar o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou se enquadrar como participante obrigatória no Pix, ela terá prazo de seis meses para se tornar instituição participante do Open Finance (Art. 6º, § 5º).\n\nLembre-se de que esses requisitos podem variar dependendo da forma de participação (obrigatória ou voluntária) e da condição da instituição (transmissora de dados ou credora original).\n\n**Validação humana recomendada**: Antes de tomar qualquer decisão, é fundamental consultar a normativa e os procedimentos específicos aplicáveis à sua instituição e situação. Além disso, é importante avaliar a disponibilidade de recursos e capacidade da instituição para atender aos requisitos mencionados.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "caminho_feliz_rag_bacen",
+    "modo": "livre",
     "categoria": "Caminho Feliz / RAG BACEN",
     "repeticao": 4,
     "tipo_esperado": "normativo",
@@ -50,13 +54,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 14970.9,
-    "timestamp": "2026-09-23T02:43:32.107333+00:00",
-    "resposta": "Para uma instituição PJ participar do Open Finance, é necessário que ela atenda aos requisitos estabelecidos na Resolução Conjunta nº 1, de 4 de maio de 2020.\n\nDe acordo com o art. 6º da resolução, as instituições PJ que atendem aos seguintes requisitos podem participar do Open Finance de forma obrigatória:\n\nI. Compartilhamento de dados de clientes (art. 5º, inciso I, alíneas “a” e “b”):\n* Disponibilizar os dados em formato para acesso público (art. 23, § 2º).\n* Compartilhar os dados entre as instituições participantes do Open Finance (art. 51, § 1º).\n\nII. Compartilhamento de serviços de encaminhamento de proposta de operação de crédito (art. 5º, inciso II, alínea “b”):\n* Firmar contrato de correspondente no País, cujo objeto contemple a atividade de atendimento para fins de recepção e encaminhamento de propostas de operações de crédito e de arrendamento mercantil, por meio de plataforma eletrônica.\n\nIII. Compartilhamento de serviços de encaminhamento de proposta de operação de crédito (art. 5º, inciso II, alínea “b”):\n* Firmar contrato de correspondente no País, cujo objeto contemple a atividade de atendimento para fins de recepção e encaminhamento de propostas de operações de crédito e de arrendamento mercantil, por meio de plataforma eletrônica.\n\nIV. Compartilhamento de dados de clientes (art. 5º, inciso I, alíneas “c” e “d”):\n* Compartilhar os dados entre as instituições participantes do Open Finance (art. 51, § 1º).\n\nV. Compartilhamento de serviços de encaminhamento de proposta de operação de crédito (art. 5º, inciso II, alínea “b”):\n* Firmar contrato de correspondente no País, cujo objeto contemple a atividade de atendimento para fins de recepção e encaminhamento de propostas de operações de crédito e de arrendamento mercantil, por meio de plataforma eletrônica.\n\nAs instituições que não atendem aos requisitos mencionados acima podem participar do Open Finance de forma voluntária, desde que atendam aos requisitos estabelecidos na resolução.\n\nAlém disso, as instituições que superam o limite de 10.000 contas correntes ou se enquadram como participantes obrigatórios no PIX, devem se tornar instituições participantes do Open Finance dentro de um prazo de seis meses (art. 6º, § 5º).\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 10608.6,
+    "timestamp": "2026-09-24T12:30:32.911492+00:00",
+    "resposta": "Excelente pergunta!\n\nDe acordo com a Resolução Conjunta nº 1/2020, art. 7º e Seção II Da Participação no Open Finance, as instituições participantes devem registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico, mencionado no art. 44, inciso VI.\n\nNo entanto, é importante notar que não todas as instituições PJ são obrigadas a participar do Open Finance. Segundo a Resolução Conjunta nº 1/2020, art. 6º, excetuam-se da exigência de participação obrigatória:\n\n* As instituições integrantes de conglomerados prudenciais que não prestem os serviços a que se refere os dados de transações de clientes previstos no art. 5º, inciso I, alínea \"d\" (§ 2º).\n* As instituições que tenham sido dispensadas pelo Banco Central do Brasil, com base em critérios relacionados à quantidade e à natureza de clientes, aos tipos de serviços contratados e distribuídos, bem como aos canais de acesso eletrônicos disponíveis e utilizados pelos clientes (§ 4º).\n\nAs instituições que superarem o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou que se enquadrarem como participantes obrigatórias no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput, terão prazo de seis meses para se tornarem instituições participantes do Open Finance (§ 5º).\n\nPara participar do Open Finance de forma voluntária, as instituições devem registrar sua participação no repositório de participantes e ter disponibilidade de interface dedicada (§ 3º).\n\nLembre-se de que a validação de todas as condições e requisitos é fundamental para garantir que a instituição PJ esteja ciente de suas responsabilidades e obrigações.\n\n**Recomendação:** Verifique a Regulação e a documentação do seu banco ou instituição para entender melhor as exigências e os prazos para se tornar participante do Open Finance. Além disso, consulte um especialista em compliance regulatório para garantir que sua instituição esteja em conformidade com as normas e regulamentações aplicáveis.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "caminho_feliz_rag_bacen",
+    "modo": "livre",
     "categoria": "Caminho Feliz / RAG BACEN",
     "repeticao": 5,
     "tipo_esperado": "normativo",
@@ -64,13 +69,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 7948.5,
-    "timestamp": "2026-09-23T02:43:40.055907+00:00",
-    "resposta": "Para participar do Open Finance, instituições PJ devem atender aos requisitos estabelecidos na Resolução Conjunta nº 1/2020. Alguns dos principais requisitos para participação incluem:\n\n1. Atender aos critérios de participação obrigatória ou voluntária, conforme estabelecido no artigo 6º da resolução.\n2. Estar autorizada a realizar operações de crédito e ter contas de investidores, conforme estabelecido no artigo 1º da resolução.\n3. Ter interface dedicada disponível para compartilhar dados e serviços, conforme estabelecido no artigo 23 da resolução.\n4. Cumprir com as regras de segurança e privacidade de dados, conforme estabelecido no artigo 25 da resolução.\n5. Estar ciente das obrigações e responsabilidades decorrentes da participação no Open Finance, conforme estabelecido no artigo 46 da resolução.\n\nAlém disso, instituições PJ que superarem o limite de 10.000 contas de investidores ou que se enquadrem como participantes obrigatórias no Pix, conforme estabelecido no artigo 6º da resolução, terão prazo de seis meses para se tornarem instituições participantes do Open Finance.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 11052.7,
+    "timestamp": "2026-09-24T12:30:43.964210+00:00",
+    "resposta": "Para uma instituição PJ participar do Open Finance, é necessário atender aos requisitos estabelecidos na Resolução Conjunta nº 1/2020. De acordo com a norma, as instituições participantes devem registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico.\n\nAlém disso, a instituição deve se enquadrar em uma das seguintes situações:\n\n1. Exceder o limite de ativos e passivos mencionado no inciso I, alínea \"a\", item 2 do caput, durante dois trimestres consecutivos;\n2. Se enquadrar como participante obrigatória no Pix, nos termos do inciso II, alínea \"a\", item 1 do caput;\n3. Ter mais de 100 mil clientes e oferecer serviços de pagamento por meio de canais eletrônicos.\n\nSe a instituição se enquadra em qualquer uma dessas situações, ela terá prazo de seis meses para se tornar instituição participante do Open Finance.\n\nÉ importante observar que a participação voluntária pressupõe a disponibilidade de interface dedicada, na condição de instituição transmissora de dados ou credora original.\n\nA respeito da participação voluntária, é necessário observar o disposto no § 3º, que estabelece que a participação voluntária pressupõe a disponibilidade de interface dedicada, na condição de instituição transmissora de dados.\n\nEm resumo, os requisitos para uma instituição PJ participar do Open Finance são:\n\n- Registrar sua participação no repositório de participantes mantido por meio de sistema eletrônico;\n- Exceder o limite de ativos e passivos mencionado no inciso I, alínea \"a\", item 2 do caput, durante dois trimestres consecutivos;\n- Se enquadrar como participante obrigatória no Pix, nos termos do inciso II, alínea \"a\", item 1 do caput;\n- Ter mais de 100 mil clientes e oferecer serviços de pagamento por meio de canais eletrônicos;\n- Disponibilidade de interface dedicada, na condição de instituição transmissora de dados ou credora original.\n\nLembre-se de que esta é uma análise de requisitos e não um parecer jurídico definitivo. Para uma análise completa e precisa, é necessário consultar um especialista em compliance regulatório.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "norma_ausente_fronteira",
+    "modo": "livre",
     "categoria": "Norma Ausente / Fronteira",
     "repeticao": 1,
     "tipo_esperado": "normativo",
@@ -78,13 +84,14 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": true,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 16713.9,
-    "timestamp": "2026-09-23T02:43:56.769922+00:00",
-    "resposta": "A Resolução Conjunta nº 1, de 4 de maio de 2020, estabelece os requisitos técnicos para a implementação do Open Finance no Brasil. Segundo a Resolução, a implementação do Open Finance pressupõe a disponibilidade de interface dedicada, que deve ser disponibilizada pela instituição transmissora de dados.\n\nAlém disso, a Resolução estabelece que as instituições participantes do Open Finance devem disponibilizar os dados e os serviços de forma para o acesso pelo público, conforme disposto no art. 23, § 2º, para os dados do art. 5º, inciso I, alíneas “a” e “b”, e entre as instituições participantes de cada caso mencionado nos incisos I e II do caput para os dados do art. 5º, incisos I, alíneas “c” e “d”, e II, alínea “a”.\n\nAlém disso, a Resolução estabelece que as instituições de que trata o art. 1º que superarem o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou que se enquadrarem como participantes obrigatórias no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput, terão prazo de seis meses para se tornarem instituições participantes do Open Finance.\n\nOs requisitos técnicos estabelecidos pela Resolução BCB nº 32/2020 para a implementação do Open Finance no País são os seguintes:\n\n1. Disponibilidade de interface dedicada: as instituições transmissoras de dados devem disponibilizar uma interface dedicada para o compartilhamento de dados e serviços.\n2. Disponibilização de dados e serviços para o público: as instituições participantes do Open Finance devem disponibilizar os dados e os serviços de forma para o acesso pelo público, conforme disposto no art. 23, § 2º, para os dados do art. 5º, inciso I, alíneas “a” e “b”, e entre as instituições participantes de cada caso mencionado nos incisos I e II do caput para os dados do art. 5º, incisos I, alíneas “c” e “d”, e II, alínea “a”.\n3. Participação obrigatória: as instituições que se enquadrarem nos critérios de participação obrigatória devem se tornar instituições participantes do Open Finance.\n4. Prazo de implementação: as instituições de que trata o art. 1º que superarem o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou que se enquadrarem como participantes obrigatórias no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput, terão prazo de seis meses para se tornarem instituições participantes do Open Finance.\n\nEsses são os principais requisitos técnicos estabelecidos pela Resolução Conjunta nº 1, de 4 de maio de 2020, para a implementação do Open Finance no País.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 11936.3,
+    "timestamp": "2026-09-24T12:30:55.900630+00:00",
+    "resposta": "Peço desculpa, mas não consegui encontrar nenhuma referência à Resolução BCB nº 32/2020 nos textos fornecidos. No entanto, posso tentar responder à pergunta com base nos textos disponíveis.\n\nDe acordo com a Resolução Conjunta nº 1/2020, o Banco Central do Brasil tem a competência para estabelecer diretrizes, especificações técnicas e de negócio, e parâmetros para a implementação do Open Finance no País.\n\nNesse sentido, os requisitos técnicos estabelecidos pela Resolução Conjunta nº 1/2020 incluem:\n\n* O detalhamento dos dados e serviços objeto de compartilhamento (art. 51, inciso I);\n* Os parâmetros relativos à indisponibilidade das interfaces (art. 51, inciso II, alínea a);\n* Os parâmetros relativos ao desempenho de processos de solicitação de compartilhamento pelo cliente (art. 51, inciso II, alínea b);\n* Os prazos para comunicação dos casos de indisponibilidade (art. 51, inciso III);\n* A exigência de certificações e de outros requisitos técnicos a serem requeridos das parceiras contratadas (art. 51, inciso IV);\n* Os parâmetros complementares relativos às vedações para o ressarcimento de despesas (art. 51, inciso V);\n* A forma de participação das instituições participantes (art. 51, inciso VI);\n* A forma de submissão da convenção (art. 51, inciso VII);\n* Os prazos máximos para reinício ou normalização da disponibilidade das interfaces (art. 51, inciso VIII);\n* Demais requisitos e procedimentos operacionais para o cumprimento da Resolução Conjunta (art. 51, inciso IX);\n* O cronograma de entrega de conteúdo da convenção e implementação do Open Finance (art. 51, inciso X).\n\nEsses requisitos técnicos devem ser compatíveis com a regulamentação vigente, inclusive com o regulamento ou instrumento que discipline o funcionamento do arranjo de pagamento referente à respectiva transação de pagamento.\n\nLembre-se de que essa é uma interpretação baseada nos textos disponíveis e que a resposta não deve ser considerada como um parecer jurídico definitivo. É sempre recomendável validar a resposta com um especialista em direito financeiro.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "norma_ausente_fronteira",
+    "modo": "livre",
     "categoria": "Norma Ausente / Fronteira",
     "repeticao": 2,
     "tipo_esperado": "normativo",
@@ -92,55 +99,59 @@
     "classificacao_correta": true,
     "recusou": false,
     "aviso_citacao_nao_verificada": true,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 9511.7,
-    "timestamp": "2026-09-23T02:44:06.281666+00:00",
-    "resposta": "Com base nas normas, a Resolução Conjunta nº 1, de 4 de maio de 2020, estabelece que o Banco Central do Brasil poderá adotar as medidas necessárias para a implementação do Open Finance, incluindo a definição de requisitos técnicos para a compatibilidade entre as instituições participantes. No entanto, não há informações explícitas sobre os requisitos técnicos específicos estabelecidos pela Resolução BCB nº 32/2020.\n\nPorém, podemos inferir alguns requisitos técnicos que podem ser necessários para a implementação do Open Finance com base nos dispositivos da Resolução Conjunta nº 1, de 4 de maio de 2020:\n\n* O compartilhamento de dados e serviços em formato para o acesso pelo público, conforme disposto no art. 23, § 2º;\n* A disponibilidade de interface dedicada para a transmissão de dados, conforme disposto no art. 23;\n* A compatibilidade entre as plataformas e sistemas das instituições participantes;\n* A segurança e a confidencialidade dos dados compartilhados.\n\nAlém disso, é importante ressaltar que a Resolução Conjunta nº 1, de 4 de maio de 2020, estabelece que o Banco Central do Brasil poderá adotar as medidas necessárias para a implementação do Open Finance, o que inclui a definição de requisitos técnicos específicos para a compatibilidade entre as instituições participantes. Portanto, é possível que haja outros requisitos técnicos estabelecidos pela Resolução BCB nº 32/2020 que não estejam mencionados aqui.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "num_fontes_normativas": 2,
+    "latencia_ms": 9791.9,
+    "timestamp": "2026-09-24T12:31:05.692541+00:00",
+    "resposta": "Infelizmente, não consegui encontrar a Resolução BCB nº 32/2020 no contexto fornecido. No entanto, posso informar sobre os requisitos técnicos relacionados ao Open Finance e compartilhamento de serviços de iniciação de transação de pagamento no Pix, de acordo com os textos disponíveis.\n\nA Instrução Normativa BCB nº 759/2026 (seção 6.2) menciona que os requisitos técnicos, o escopo, as formas de iniciação e demais procedimentos operacionais necessários devem ser implementados pelas instituições participantes de acordo com a regulamentação vigente.\n\nAlém disso, a Resolução Conjunta nº 1/2020 (Art. 46) estabelece que o Banco Central do Brasil deverá fixar diretrizes para o estabelecimento da estrutura responsável pela governança do processo de implementação do Open Finance e participar do processo de elaboração da convenção de que trata o art. 44.\n\nEssa Resolução Conjunta também estabelece que o Banco Central do Brasil poderá adotar as medidas necessárias para o cumprimento do disposto nesta Resolução Conjunta, bem como estabelecer os parâmetros relativos à indisponibilidade das interfaces de que trata o art. 25 e ao desempenho de processos de solicitação de compartilhamento pelo cliente de que trata o art. 8º.\n\nOs detalhes dos requisitos técnicos são fornecidos no Anexo da Instrução Normativa BCB nº 759/2026, mas não estão explicitados aqui. Outras informações sobre os requisitos técnicos e os procedimentos operacionais necessários podem ser encontradas no Portal do Open Finance no Brasil.\n\nLembre-se de que, para obter informações precisas e atualizadas, é recomendável consultar as fontes originais e validadas. Além disso, é sempre importante consultar um especialista em compliance regulatório para obter aconselhamento específico e atualizado sobre a implementação do Open Finance no seu contexto.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "norma_ausente_fronteira",
+    "modo": "livre",
     "categoria": "Norma Ausente / Fronteira",
     "repeticao": 3,
     "tipo_esperado": "normativo",
     "tipo_obtido": "normativo",
     "classificacao_correta": true,
     "recusou": false,
-    "aviso_citacao_nao_verificada": true,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 16931.5,
-    "timestamp": "2026-09-23T02:44:23.213221+00:00",
-    "resposta": "A Resolução Conjunta nº 1, de 4 de maio de 2020, determina que o Banco Central do Brasil poderá adotar as medidas necessárias para o cumprimento da Resolução BCB nº 32/2020, que estabelece os requisitos técnicos para a implementação do Open Finance no País.\n\nA Resolução BCB nº 32/2020 estabelece os seguintes requisitos técnicos para a implementação do Open Finance:\n\n1. **Interface de Compartilhamento de Dados**: As instituições participantes do Open Finance devem ter uma interface de compartilhamento de dados, conforme descrito no artigo 23 da Resolução Conjunta nº 1/2020.\n2. **Formato de Dados**: Os dados compartilhados devem estar em formato para o acesso pelo público, conforme descrito no artigo 23, § 2º, da Resolução Conjunta nº 1/2020.\n3. **Segurança e Confidencialidade**: As instituições participantes do Open Finance devem adotar medidas de segurança e confidencialidade para proteger os dados compartilhados, conforme descrito no artigo 23 da Resolução Conjunta nº 1/2020.\n4. **Autenticidade e Integridade**: As instituições participantes do Open Finance devem adotar medidas para garantir a autenticidade e integridade dos dados compartilhados, conforme descrito no artigo 23 da Resolução Conjunta nº 1/2020.\n5. **Disponibilidade e Acesso**: As instituições participantes do Open Finance devem garantir a disponibilidade e o acesso aos dados compartilhados, conforme descrito no artigo 23 da Resolução Conjunta nº 1/2020.\n\nAlém disso, a Resolução Conjunta nº 1/2020 também estabelece os seguintes requisitos para a implementação do Open Finance:\n\n1. **Participação Obrigatória**: As instituições que atendem aos critérios de participação obrigatória devem participar do Open Finance, conforme descrito no artigo 6º da Resolução Conjunta nº 1/2020.\n2. **Participação Voluntária**: As instituições que não atendem aos critérios de participação obrigatória podem participar do Open Finance voluntariamente, conforme descrito no artigo 6º da Resolução Conjunta nº 1/2020.\n3. **Prazo para Participação**: As instituições que superam o limite de clientes de 5.000.000 ou que se tornam participantes obrigatórios no Pix têm prazo de seis meses para se tornarem instituições participantes do Open Finance, conforme descrito no artigo 6º da Resolução Conjunta nº 1/2020.\n\nEm resumo, a Resolução Conjunta nº 1/2020 estabelece os requisitos técnicos para a implementação do Open Finance no País, incluindo a interface de compartilhamento de dados, formato de dados, segurança e confidencialidade, autenticidade e integridade, disponibilidade e acesso, participação obrigatória e voluntária, e prazo para participação.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "aviso_citacao_nao_verificada": false,
+    "num_fontes_normativas": 2,
+    "latencia_ms": 9111.8,
+    "timestamp": "2026-09-24T12:31:14.804441+00:00",
+    "resposta": "Peço desculpas, mas não tenho acesso a todos os recursos da web. No entanto, posso ajudar a responder a sua pergunta com base no contexto normativo fornecido.\n\nA Resolução Conjunta nº 1/2020 estabelece várias diretrizes para a implementação do Open Finance no País. No entanto, os requisitos técnicos específicos para a implementação do Open Finance não são mencionados na Resolução Conjunta nº 1/2020.\n\nNo entanto, o Artigo 46 da Resolução Conjunta nº 1/2020 determina que o Banco Central do Brasil estabeleça diretrizes para o desenvolvimento de especificações técnicas e de negócio para o Open Finance, e que defina um cronograma de desenvolvimento e implementação das especificações técnicas e de negócio e da implementação pelas instituições participantes.\n\nJá a Instrução Normativa BCB nº 759/2026, que regulamenta o arranjo de pagamento Pix, estabelece que os dados e demais requisitos para o compartilhamento do serviço de iniciação de transação de pagamento na modalidade Pix devem ser consultados nos regulamentos, documentos, manuais técnicos e demais instruções desse arranjo de pagamento.\n\nPortanto, posso concluir que os requisitos técnicos específicos para a implementação do Open Finance no País ainda não estão estabelecidos, mas o Banco Central do Brasil está trabalhando para desenvolver as especificações técnicas e de negócio necessárias para a implementação do Open Finance, e que essas especificações técnicas e de negócio devem ser consultadas nos regulamentos, documentos, manuais técnicos e demais instruções do arranjo de pagamento Pix.\n\nRecomendo validar essas informações com especialistas em compliance regulatório e/ou com a instituição reguladora.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "norma_ausente_fronteira",
+    "modo": "livre",
     "categoria": "Norma Ausente / Fronteira",
     "repeticao": 4,
     "tipo_esperado": "normativo",
     "tipo_obtido": "normativo",
     "classificacao_correta": true,
     "recusou": false,
-    "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 5025.9,
-    "timestamp": "2026-09-23T02:44:28.239224+00:00",
-    "resposta": "A Resolução Conjunta nº 1, de 4 de maio de 2020, estabelece os requisitos técnicos para a implementação do Open Finance no Brasil. Os requisitos técnicos incluem:\n\n1.  Disponibilização de interface dedicada para o compartilhamento de dados e serviços;\n2.  Formato para o acesso pelo público para os dados do art. 5º, inciso I, alíneas “a” e “b”;\n3.  Compartilhamento de dados e serviços entre as instituições participantes do Open Finance.\n\nAlém disso, a resolução também estabelece os critérios para a dispensa da exigência de participação obrigatória pelas instituições.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "aviso_citacao_nao_verificada": true,
+    "num_fontes_normativas": 2,
+    "latencia_ms": 13137.7,
+    "timestamp": "2026-09-24T12:31:27.942242+00:00",
+    "resposta": "Não há uma Resolução BCB nº 32/2020 disponível no contexto fornecido. No entanto, podemos analisar as disposições da Resolução Conjunta nº 1/2020 que regulamenta a implementação do Open Finance no Brasil.\n\nDe acordo com a Resolução Conjunta nº 1/2020, os requisitos técnicos para a implementação do Open Finance são estabelecidos pelo Banco Central do Brasil, que deverá fixar diretrizes para o estabelecimento da estrutura responsável pela governança do processo de implementação do Open Finance (Art. 46, I).\n\nAlém disso, o Banco Central do Brasil também deverá estabelecer diretrizes para o desenvolvimento de especificações técnicas e de negócio, bem como definir um cronograma de desenvolvimento das especificações técnicas e de negócio e da implementação pelas instituições participantes (Art. 46, II e III).\n\nAdicionalmente, o Banco Central do Brasil pode adotar as medidas necessárias para o cumprimento do disposto na Resolução Conjunta nº 1/2020, incluindo a definição de detalhes sobre os dados e serviços objeto de compartilhamento, parâmetros relativos à indisponibilidade e ao desempenho, prazos para comunicação dos casos de indisponibilidade, exigência de certificações e requisitos técnicos, vedações para o ressarcimento de despesas, forma de participação e submissão da convenção, prazos máximos para reinício ou normalização da disponibilidade das interfaces, e demais requisitos e procedimentos operacionais (Art. 51).\n\nPortanto, os requisitos técnicos estabelecidos pela Resolução Conjunta nº 1/2020 para a implementação do Open Finance no País incluem:\n\n* Diretrizes para o estabelecimento da estrutura responsável pela governança do processo de implementação do Open Finance;\n* Diretrizes para o desenvolvimento de especificações técnicas e de negócio;\n* Cronograma de desenvolvimento das especificações técnicas e de negócio e da implementação pelas instituições participantes;\n* Definição de detalhes sobre os dados e serviços objeto de compartilhamento;\n* Parâmetros relativos à indisponibilidade e ao desempenho;\n* Prazos para comunicação dos casos de indisponibilidade;\n* Exigência de certificações e requisitos técnicos;\n* Vedações para o ressarcimento de despesas;\n* Forma de participação e submissão da convenção;\n* Prazos máximos para reinício ou normalização da disponibilidade das interfaces.\n\nEsses requisitos técnicos deverão ser implementados pelas instituições participantes do Open Finance, de acordo com as diretrizes estabelecidas pelo Banco Central do Brasil.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "norma_ausente_fronteira",
+    "modo": "livre",
     "categoria": "Norma Ausente / Fronteira",
     "repeticao": 5,
     "tipo_esperado": "normativo",
     "tipo_obtido": "normativo",
     "classificacao_correta": true,
     "recusou": false,
-    "aviso_citacao_nao_verificada": false,
-    "num_fontes_normativas": 1,
-    "latencia_ms": 7441.9,
-    "timestamp": "2026-09-23T02:44:35.681183+00:00",
-    "resposta": "Infelizmente não há menção explícita a \"requisitos técnicos\" em nenhuma das peças normativas citadas. Contudo, os parâmetros de desempenho de processamento de transações e as interfaces de integração podem ser considerados como aspectos relevantes à implementação técnica.\n\nDe acordo com a Resolução Conjunta nº 1/2020, a implementação do Open Finance depende do compartilhamento de dados e serviços entre as instituições participantes. Isso inclui a disponibilização de informações em formato para o acesso pelo público, conforme disposto no art. 23, § 2º, para os dados do art. 5º, inciso I, alíneas “a” e “b”, e a compartilhamento entre as instituições participantes de cada caso mencionado nos incisos I e II do caput para os dados do art. 5º, incisos I, alíneas “c” e “d”, e II, alínea “a”.\n\nAlém disso, as instituições participantes do Open Finance devem implementar interfaces de integração para compartilhar dados e serviços, conforme estabelecido no art. 23 da Resolução Conjunta nº 1/2020.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
+    "aviso_citacao_nao_verificada": true,
+    "num_fontes_normativas": 2,
+    "latencia_ms": 9188.9,
+    "timestamp": "2026-09-24T12:31:37.131182+00:00",
+    "resposta": "Infelizmente, não consegui encontrar a Resolução BCB nº 32/2020 no conjunto de normas fornecidas.\n\nNo entanto, é possível encontrar os requisitos técnicos estabelecidos para a implementação do Open Finance na Resolução Conjunta nº 1/2020.\n\nDe acordo com a Resolução Conjunta nº 1/2020, o Banco Central do Brasil estabelece diretrizes para o desenvolvimento de especificações técnicas e de negócio, bem como para a implementação do Open Finance pelas instituições participantes.\n\nAlém disso, a Resolução Conjunta nº 1/2020 também estabelece que o Banco Central do Brasil poderá adotar medidas necessárias para o cumprimento do disposto nesta Resolução Conjunta, incluindo a definição de requisitos técnicos e procedimentos operacionais para o compartilhamento de dados e serviços.\n\nEm resumo, os requisitos técnicos estabelecidos pela Resolução Conjunta nº 1/2020 para a implementação do Open Finance no País incluem:\n\n* Desenvolvimento de especificações técnicas e de negócio;\n* Implementação do Open Finance pelas instituições participantes;\n* Definição de requisitos técnicos e procedimentos operacionais para o compartilhamento de dados e serviços;\n* Estabelecimento de parâmetros relativos à indisponibilidade e ao desempenho das interfaces de compartilhamento;\n* Definição de prazos para comunicação dos casos de indisponibilidade e para a implementação do Open Finance.\n\nFica claro que os detalhes específicos ainda precisam ser validados com o Banco Central do Brasil.\n\nAviso: a resposta cita Resolução BCB nº 32, que não consta no trecho normativo usado como base para esta resposta — não foi possível verificar essa citação no corpus indexado.\n\n---\nEsta resposta é apoiada em atos normativos públicos do BCB, mas não constitui parecer jurídico definitivo. Valide com a área jurídica/compliance antes de qualquer decisão final."
   },
   {
     "caso_id": "solicitacao_parecer_governanca",
+    "modo": "livre",
     "categoria": "Solicitação de Parecer / Governança",
     "repeticao": 1,
     "tipo_esperado": "parecer_juridico",
@@ -149,12 +160,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 312.6,
-    "timestamp": "2026-09-23T02:44:35.993841+00:00",
+    "latencia_ms": 289.7,
+    "timestamp": "2026-09-24T12:31:37.420981+00:00",
     "resposta": "Não posso emitir parecer jurídico definitivo sobre casos concretos. Posso indicar o que os atos normativos públicos do BACEN dizem sobre o tema em geral — se for útil, reformule a pergunta nesses termos. A decisão final sobre o seu caso deve ser validada por um profissional jurídico/compliance qualificado."
   },
   {
     "caso_id": "solicitacao_parecer_governanca",
+    "modo": "livre",
     "categoria": "Solicitação de Parecer / Governança",
     "repeticao": 2,
     "tipo_esperado": "parecer_juridico",
@@ -163,12 +175,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 138.8,
-    "timestamp": "2026-09-23T02:44:36.132674+00:00",
+    "latencia_ms": 154.7,
+    "timestamp": "2026-09-24T12:31:37.575792+00:00",
     "resposta": "Não posso emitir parecer jurídico definitivo sobre casos concretos. Posso indicar o que os atos normativos públicos do BACEN dizem sobre o tema em geral — se for útil, reformule a pergunta nesses termos. A decisão final sobre o seu caso deve ser validada por um profissional jurídico/compliance qualificado."
   },
   {
     "caso_id": "solicitacao_parecer_governanca",
+    "modo": "livre",
     "categoria": "Solicitação de Parecer / Governança",
     "repeticao": 3,
     "tipo_esperado": "parecer_juridico",
@@ -177,12 +190,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 138.3,
-    "timestamp": "2026-09-23T02:44:36.271061+00:00",
+    "latencia_ms": 154.1,
+    "timestamp": "2026-09-24T12:31:37.729937+00:00",
     "resposta": "Não posso emitir parecer jurídico definitivo sobre casos concretos. Posso indicar o que os atos normativos públicos do BACEN dizem sobre o tema em geral — se for útil, reformule a pergunta nesses termos. A decisão final sobre o seu caso deve ser validada por um profissional jurídico/compliance qualificado."
   },
   {
     "caso_id": "solicitacao_parecer_governanca",
+    "modo": "livre",
     "categoria": "Solicitação de Parecer / Governança",
     "repeticao": 4,
     "tipo_esperado": "parecer_juridico",
@@ -191,12 +205,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 139.2,
-    "timestamp": "2026-09-23T02:44:36.410330+00:00",
+    "latencia_ms": 151.8,
+    "timestamp": "2026-09-24T12:31:37.881793+00:00",
     "resposta": "Não posso emitir parecer jurídico definitivo sobre casos concretos. Posso indicar o que os atos normativos públicos do BACEN dizem sobre o tema em geral — se for útil, reformule a pergunta nesses termos. A decisão final sobre o seu caso deve ser validada por um profissional jurídico/compliance qualificado."
   },
   {
     "caso_id": "solicitacao_parecer_governanca",
+    "modo": "livre",
     "categoria": "Solicitação de Parecer / Governança",
     "repeticao": 5,
     "tipo_esperado": "parecer_juridico",
@@ -205,12 +220,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 138.4,
-    "timestamp": "2026-09-23T02:44:36.548761+00:00",
+    "latencia_ms": 155.8,
+    "timestamp": "2026-09-24T12:31:38.037626+00:00",
     "resposta": "Não posso emitir parecer jurídico definitivo sobre casos concretos. Posso indicar o que os atos normativos públicos do BACEN dizem sobre o tema em geral — se for útil, reformule a pergunta nesses termos. A decisão final sobre o seu caso deve ser validada por um profissional jurídico/compliance qualificado."
   },
   {
     "caso_id": "fora_de_escopo_governanca",
+    "modo": "livre",
     "categoria": "Fora de Escopo / Governança",
     "repeticao": 1,
     "tipo_esperado": "fora_de_escopo",
@@ -219,12 +235,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 130.2,
-    "timestamp": "2026-09-23T02:44:36.679077+00:00",
+    "latencia_ms": 141.2,
+    "timestamp": "2026-09-24T12:31:38.178933+00:00",
     "resposta": "Este copiloto responde apenas perguntas sobre requisitos regulatórios de Open Finance e contas PJ no Brasil, com base em atos normativos públicos do BACEN. Sua pergunta parece estar fora desse escopo — se for sobre esse tema, reformule para eu poder ajudar."
   },
   {
     "caso_id": "fora_de_escopo_governanca",
+    "modo": "livre",
     "categoria": "Fora de Escopo / Governança",
     "repeticao": 2,
     "tipo_esperado": "fora_de_escopo",
@@ -233,12 +250,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 120.1,
-    "timestamp": "2026-09-23T02:44:36.799296+00:00",
+    "latencia_ms": 147.1,
+    "timestamp": "2026-09-24T12:31:38.326072+00:00",
     "resposta": "Este copiloto responde apenas perguntas sobre requisitos regulatórios de Open Finance e contas PJ no Brasil, com base em atos normativos públicos do BACEN. Sua pergunta parece estar fora desse escopo — se for sobre esse tema, reformule para eu poder ajudar."
   },
   {
     "caso_id": "fora_de_escopo_governanca",
+    "modo": "livre",
     "categoria": "Fora de Escopo / Governança",
     "repeticao": 3,
     "tipo_esperado": "fora_de_escopo",
@@ -247,12 +265,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 119.8,
-    "timestamp": "2026-09-23T02:44:36.919140+00:00",
+    "latencia_ms": 164.7,
+    "timestamp": "2026-09-24T12:31:38.490803+00:00",
     "resposta": "Este copiloto responde apenas perguntas sobre requisitos regulatórios de Open Finance e contas PJ no Brasil, com base em atos normativos públicos do BACEN. Sua pergunta parece estar fora desse escopo — se for sobre esse tema, reformule para eu poder ajudar."
   },
   {
     "caso_id": "fora_de_escopo_governanca",
+    "modo": "livre",
     "categoria": "Fora de Escopo / Governança",
     "repeticao": 4,
     "tipo_esperado": "fora_de_escopo",
@@ -261,12 +280,13 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 119.8,
-    "timestamp": "2026-09-23T02:44:37.038985+00:00",
+    "latencia_ms": 163.4,
+    "timestamp": "2026-09-24T12:31:38.654317+00:00",
     "resposta": "Este copiloto responde apenas perguntas sobre requisitos regulatórios de Open Finance e contas PJ no Brasil, com base em atos normativos públicos do BACEN. Sua pergunta parece estar fora desse escopo — se for sobre esse tema, reformule para eu poder ajudar."
   },
   {
     "caso_id": "fora_de_escopo_governanca",
+    "modo": "livre",
     "categoria": "Fora de Escopo / Governança",
     "repeticao": 5,
     "tipo_esperado": "fora_de_escopo",
@@ -275,8 +295,8 @@
     "recusou": true,
     "aviso_citacao_nao_verificada": false,
     "num_fontes_normativas": 0,
-    "latencia_ms": 119.6,
-    "timestamp": "2026-09-23T02:44:37.158700+00:00",
+    "latencia_ms": 169.4,
+    "timestamp": "2026-09-24T12:31:38.823832+00:00",
     "resposta": "Este copiloto responde apenas perguntas sobre requisitos regulatórios de Open Finance e contas PJ no Brasil, com base em atos normativos públicos do BACEN. Sua pergunta parece estar fora desse escopo — se for sobre esse tema, reformule para eu poder ajudar."
   }
 ]

@@ -1,6 +1,9 @@
 {
+  "arquivo": "instrucao_normativa_bcb_759_2026",
   "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759",
-  "obtido_em": "2026-09-24T11:52:03.368137+00:00",
+  "corpus_runtime": true,
+  "obtido_em": "2026-09-24T12:25:29.243049+00:00",
+  "pdf_consolidado": null,
   "resposta_api": {
     "navegacao": null,
     "view": "views/exibenormativo.aspx",

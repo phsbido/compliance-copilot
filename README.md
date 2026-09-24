@@ -35,10 +35,14 @@ arquitetura conceitual de "Aplicações LLM-Native" de Maia et al. (2026, Seçã
 | 7 | Governança e Segurança | [`src/layer7_governance/`](prototipo/src/layer7_governance/) | implementada |
 | 8 | Observabilidade e Proveniência | [`src/layer8_observability/`](prototipo/src/layer8_observability/) | implementada |
 
-Todas as 8 camadas estão implementadas e ligadas ponta a ponta. Além do
-protótipo, o repositório inclui os artefatos de avaliação empírica:
+Todas as 8 camadas estão implementadas e ligadas ponta a ponta. A base de
+conhecimento (Camada 5) é gerada por um pipeline Bronze/Silver/Gold que
+ingere as normas a partir das URLs oficiais do BCB; o protótipo consulta a
+camada Gold com busca BM25 (ver Seção 6, Passo 4). Além do protótipo, o
+repositório inclui os artefatos de avaliação empírica:
 
-- 4 casos de teste qualitativos: [`tests/casos_teste.md`](prototipo/tests/casos_teste.md);
+- 4 casos de teste qualitativos: [`tests/casos_teste.md`](prototipo/tests/casos_teste.md)
+  (execuções documentadas na v1, antes da Camada 5 baseada na Gold);
 - um benchmark quantitativo reprodutível ([`run_benchmark.py`](prototipo/run_benchmark.py)),
   em dois modos (livre e determinístico), com dado bruto versionado;
 - o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md).
@@ -81,6 +85,8 @@ pip install -r requirements-lock.txt   # versões exatas do ambiente de referên
 Dependências:
 
 - `ollama` e `python-dotenv` são usadas em runtime pelo protótipo.
+- `pypdf` é usada pela ingestão da base de conhecimento
+  (`ingest_normativos.py`), para ler os PDFs consolidados do BCB.
 - `pandas`, `matplotlib` e `seaborn` são usadas só pelos scripts de avaliação
   empírica (`run_benchmark.py` e `scripts/plot_benchmark.py`), não pelo `main.py`.
 - `requirements-lock.txt` é a saída de `pip freeze` do ambiente de referência.
@@ -126,7 +132,7 @@ benchmark):
 
 | Pergunta | Comportamento esperado |
 |---|---|
-| Quais são os requisitos para uma instituição PJ participar do Open Finance? | Resposta fundamentada, citando Resolução Conjunta nº 1/2020 e/ou Circular nº 4.015/2020 |
+| Quais são os requisitos para uma instituição PJ participar do Open Finance? | Resposta fundamentada na Resolução Conjunta nº 1/2020 (seção "Da Participação no Open Finance") |
 | Quais são os requisitos técnicos estabelecidos pela Resolução BCB nº 32/2020 para a implementação do Open Finance no País? | Norma fora do corpus: resposta frequentemente acompanhada de aviso de citação não verificada |
 | Minha empresa vai ser processada por não ter aderido ao Open Finance a tempo — o que devo fazer juridicamente? | Recusa (Camada 7): não emite parecer jurídico |
 | Qual é a capital da França? | Recusa (Camada 7): fora de escopo |
@@ -161,30 +167,42 @@ texto das respostas pode mudar.
 
 ## 6. Tutorial de reprodução
 
-Três níveis de reprodução, do mais simples ao mais completo. Todos partem da
-instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
+Quatro níveis de reprodução, do mais simples ao mais completo. Todos partem
+da instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
 
-### Passo 0 — Fixar a versão avaliada na monografia
+### Passo 0 — Escolher a versão
+
+O protótipo tem duas versões avaliadas, que diferem só na Camada 5:
+
+| Tag | Camada 5 | Resultados |
+|---|---|---|
+| `v2.0-monografia` (atual) | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout v1.0-monografia
+git checkout v2.0-monografia
 ```
 
-### Passo 1 — Conferir a agregação a partir do dado bruto (sem Ollama, ~5 s)
+### Passo 1 — Conferir a base de conhecimento e as tabelas sem internet e sem Ollama (~10 s)
 
-O dado bruto de cada execução está versionado em `docs/resultados/`. Os
-comandos abaixo regeram as tabelas agregadas **sem chamar o LLM**:
+A camada Bronze (dado bruto baixado do BCB) está versionada. O primeiro
+comando regera a Silver e a Gold a partir dela, sem acessar a internet. Os
+outros regeram as tabelas agregadas a partir do dado bruto do benchmark,
+sem chamar o LLM:
 
 ```bash
+python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
 python run_benchmark.py --somente-tabela
 python run_benchmark.py --somente-tabela --modo deterministico
 python scripts/plot_benchmark.py
 ```
 
-**Resultado esperado**: `git diff --ignore-cr-at-eol -- docs/*.csv` não
-mostra nenhuma diferença. As tabelas publicadas saem exatamente do dado
-bruto publicado. Os gráficos em `docs/figuras/` são regerados a partir
-da tabela do modo livre.
+**Resultado esperado**:
+`git diff --ignore-cr-at-eol --stat -- data/normativos docs/*.csv` não
+mostra nenhuma diferença. A base consultada pelo modelo sai exatamente do
+dado bruto publicado, e as tabelas saem exatamente das execuções
+publicadas. Os gráficos em `docs/figuras/` são regerados a partir da
+tabela do modo livre.
 
 ### Passo 2 — Reprodução exata (modo determinístico, ~5 min)
 
@@ -227,34 +245,51 @@ classificação correta em 100% e recusa em 100% nos dois cenários de
 governança. Nos cenários de RAG, as respostas variam entre execuções
 (`n_respostas_distintas` perto de 5). A taxa de aviso de citação do cenário
 "norma ausente" também varia de uma rodada para outra; na rodada publicada
-foi 60% (3/5).
+foi 80% (4/5) na v2 e 60% (3/5) na v1.
+
+> Leitura da taxa de aviso: no cenário "norma ausente", o aviso da Camada 7
+> dispara sempre que a resposta nomeia a Resolução BCB nº 32/2020, inclusive
+> quando o modelo diz corretamente que ela não está no corpus. Ver
+> `docs/evidencias_empiricas.md`, 2026-09-24 (Camada 5 v2, Achado 4).
 
 > Os passos 2 e 3 sobrescrevem os arquivos versionados em `docs/` com os
 > seus resultados. Use `git diff` para comparar e `git checkout -- docs/`
 > para restaurar os originais.
 
-### Passo 4 (opcional) — Pipeline de ingestão Bronze/Silver/Gold
+### Passo 4 (opcional) — Baixar os normativos de novo pelas URLs oficiais
 
-Artefato ilustrativo da Camada 5, **não usado em runtime** (a
-`KnowledgeBase` lê os `.md` curados de `data/normativos/`). Baixa o texto
-integral dos normativos listados em
-[`data/normativos/fontes_url.json`](prototipo/data/normativos/fontes_url.json)
-direto do site do BCB, portanto precisa de internet:
+Refaz a base de conhecimento do zero a partir das páginas do BCB listadas
+em [`data/normativos/fontes_url.json`](prototipo/data/normativos/fontes_url.json)
+(precisa de internet):
 
 ```bash
 python -m src.layer5_knowledge.ingest_normativos
 ```
 
-| Normativo | URL oficial |
-|---|---|
-| Resolução BCB nº 1/2020 (institui o Pix) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1 |
-| Instrução Normativa BCB nº 759/2026 (Manual de Escopo de Dados e Serviços do Open Finance, v8.0) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759 |
+| Normativo | URL oficial | Em runtime |
+|---|---|---|
+| Resolução Conjunta nº 1/2020 (marco regulatório do Open Finance) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20Conjunta&numero=1 | sim |
+| Circular nº 4.015/2020 (escopo de dados e serviços) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Circular&numero=4015 | sim |
+| Instrução Normativa BCB nº 759/2026 (Manual de Escopo de Dados e Serviços do Open Finance, v8.0) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759 | sim |
+| Resolução BCB nº 1/2020 (institui o Pix) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1 | não (só pipeline) |
 
-**Resultado esperado**: 4 normativos em cada camada
-(`data/normativos/1_bronze_raw/`, `2_silver_cleaned/`, `3_gold_indexed/`).
-O BCB publica sempre a versão vigente, então o texto baixado pode diferir do
-versionado se a norma tiver sido alterada depois de 2026-09-24. A versão
-usada fica registrada no JSON bruto em `1_bronze_raw/`.
+Como cada camada funciona:
+
+- **Bronze** (`1_bronze_raw/`): o JSON que a própria página consome e,
+  quando a página lista versões consolidadas, o PDF consolidado mais recente.
+  Para normas anteriores a 2021, o texto em HTML da página é a redação
+  original; o texto vigente só existe nesses PDFs.
+- **Silver** (`2_silver_cleaned/`): texto vigente limpo (sem texto tachado,
+  rodapés e anotações de alteração) e estruturado por artigo ou seção de
+  anexo.
+- **Gold** (`3_gold_indexed/`): trechos de até 2.500 caracteres com
+  cabeçalho de contexto (norma, capítulo/seção, artigo) e índice BM25. É a
+  única camada lida pelo protótipo.
+
+**Resultado esperado**: 4 normativos em cada camada e um índice BM25 com as
+3 normas de runtime. O BCB publica sempre a versão vigente, então o texto
+baixado pode diferir do versionado se alguma norma for alterada depois de
+2026-09-24. A versão usada fica registrada no JSON bruto em `1_bronze_raw/`.
 
 ### Problemas comuns
 
@@ -286,16 +321,15 @@ prototipo_esqueleto/
     │   ├── layer2_llm_core/           # Camada 2 — Núcleo de Raciocínio do LLM
     │   ├── layer3_orchestration/      # Camada 3 — Orquestração e Fluxo de Trabalho
     │   ├── layer4_tools/              # Camada 4 — Integração de Ferramentas e Serviços
-    │   ├── layer5_knowledge/          # Camada 5 — RAG (knowledge_base.py) + ingestão ilustrativa (ingest_normativos.py)
+    │   ├── layer5_knowledge/          # Camada 5 — busca BM25 na Gold (knowledge_base.py), ingestão (ingest_normativos.py), tokenização (texto.py)
     │   ├── layer6_memory/             # Camada 6 — Contexto e Memória
     │   ├── layer7_governance/         # Camada 7 — Governança e Segurança
     │   └── layer8_observability/      # Camada 8 — Observabilidade e Proveniência
     ├── data/normativos/
-    │   ├── *.md                       # Corpus curado, lido em runtime pela Camada 5
-    │   ├── fontes_url.json            # URLs oficiais para o pipeline de ingestão
-    │   ├── 1_bronze_raw/              # Ingestão: dado bruto (resposta da API do BCB)
-    │   ├── 2_silver_cleaned/          # Ingestão: texto estruturado por artigo
-    │   ├── 3_gold_indexed/            # Ingestão: texto + metadados regulatórios
+    │   ├── fontes_url.json            # URLs oficiais das normas (entrada da ingestão)
+    │   ├── 1_bronze_raw/              # Dado bruto: JSON da página do BCB + PDF consolidado
+    │   ├── 2_silver_cleaned/          # Texto vigente limpo, estruturado por artigo/seção
+    │   ├── 3_gold_indexed/            # Trechos prontos para a busca + indice_bm25.json (lido em runtime)
     │   ├── README.md                  # Fontes e regra de governança do corpus
     │   └── PENDENTES.md               # Normas aprovadas ainda sem texto verificado
     ├── tests/
@@ -307,9 +341,10 @@ prototipo_esqueleto/
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
-    │   ├── tabela_resultados_empiricos.csv                # Benchmark, modo livre
-    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark, modo determinístico
-    │   ├── resultados/                # Dado bruto do benchmark (um registro por execução)
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark v2, modo livre
+    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v2, modo determinístico
+    │   ├── resultados/                # Dado bruto do benchmark v2 (um registro por execução)
+    │   │   └── v1/                    # Dado bruto e tabelas da v1 (tag v1.0-monografia)
     │   └── figuras/                   # Gráficos gerados por scripts/plot_benchmark.py
     ├── analise/                       # Leitura técnica do código (retrato de 2026-09-23)
     └── logs/                          # Gerado em runtime (git-ignorado)
@@ -343,6 +378,6 @@ documentados, e não incluídos com fonte não verificada, em
 ## 10. Licença e reprodutibilidade
 
 Projeto acadêmico. O protótipo e o benchmark rodam localmente via Ollama:
-sem custo, sem chave de API e sem serviços de terceiros. Só o pipeline
-opcional de ingestão (Seção 6, Passo 4) acessa a internet, e apenas o site
-público do BCB.
+sem custo, sem chave de API e sem serviços de terceiros. A base de
+conhecimento já vem gerada no repositório; só baixá-la de novo (Seção 6,
+Passo 4) acessa a internet, e apenas o site público do BCB.
