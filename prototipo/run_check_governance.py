@@ -28,15 +28,15 @@ if __name__ == "__main__":
     resposta_com_erro = "Esse requisito está no art. 51 da Resolução Conjunta nº 1."
     resultado = validar_citacao(resposta_com_erro, CONTEXTO_REAL)
     print(resultado)
-    assert "art. 51" in resultado and "não aparece no trecho normativo" in resultado
+    assert "art. 51" in resultado and "não aparece nos trechos normativos" in resultado
     print("\n[OK] Citação incorreta foi sinalizada.\n")
 
     print("Testando validar_citacao com citação correta (art. 6º, presente no contexto)...")
     resposta_correta = "Esse requisito está no art. 6º da Resolução Conjunta nº 1."
     resultado2 = validar_citacao(resposta_correta, CONTEXTO_REAL)
     print(resultado2)
-    assert "não aparece no trecho normativo" not in resultado2
-    assert "não consta no trecho normativo" not in resultado2, (
+    assert "não aparece nos trechos normativos" not in resultado2
+    assert "não consta nos trechos normativos" not in resultado2, (
         "falso positivo: o ponto final da frase não deve ser confundido com "
         "parte do número da norma"
     )

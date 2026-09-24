@@ -15,6 +15,12 @@ normativas usadas são extraídas do texto já formatado que a Camada 4
 determinístico — mesmo padrão de parsing já usado na Camada 7 — em vez de
 alterar a assinatura de `buscar_normativo` para retornar dados estruturados,
 sem um segundo consumidor que justifique essa mudança.
+
+Camada 7 v2 (2026-09-24): o registro passa a guardar o `desfecho` da
+interação (resposta ou qual recusa) e as categorias da validação da Camada 7
+(`validacao`: normas/artigos/valores não verificados, normas declaradas
+ausentes). `aviso_citacao_nao_verificada` continua existindo com o critério
+da v1/v2, para comparar versões com a mesma régua.
 """
 import json
 import re
@@ -36,6 +42,8 @@ class RegistroInteracao:
     fontes_normativas: list[dict] = field(default_factory=list)
     aviso_citacao_nao_verificada: bool = False
     resposta_final: str = ""
+    desfecho: str = "resposta"  # "resposta" | "recusa_parecer_juridico" | "recusa_fora_de_escopo" | "recusa_sem_base"
+    validacao: dict = field(default_factory=dict)
 
 
 def _extrair_fontes(normativo: str) -> list[dict]:
@@ -59,14 +67,20 @@ def registrar_interacao(
     resposta_final: str,
     normativo: str = "",
     arquivo: Path | None = None,
+    validacao: dict | None = None,
+    desfecho: str = "resposta",
 ) -> RegistroInteracao:
     registro = RegistroInteracao(
         timestamp=datetime.now(timezone.utc).isoformat(),
         pergunta=pergunta,
         tipo_classificacao=tipo_classificacao,
         fontes_normativas=_extrair_fontes(normativo),
-        aviso_citacao_nao_verificada="Aviso:" in resposta_final,
+        aviso_citacao_nao_verificada=(
+            validacao["aviso_legado"] if validacao else "Aviso:" in resposta_final
+        ),
         resposta_final=resposta_final,
+        desfecho=desfecho,
+        validacao=validacao or {},
     )
     destino = arquivo or LOG_FILE
     destino.parent.mkdir(parents=True, exist_ok=True)

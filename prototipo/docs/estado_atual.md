@@ -1,8 +1,8 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-09-24 (Camada 5 revisada: runtime passa a ler
-a camada Gold do pipeline Bronze/Silver/Gold, ingerido por URL oficial, com
-busca BM25 — ver seção "Camada 5 v2" abaixo).
+**Última atualização**: 2026-09-24 (Camada 7 v2 — governança revisada,
+benchmark v3; ver seção "Camada 7 v2" abaixo. Antes, no mesmo dia: Camada 5
+v2 com Gold + BM25).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -215,10 +215,32 @@ e `docs/evidencias_empiricas.md` (2026-09-24, Camada 5 v2).
   Circ. 4.015 v3→v5). `pypdf` de volta às dependências.
 - Resultados v1 arquivados em `docs/resultados/v1/`; v2 nos caminhos
   padrão. Tag planejada: `v2.0-monografia`.
-- **Pendência para decisão (Camada 7)**: o aviso de norma não verificada
-  dispara também quando o modelo diz corretamente que a Resolução BCB 32 não
-  está no corpus — a taxa de aviso do cenário "norma ausente" mistura
-  alucinação com recusa honesta.
+- (Resolvido na Camada 7 v2) o aviso de norma disparava também quando o
+  modelo dizia corretamente que a Resolução BCB 32 não está no corpus.
+
+## Camada 7 v2 — governança (2026-09-24, benchmark v3)
+
+Detalhes em `docs/decisoes_arquitetura.md` (Camada 7, "Camada 7 v2") e
+`docs/evidencias_empiricas.md` (2026-09-24, Camada 7 v2).
+
+- Antes da geração: `POLITICA_SINTESE` (definida na Camada 7, injetada pela
+  Camada 3) e `recusar_sem_base`. Depois: `validar_resposta` ->
+  `ResultadoValidacao` (norma não verificada / ausência declarada / artigo
+  não verificado / artigo fora da norma / valor não verificado) + fontes
+  anexadas + aviso humano. Ingestão: `validar_fonte_publica` (só BCB).
+- Camada 8 registra `desfecho` e `validacao`; `aviso_citacao_nao_verificada`
+  mantém a régua v1/v2 (`_aviso_legado`) para comparação.
+- `tests/test_governanca.py`: 24 testes sem LLM, com casos reais.
+- Benchmark guarda resposta do LLM + contexto; `--revalidar` reaplica a
+  Camada 7 sem nova geração. Resultados v2 arquivados em `docs/resultados/v2/`.
+- Resultado v3: erro numérico do caminho feliz eliminado (0/10); norma
+  ausente = 100% ausência declarada, 0 invenção. Novo modo de falha: 1/5
+  livre imitou o cabeçalho da Gold para artigos fora do contexto (regra 3
+  da política) — candidato a ajuste.
+- **Próximo (aprovado pelo usuário)**: busca híbrida BM25 + densa + RRF na
+  Camada 5, *com avaliação*: montar conjunto rotulado (~25 perguntas com o
+  artigo esperado), medir Recall@3/MRR e só adotar se melhorar. Trazer o
+  plano da Camada 5 para aprovação antes do código.
 
 ## Próximo passo sugerido
 

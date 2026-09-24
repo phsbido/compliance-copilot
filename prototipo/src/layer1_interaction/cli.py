@@ -8,11 +8,10 @@ escopo (ver README.md) — aqui, um loop de CLI em texto puro.
 Decisão de projeto (ver docs/decisoes_arquitetura.md): um único
 `Orchestrator` é instanciado uma vez por sessão (não por pergunta), para que
 a Camada 6 (memória) acumule as interações da sessão inteira. Após cada
-resposta, um rodapé de proveniência é impresso a partir de
-`orchestrator.ultimo_registro` (Camada 8) — títulos das fontes normativas
-usadas e um aviso se a Camada 7 sinalizou citação não verificada — em vez do
-log JSON bruto, para que o usuário veja de forma legível o que fundamentou
-a resposta.
+resposta, um destaque é impresso a partir de `orchestrator.ultimo_registro`
+(Camada 8) se a Camada 7 sinalizou algo não verificado. As fontes
+consultadas vêm na própria resposta desde a Camada 7 v2 (antes eram
+impressas aqui).
 """
 from src.layer3_orchestration.orchestrator import Orchestrator
 
@@ -22,13 +21,12 @@ COMANDOS_SAIDA = {"sair", "exit", "quit"}
 def _formatar_proveniencia(registro) -> str:
     if registro is None:
         return ""
-    linhas = []
-    if registro.fontes_normativas:
-        titulos = ", ".join(f["titulo"] for f in registro.fontes_normativas)
-        linhas.append(f"[Fontes: {titulos}]")
-    if registro.aviso_citacao_nao_verificada:
-        linhas.append("[Atenção: citação não verificada no corpus indexado — ver aviso acima]")
-    return "\n".join(linhas)
+    # As fontes já vêm na própria resposta ("Fontes consultadas", anexadas
+    # pela Camada 7 v2); aqui fica só o destaque quando a validação
+    # encontrou algo não verificado.
+    if registro.validacao.get("possui_aviso"):
+        return "[Atenção: a Camada 7 encontrou citação ou valor não verificado — ver avisos acima]"
+    return ""
 
 
 def main() -> None:

@@ -16,6 +16,10 @@ from src.layer5_knowledge.knowledge_base import KnowledgeBase
 
 _kb = KnowledgeBase()
 
+# Retorno quando a Camada 5 não acha nenhum trecho — a Camada 3 compara com
+# esta constante para desviar para a recusa sem base (Camada 7).
+NENHUM_TRECHO_ENCONTRADO = "Nenhum trecho normativo relevante foi encontrado no corpus indexado."
+
 
 def buscar_normativo(pergunta: str, top_k: int = 3) -> str:
     """Busca trechos normativos relevantes e retorna um texto citável.
@@ -26,7 +30,7 @@ def buscar_normativo(pergunta: str, top_k: int = 3) -> str:
     """
     resultados = _kb.buscar(pergunta, top_k=top_k)
     if not resultados:
-        return "Nenhum trecho normativo relevante foi encontrado no corpus indexado."
+        return NENHUM_TRECHO_ENCONTRADO
 
     blocos = []
     for doc in resultados:

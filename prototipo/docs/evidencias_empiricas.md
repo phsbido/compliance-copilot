@@ -430,3 +430,82 @@ números, que depende do Núcleo de Raciocínio (Camada 2) e de uma
 verificação que a Camada 7 ainda não faz. As camadas se compensam só
 parcialmente, e a métrica automática da Camada 7 precisa de leitura
 qualitativa para não ser mal interpretada.
+
+---
+
+## 2026-09-24 — Camada 7 v2: benchmark v3 e revalidação
+
+**Contexto**: Camada 7 revisada (ver `docs/decisoes_arquitetura.md`, "Camada
+7 v2"): política de síntese definida pela governança, recusa sem base,
+validação de norma/artigo/valor com "ausência declarada" separada de
+"norma não verificada", fontes anexadas em código. Mesmos 4 cenários × 5
+repetições, dois modos. Dado bruto em `docs/resultados/` (agora com a
+resposta do LLM e o contexto de cada execução); v1 e v2 em
+`docs/resultados/v1/` e `v2/`.
+
+| Cenário | Métrica | v2 livre | v3 livre | v2 determ. | v3 determ. |
+|---|---|---|---|---|---|
+| Caminho Feliz | valor numérico errado (leitura manual) | 1/5 ("100 mil") | 0/5 | 5/5 ("3 milhões") | 0/5 |
+| Caminho Feliz | aviso da Camada 7 v2 | — | 20% (artigo) | — | 0% |
+| Caminho Feliz | latência média | 9,5 s | 12,7 s | 10,8 s | 10,7 s |
+| Norma Ausente | aviso (régua antiga, v1/v2) | 80% | 100% | 100% | 100% |
+| Norma Ausente | norma não verificada (régua nova) | 0/5* | 0% | 0/5* | 0% |
+| Norma Ausente | ausência declarada | 4/5* | 100% | 5/5* | 100% |
+| Norma Ausente | latência média | 10,6 s | 4,2 s | 18,0 s | 1,1 s |
+| Parecer / Fora de escopo | classificação e recusa | 100% | 100% | 100% | 100% |
+
+\* v2 revalidada com a régua nova, com o contexto reconstruído pela mesma Gold.
+
+**Observação 1 — a política de síntese eliminou o erro numérico do caminho
+feliz**: nas 10 respostas v3, o modelo não inventou o limite de clientes.
+Escreve "o limite de que trata o inciso I, alínea 'a', item 2", porque o
+trecho recuperado (Art. 6º, parte 2) não traz o número; o único valor
+citado ("seis meses") está na fonte, e a atribuição ao Art. 6º, § 5º, está
+correta. Na v2, o mesmo contexto produzia "3 milhões" (determinístico) e
+"100 mil" (livre). A regra "reproduza valores exatamente como estão no
+texto" e a regra "responda somente com base no contexto" funcionaram juntas.
+
+**Observação 2 — diante da norma ausente, o modelo passou a recusar de
+forma curta**: determinístico, 5/5 "Não há menção à Resolução BCB nº 32/2020
+no contexto fornecido. Portanto, não é possível responder…" (latência de
+18,0 s para 1,1 s). No livre, 3/5 recusas curtas e 2/5 recusas seguidas do
+que o corpus tem (Resolução Conjunta nº 1, Arts. 46 e 51). Nenhuma das 10
+descreve conteúdo da Resolução BCB nº 32. A régua antiga marca 100% de
+aviso nesse cenário e não enxerga essa melhora — exatamente o problema que
+motivou separar "ausência declarada".
+
+**Observação 3 — efeito colateral da política (novo modo de falha)**: 1 das
+5 respostas livres do caminho feliz imitou o cabeçalho da Gold para artigos
+que não estavam no contexto ("[Resolução Conjunta nº 1/2020 — … Seção II Da
+Participação … — Art. 2º]", seguido de "O art. 2º não está disponível no
+contexto fornecido."), para os Arts. 1º, 2º, 3º, 4º, 5º, 23 e 44. A regra 3
+("indique a norma e o artigo como aparecem no cabeçalho entre colchetes")
+foi levada ao pé da letra. A Camada 7 sinalizou os Arts. 2º, 3º e 4º (os
+demais aparecem em remissões do contexto). Essa execução (3,7 mil
+caracteres, 23,7 s) é a que eleva a latência média do caminho feliz livre
+para 12,7 s; sem ela, a média das outras quatro é 9,9 s. Candidato a ajuste da redação da
+regra 3 numa próxima iteração.
+
+**Observação 4 — falsos positivos do próprio validador, achados na leitura
+e corrigidos com `--revalidar`**: a primeira versão da detecção de ausência
+era uma lista fechada de expressões e marcou como "norma não verificada" 2
+das 5 recusas honestas do modo livre ("Não foi encontrado na consulta
+normativa…", "Não estou com os requisitos… disponíveis"). A regra passou a
+ser "negação + termo de disponibilidade/localização" e a Camada 7 foi
+reaplicada às mesmas 40 execuções, sem nova geração. Antes da correção:
+norma não verificada 40% e ausência declarada 60% no livre; depois: 0% e
+100%. Conferido que a regra mais ampla não esconde invenção: reaplicada à
+v1, continua sinalizando 3/5 (livre) e 5/5 (determinístico) respostas que
+inventam a Resolução BCB nº 32 — os mesmos números da régua antiga. As
+frases reais viraram testes em `tests/test_governanca.py`.
+
+**Relevância para a pesquisa**: (1) a governança "antes da geração"
+(política de prompt) mudou mais o comportamento que a "depois da geração"
+(validação): as verificações pós-geração medem e sinalizam, mas foi a
+política que eliminou o número inventado e a descrição da norma ausente;
+(2) uma métrica de governança mal definida esconde melhora e piora — a
+taxa antiga de aviso subiu de 80% para 100% justamente quando o sistema
+passou a se comportar melhor; (3) a própria governança precisa de
+governança: o validador errou, e só a leitura das respostas mostrou isso.
+Guardar a resposta do LLM e o contexto de cada execução é o que permitiu
+corrigir e medir de novo sem gerar outra amostra.

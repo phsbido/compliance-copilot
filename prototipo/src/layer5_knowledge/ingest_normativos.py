@@ -63,6 +63,7 @@ from pathlib import Path
 import pypdf
 
 from src.layer5_knowledge.texto import tokenizar
+from src.layer7_governance.governance import validar_fonte_publica
 
 FONTE_DIR = Path(__file__).resolve().parents[2] / "data" / "normativos"
 FONTES_URL_FILE = FONTE_DIR / "fontes_url.json"
@@ -137,6 +138,9 @@ def etapa_bronze(fontes: list[dict]) -> None:
 
     for fonte in fontes:
         nome, url_oficial = fonte["arquivo"], fonte["url_oficial"]
+        # Constraint "usar apenas fontes públicas" (Camada 7), garantida em
+        # código: URL fora dos domínios do BCB interrompe a ingestão.
+        validar_fonte_publica(url_oficial)
         print(f"    baixando {nome} ...", flush=True)
         dados = json.loads(_http_get(_url_api(url_oficial), "application/json").decode("utf-8"))
         conteudo = dados.get("conteudo") or []
@@ -149,6 +153,7 @@ def etapa_bronze(fontes: list[dict]) -> None:
         if pdf:
             arquivo_pdf, versao_pdf = pdf
             url_pdf = _ANEXO_PDF.format(id=registro["Id"], arquivo=arquivo_pdf)
+            validar_fonte_publica(url_pdf)
             print(f"      + PDF consolidado {arquivo_pdf}", flush=True)
             (BRONZE_DIR / f"{nome}.pdf").write_bytes(_http_get(url_pdf, "application/pdf"))
             pdf_info = {"arquivo": arquivo_pdf, "versao": versao_pdf, "url": url_pdf}

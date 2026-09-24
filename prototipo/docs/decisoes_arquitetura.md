@@ -423,6 +423,91 @@ duplicado. Corrigido: a memória agora guarda a resposta sintetizada, antes
 da validação de citação; `_validar_citacao` é aplicada só na resposta
 retornada ao usuário, não na que entra no histórico.
 
+### Camada 7 v2 — revisão da governança (2026-09-24)
+
+Plano apresentado e aprovado pelo usuário antes do código (escopo completo,
+itens A a H), com a justificativa de que a governança é o "coração" de uma
+aplicação LLM-Native. Motivada por uma revisão do validador contra as 40
+respostas normativas dos benchmarks v1 e v2, que achou 8 problemas; os
+principais:
+
+1. a regex de norma não reconhecia "Instrução Normativa **BCB** nº" — 13
+   menções à IN 759 nas respostas, nenhuma verificada;
+2. nomear uma norma para dizer que ela está ausente contava como citação —
+   9 de 10 avisos da v2 no cenário "norma ausente" eram recusas honestas;
+3. valores numéricos não eram verificados — e distorção de número é o erro
+   mais recorrente do projeto (2026-08-14; "cinco milhões" -> "3 milhões"
+   em 2026-09-24);
+4. o artigo não era conferido contra a norma a que a resposta o atribui;
+5. com a busca vazia, o LLM respondia sem base;
+6. "sempre linkar fonte" e "só fontes públicas" não estavam garantidos em
+   código.
+
+**Decisão**: a governança passa a atuar em três momentos, todos
+determinísticos e no mesmo módulo (`governance.py`):
+
+- **Antes da geração**: `POLITICA_SINTESE` — as regras de síntese (só o
+  contexto; declarar norma ausente; citar norma e artigo do cabeçalho;
+  copiar valores sem converter; dizer quando o contexto não basta; sem
+  parecer) passam a ser definidas pela Camada 7 e só injetadas pela
+  Camada 3. `recusar_sem_base` fecha a rota "busca vazia -> LLM responde de
+  memória", do mesmo jeito que parecer e fora de escopo.
+- **Depois da geração**: `validar_resposta` devolve um `ResultadoValidacao`
+  com categorias separadas:
+  - *norma não verificada* vs. *ausência declarada*: a resposta é dividida
+    em frases (sem quebrar em "Art. 6º"); uma menção numa frase com
+    marcador de ausência ("não encontrei", "não consta", "não está no
+    contexto"…) é ausência declarada, sem aviso — a menos que a mesma norma
+    apareça como fonte em outra frase;
+  - *artigo não verificado* e *artigo fora da norma*: cada artigo é
+    associado à norma mais próxima na mesma frase e conferido contra os
+    pares (norma, artigo) atestados no contexto — o cabeçalho de cada trecho
+    da Gold diz a que norma ele pertence, e remissões explícitas no texto
+    ("art. 44 … da Resolução Conjunta nº 1") também atestam o par;
+  - *valor não verificado*: quantidades com unidade (dias, meses, anos,
+    horas, %, R$) ou multiplicador (mil, milhões), em dígitos ou por extenso
+    ("cinco milhões" = "5 milhões"), precisam aparecer no contexto;
+  - normas reconhecidas: Lei, Lei Complementar, Decreto, Resolução
+    (Conjunta, BCB, CMN, CNSP), Circular (e Circular Susep), Instrução
+    Normativa BCB; comparação sem acento, sem caixa e sem ponto de milhar.
+  O texto final recebe os avisos, as **fontes consultadas (título e URL)
+  extraídas do contexto** — "sempre linkar fonte" deixa de depender do LLM
+  — e o aviso de validação humana (que também deixou de ser pedido ao
+  modelo).
+- **Na ingestão**: `validar_fonte_publica` — a Camada 5 só baixa URL HTTPS
+  de `www.bcb.gov.br`, `bcb.gov.br` ou `normativos.bcb.gov.br`.
+
+**Rastreabilidade e comparabilidade**: a Camada 8 registra o `desfecho`
+(resposta ou qual recusa) e as categorias da validação. A métrica antiga
+(`aviso_citacao_nao_verificada`) continua sendo calculada pelo validador da
+v1/v2, preservado sem mudança (`_aviso_legado`), para que v1, v2 e v3 sejam
+comparáveis com a mesma régua. O benchmark guarda a resposta do LLM e o
+contexto de cada execução, e `run_benchmark.py --revalidar` reaplica a
+Camada 7 atual a esse dado sem nova geração — uma mudança futura na
+governança pode ser medida isoladamente.
+
+**Testes**: `tests/test_governanca.py` (20 testes, `unittest`, sem LLM),
+com casos reais — a invenção da Resolução BCB nº 32 na v1 deve gerar aviso;
+"Não encontrei a Resolução BCB nº 32/2020" na v2 não deve; "3 milhões"
+contra "cinco milhões" deve; IN BCB com número inventado deve. Revalidadas
+as 20 respostas normativas da v2 com o contexto reconstruído: 0 falsos
+positivos de norma e de artigo; os avisos de valor apontaram exatamente as
+distorções achadas na leitura manual ("3 milhões" ×5, "100 mil") e um
+valor correto ("5 milhões") que não estava nos trechos consultados — aviso
+correto pela regra, porque o modelo o trouxe de fora do contexto.
+
+**Ambiguidade da arquitetura**: Maia et al. descrevem a governança como
+camada, mas, na prática, ela precisou atuar em três pontos do fluxo
+(ingestão, prompt, pós-geração) e em três outras camadas (5, 3 e 8). Uma
+"camada" de governança aqui é um conjunto de políticas com pontos de
+aplicação distribuídos, não uma etapa do pipeline.
+
+**Limites declarados**: verificação lexical — não detecta afirmação falsa
+que não cite norma, artigo ou valor; não verifica o histórico da conversa;
+os marcadores de ausência são uma lista fechada. Um verificador semântico
+(ex.: LLM-juiz) cobriria parte disso, ao custo do determinismo — registrado
+como trabalho futuro.
+
 ---
 
 ## Camada 8 — Observabilidade e Proveniência

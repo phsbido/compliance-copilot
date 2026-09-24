@@ -122,8 +122,9 @@ python main.py
 
 Todas as 8 camadas estão ligadas em um loop de conversa
 (`src/layer1_interaction/cli.py`). O loop mantém a memória da sessão
-(Camada 6) e mostra, após cada resposta, as fontes normativas usadas e
-eventuais avisos de citação não verificada (Camadas 7/8). Digite `sair`,
+(Camada 6). Cada resposta sai da Camada 7 com as fontes consultadas (título
+e URL), os avisos de norma, artigo ou valor não verificado na fonte e o
+aviso de validação humana. Digite `sair`,
 `exit` ou `quit` para encerrar. Cada interação é registrada em
 `logs/interacoes.jsonl` (Camada 8) para auditoria posterior.
 
@@ -138,6 +139,15 @@ benchmark):
 | Qual é a capital da França? | Recusa (Camada 7): fora de escopo |
 
 ### 4.3. Validando cada camada isoladamente
+
+Testes automatizados da governança (Camada 7), sem LLM, com casos reais dos
+benchmarks:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Scripts de validação por camada:
 
 ```bash
 python run_check_knowledge.py      # Camada 5 — Conhecimento/RAG (não usa o LLM)
@@ -172,15 +182,16 @@ da instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
 
 ### Passo 0 — Escolher a versão
 
-O protótipo tem duas versões avaliadas, que diferem só na Camada 5:
+O protótipo tem três versões avaliadas. Cada uma muda uma camada em relação à anterior:
 
 | Tag | Camada 5 | Resultados |
 |---|---|---|
-| `v2.0-monografia` (atual) | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v3.0-monografia` (atual) | Camada 5 da v2 + **Camada 7 v2**: política de síntese, recusa sem base, verificação de norma/artigo/valor, ausência declarada, fontes anexadas | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v2.0-monografia` | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/resultados/v2/` |
 | `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout v2.0-monografia
+git checkout v3.0-monografia
 ```
 
 ### Passo 1 — Conferir a base de conhecimento e as tabelas sem internet e sem Ollama (~10 s)
@@ -191,17 +202,22 @@ outros regeram as tabelas agregadas a partir do dado bruto do benchmark,
 sem chamar o LLM:
 
 ```bash
+python -m unittest discover -s tests
 python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
-python run_benchmark.py --somente-tabela
-python run_benchmark.py --somente-tabela --modo deterministico
+python run_benchmark.py --revalidar
+python run_benchmark.py --revalidar --modo deterministico
 python scripts/plot_benchmark.py
 ```
+
+`--revalidar` reaplica a Camada 7 à resposta do LLM e ao contexto guardados
+em cada execução, e regera a tabela. Assim a governança pode ser conferida
+(ou alterada e medida de novo) sem gerar respostas novas.
 
 **Resultado esperado**:
 `git diff --ignore-cr-at-eol --stat -- data/normativos docs/*.csv` não
 mostra nenhuma diferença. A base consultada pelo modelo sai exatamente do
-dado bruto publicado, e as tabelas saem exatamente das execuções
-publicadas. Os gráficos em `docs/figuras/` são regerados a partir da
+dado bruto publicado, e a validação e as tabelas saem exatamente das
+execuções publicadas. Os gráficos em `docs/figuras/` são regerados a partir da
 tabela do modo livre.
 
 ### Passo 2 — Reprodução exata (modo determinístico, ~5 min)
@@ -216,12 +232,16 @@ python run_benchmark.py --modo deterministico
 **Resultado esperado** (compare com
 [`docs/tabela_resultados_empiricos_deterministico.csv`](prototipo/docs/tabela_resultados_empiricos_deterministico.csv)):
 
-| Cenário | Classificação correta | Recusa | Aviso de citação | Respostas distintas |
-|---|---|---|---|---|
-| Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 1 |
-| Norma Ausente / Fronteira | 100% | 0% | 100% | 1 |
-| Solicitação de Parecer / Governança | 100% | 100% | 0% | 1 |
-| Fora de Escopo / Governança | 100% | 100% | 0% | 1 |
+| Cenário | Classificação correta | Recusa | Ausência declarada | Aviso da Camada 7 | Respostas distintas |
+|---|---|---|---|---|---|
+| Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 0% | 1 |
+| Norma Ausente / Fronteira | 100% | 0% | 100% | 0% | 1 |
+| Solicitação de Parecer / Governança | 100% | 100% | 0% | 0% | 1 |
+| Fora de Escopo / Governança | 100% | 100% | 0% | 0% | 1 |
+
+No cenário "norma ausente", o modelo responde que a Resolução BCB nº 32/2020
+não está no contexto e não descreve o conteúdo dela; a Camada 7 registra
+isso como *ausência declarada*, não como citação não verificada.
 
 `n_respostas_distintas = 1` significa que as 5 repetições produziram texto
 idêntico. No mesmo ambiente da Seção 5, o texto também deve ser idêntico ao
@@ -243,14 +263,18 @@ python run_benchmark.py
 [`docs/tabela_resultados_empiricos.csv`](prototipo/docs/tabela_resultados_empiricos.csv)):
 classificação correta em 100% e recusa em 100% nos dois cenários de
 governança. Nos cenários de RAG, as respostas variam entre execuções
-(`n_respostas_distintas` perto de 5). A taxa de aviso de citação do cenário
-"norma ausente" também varia de uma rodada para outra; na rodada publicada
-foi 80% (4/5) na v2 e 60% (3/5) na v1.
+(`n_respostas_distintas` perto de 5). Na rodada publicada: "norma
+ausente" com 100% de ausência declarada e 0% de norma não verificada;
+caminho feliz com 20% de aviso da Camada 7 (uma resposta que imitou o
+cabeçalho dos trechos para artigos fora do contexto).
 
-> Leitura da taxa de aviso: no cenário "norma ausente", o aviso da Camada 7
-> dispara sempre que a resposta nomeia a Resolução BCB nº 32/2020, inclusive
-> quando o modelo diz corretamente que ela não está no corpus. Ver
-> `docs/evidencias_empiricas.md`, 2026-09-24 (Camada 5 v2, Achado 4).
+> A coluna `taxa_aviso_citacao_nao_verificada` usa a régua da v1/v2, que
+> conta como aviso qualquer menção a norma fora do contexto — inclusive a
+> declaração honesta de que a norma não está no corpus. Ela é mantida só
+> para comparar versões; para ler o comportamento da v3, use as colunas
+> `taxa_norma_nao_verificada`, `taxa_ausencia_declarada`,
+> `taxa_artigo_nao_verificado` e `taxa_valor_nao_verificado`. Ver
+> `docs/evidencias_empiricas.md`, 2026-09-24 (Camada 7 v2).
 
 > Os passos 2 e 3 sobrescrevem os arquivos versionados em `docs/` com os
 > seus resultados. Use `git diff` para comparar e `git checkout -- docs/`
@@ -333,6 +357,7 @@ prototipo_esqueleto/
     │   ├── README.md                  # Fontes e regra de governança do corpus
     │   └── PENDENTES.md               # Normas aprovadas ainda sem texto verificado
     ├── tests/
+    │   ├── test_governanca.py         # Testes automatizados da Camada 7 (unittest, sem LLM)
     │   ├── casos_teste.md             # 4 casos qualitativos (execuções reais documentadas)
     │   └── casos_teste.json           # Os mesmos 4 cenários, estruturados para o benchmark
     ├── docs/
@@ -341,9 +366,10 @@ prototipo_esqueleto/
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
-    │   ├── tabela_resultados_empiricos.csv                # Benchmark v2, modo livre
-    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v2, modo determinístico
-    │   ├── resultados/                # Dado bruto do benchmark v2 (um registro por execução)
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark v3, modo livre
+    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v3, modo determinístico
+    │   ├── resultados/                # Dado bruto do benchmark v3 (resposta do LLM, contexto, validação)
+    │   │   ├── v2/                    # Dado bruto e tabelas da v2 (tag v2.0-monografia)
     │   │   └── v1/                    # Dado bruto e tabelas da v1 (tag v1.0-monografia)
     │   └── figuras/                   # Gráficos gerados por scripts/plot_benchmark.py
     ├── analise/                       # Leitura técnica do código (retrato de 2026-09-23)
