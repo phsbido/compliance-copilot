@@ -1,7 +1,9 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-08-15 (Camadas 8 e 1 implementadas, e casos de
-teste documentados, nesta sessão).
+**Última atualização**: 2026-09-24 (preparação para publicação no GitHub:
+benchmark em modo determinístico, ingestão por URL oficial, dado bruto
+versionado, versões fixadas, README movido para a raiz do repositório — ver
+seção "Reprodutibilidade e publicação" abaixo).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -20,6 +22,9 @@ só resume o estado para retomar o trabalho rapidamente, em nova sessão.
 8. ✅ Camada 8 (Observabilidade) — `src/layer8_observability/observability.py`
 9. ✅ Camada 1 (Interação/CLI) — `src/layer1_interaction/cli.py` (`python main.py`)
 10. ✅ Casos de teste documentados em `tests/casos_teste.md` (4 casos)
+11. ✅ Benchmark quantitativo (`tests/casos_teste.json` + `run_benchmark.py`), 20
+    execuções (4 cenários x 5 repetições) rodadas com sucesso — ver seção
+    "Benchmark quantitativo" abaixo.
 
 Cada camada implementada tem: código em `src/layerN_*/`, script de
 validação `run_check_*.py` na raiz, entrada em
@@ -76,14 +81,140 @@ texto oficial ainda não localizado com segurança:
 - Fontes do corpus: só atos normativos públicos e oficiais do BACEN — nunca conhecimento interno/proprietário de instituição financeira (o usuário trabalha em fintech PJ — conflito de interesse a evitar).
 - Preferir decisões de implementação mínimas e explícitas (funções simples em vez de abstrações genéricas) até haver um segundo caso de uso real que justifique generalizar — aplicado nas Camadas 4 e 6.
 
+## Benchmark quantitativo (2026-09-22)
+
+Complementa os 4 casos qualitativos de `tests/casos_teste.md` (uma execução
+cada) com dado quantitativo (múltiplas repetições, latência):
+
+- `tests/casos_teste.json` — os mesmos 4 cenários (Caminho Feliz/RAG BACEN,
+  Norma Ausente/Fronteira, Parecer Jurídico/Governança, Fora de
+  Escopo/Governança), em formato estruturado para o benchmark.
+- `run_benchmark.py` — roda cada cenário 5x contra o Ollama local (sessão
+  nova por execução), mede latência e lê `orchestrator.ultimo_registro`
+  (Camada 8) para capturar classificação, recusa (Camada 7) e aviso de
+  citação não verificada.
+- `logs/resultados_benchmark.json` — 20 registros brutos (git-ignorado,
+  como o resto de `logs/`).
+- `docs/tabela_resultados_empiricos.csv` — tabela agregada por cenário
+  (via pandas), versionada — é o artefato citável na monografia.
+
+Rodar de novo: `venv\Scripts\python.exe run_benchmark.py` (usa o venv, que
+agora tem `pandas` instalado — `requirements.txt` atualizado).
+
+Resultado da primeira execução (100% classificação correta nos 4 cenários,
+60% de taxa de aviso de citação não verificada no cenário de norma ausente,
+latência ~80x menor nas recusas que no fluxo normativo): análise completa
+em `docs/evidencias_empiricas.md` (entrada de 2026-09-22) e decisão de
+projeto em `docs/decisoes_arquitetura.md` ("Benchmark Empírico").
+
+## Artefatos visuais para o Capítulo 3 (2026-09-23)
+
+Geração de gráficos e do diagrama de arquitetura **concluída com sucesso**,
+prontos para inclusão no Capítulo 3 da monografia:
+
+- `docs/diagrama_arquitetura.md` — diagrama de componentes em Mermaid
+  (`graph TD`), mapeando 1:1 as 8 camadas de Maia et al. (2026) às pastas
+  `src/layerN_*/` reais, com o fluxo de dados completo (caminho de recusa da
+  Camada 7 vs. caminho normativo com RAG). Inclui nota explícita: a Camada 5
+  usa busca lexical simples sobre Markdown, **não** uma arquitetura em
+  camadas "medalhão" (Bronze/Silver/Gold) — o diagrama reflete o código real,
+  não uma versão idealizada (ver `docs/decisoes_arquitetura.md`, seção
+  "Benchmark Empírico", para o registro dessa checagem).
+- `scripts/plot_benchmark.py` — lê `docs/tabela_resultados_empiricos.csv` e
+  gera, via `matplotlib`/`seaborn` (300 DPI, adicionados a
+  `requirements.txt`):
+  - `docs/figuras/grafico_latencia_cenarios.png` — latência média por
+    cenário, com barra de erro e anotação do fator de aceleração calculado a
+    partir dos dados (~75x mais rápido na recusa direta vs. fluxo normativo
+    completo).
+  - `docs/figuras/grafico_taxas_governanca.png` — taxa de recusa e taxa de
+    aviso de citação não verificada por cenário, com destaque no
+    comportamento de borda do cenário de norma ausente (60%).
+
+Rodar de novo: `venv\Scripts\python.exe scripts\plot_benchmark.py` (regenera
+as duas figuras a partir do CSV já versionado; não depende do Ollama).
+
+## Polimento final e Apêndice A (2026-09-23)
+
+Três tarefas de finalização, **concluídas com sucesso**:
+
+1. **`README.md` reescrito** como guia de reprodutibilidade científica
+   completo: visão geral, pré-requisitos, instalação, como subir o Ollama,
+   como reproduzir o benchmark e os gráficos (Seção 6), como validar cada
+   camada isoladamente, árvore de pastas completa (`src/layer1_interaction/`
+   a `layer8_observability/` e o resto do repositório), fontes de dados e
+   ponteiros para `docs/decisoes_arquitetura.md`/`docs/estado_atual.md`.
+
+2. **`docs/apendice_casos_teste.md`** — Apêndice A da monografia, gerado a
+   partir de `tests/casos_teste.json`: tabela-resumo dos 4 cenários (CT01–
+   CT04) e detalhamento individual de cada um, com resultado empírico
+   (dados reais de `docs/tabela_resultados_empiricos.csv`) e justificativa
+   de enquadramento segundo os critérios de avaliação de artefatos de
+   Hevner et al. (2004) — pronto para cópia no corpo da monografia.
+
+3. **`src/layer5_knowledge/ingest_normativos.py`** — pipeline de ingestão
+   Bronze/Silver/Gold (`data/normativos/1_bronze_raw/`, `2_silver_cleaned/`,
+   `3_gold_indexed/`), executável via `python -m
+   src.layer5_knowledge.ingest_normativos` ou diretamente. **Importante**:
+   este pipeline é **paralelo/ilustrativo**, não está ligado ao runtime —
+   `knowledge_base.py` continua sendo a implementação real da Camada 5
+   (busca lexical sobre `data/normativos/*.md`), validada no benchmark e
+   nos casos de teste. A pedido original desta tarefa incluía reescrever
+   `knowledge_base.py` para consumir o índice Gold, mas isso reorganizaria o
+   corpus já curado e alteraria uma camada já validada — o risco foi
+   levantado ao usuário, que optou por manter o runtime intocado (decisão e
+   justificativa completas em `docs/decisoes_arquitetura.md`, extensão de
+   2026-09-23 na seção "Benchmark Empírico"). Confirmado após rodar o
+   script: `data/normativos/*.md` sem alteração (`git status` limpo) e
+   `KnowledgeBase` continua carregando os mesmos 67 documentos de antes.
+
+   **Teste adicional (mesmo dia)**: usuário anexou 2 PDFs reais (Instrução
+   Normativa BCB nº 759/2026 e Resolução BCB nº 1/2020 — Pix) para testar o
+   pipeline contra entrada bruta de verdade, não só `.md` já curado.
+   Estendido `ingest_normativos.py` para extrair PDF via `pypdf` (novo em
+   `requirements.txt`) com metadados por heurística de regex — sempre
+   marcados `fonte_confirmada: false` e `url_oficial: ""`, nunca
+   apresentados como curados. PDFs vivem em `data/normativos/*.pdf`
+   (gitignorado, mesma convenção já usada na extração manual original da
+   Camada 5). Achado técnico: `pypdf` corrompeu a ligadura "ti" em parte do
+   texto do PDF do Pix (`Institui` -> `Ins�tui`) — artefato de extração
+   diferente do já documentado, reforça por que curadoria manual continua
+   necessária antes de qualquer inclusão no corpus real. Detalhes completos
+   em `docs/decisoes_arquitetura.md`. Corpus real e `KnowledgeBase`
+   reconfirmados intocados após o teste.
+
+## Reprodutibilidade e publicação (2026-09-24)
+
+Detalhes em `docs/decisoes_arquitetura.md` ("Reprodutibilidade") e
+`docs/evidencias_empiricas.md` (2026-09-24).
+
+- `LLMCore(options=...)` e `run_benchmark.py --modo {livre,deterministico}`.
+  Modo determinístico: 1 resposta distinta por cenário em 5 repetições;
+  aviso de citação no cenário "norma ausente" = 100% (vs. 60% no livre).
+- `run_benchmark.py --somente-tabela` regera o CSV a partir do JSON bruto
+  sem Ollama. JSONs brutos agora em `docs/resultados/` (versionados).
+- `ingest_normativos.py` lê `data/normativos/fontes_url.json` (URLs
+  oficiais da Resolução BCB 1/2020 e IN BCB 759/2026) via API do BCB, em vez
+  de PDFs locais. `pypdf` removido. Continua fora do runtime.
+- `requirements-lock.txt` com versões exatas; `.gitignore` na raiz ignora
+  `*.rar`/`*.zip`; `_openfinance_limpo.md` movido para fora do repositório.
+- `README.md` passou para a raiz do repositório, com tutorial de
+  reprodução passo a passo.
+
 ## Próximo passo sugerido
 
 Todos os itens da sequência de construção original (README.md) estão
 concluídos: 8 camadas implementadas e ligadas ponta a ponta, 4 casos de
-teste formais documentados em `tests/casos_teste.md` — incluindo o gap de
-`fora_de_escopo` encontrado e corrigido na mesma sessão (Caso 4).
+teste formais documentados em `tests/casos_teste.md`, e agora também um
+benchmark quantitativo de 20 execuções.
 
-Com o protótipo completo, o próximo passo de mais alto nível passa a ser de
-síntese para a monografia, não mais de construção: revisar
-`docs/decisoes_arquitetura.md` e `docs/evidencias_empiricas.md` como um
-todo para compilar a análise de viabilidade (Capítulo 1, Seção 5, itens d/e).
+Com o protótipo completo, a evidência quantitativa levantada, os artefatos
+visuais do Capítulo 3 gerados (diagrama + 2 gráficos), e o polimento final
+do repositório (README, Apêndice A, esteira de ingestão documentada), o
+próximo passo de mais alto nível passa a ser de síntese para a monografia,
+não mais de construção: revisar `docs/decisoes_arquitetura.md` e
+`docs/evidencias_empiricas.md` como um todo, junto com
+`docs/tabela_resultados_empiricos.csv`, `docs/diagrama_arquitetura.md`,
+`docs/figuras/` e `docs/apendice_casos_teste.md`, para compilar a análise de
+viabilidade (Capítulo 1, Seção 5, itens d/e), redigir o Capítulo 3 e
+finalizar os apêndices para a banca examinadora.

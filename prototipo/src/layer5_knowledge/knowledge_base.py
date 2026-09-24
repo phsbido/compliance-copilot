@@ -62,13 +62,45 @@ def _parse_frontmatter(conteudo: str) -> tuple[dict, str]:
     return metadados, corpo
 
 
+_TAMANHO_MAXIMO_TRECHO = 8000  # caracteres — ver docs/decisoes_arquitetura.md
+# (Camada 5, extensão 2026-09-23) para o teste de regressão que motivou este
+# valor específico: 4000 fragmentava incorretamente um artigo legítimo do
+# corpus já validado (Circular 4015/2020, Art. 3º, 6492 caracteres, que
+# contém uma lista enumerada com itens começando por maiúscula — falso
+# positivo do padrão de cabeçalho de seção). 8000 fica acima do maior trecho
+# hoje existente no corpus curado (6492) com margem, e ainda bem abaixo do
+# tamanho de um anexo técnico inteiro (dezenas de milhares de caracteres).
+
+# Cabeçalho de seção numerada (ex: "2.5.2 Tipos de serviços..."), usado como
+# divisor de segundo nível (ver _dividir_em_trechos). Exige maiúscula logo
+# após o número para não casar listas numeradas dentro do próprio texto, que
+# neste corpus sempre começam com minúscula (ex: "1. movimentação
+# eletrônica, 2. ..." em vez de "1. Movimentação").
+_SECAO_SPLIT_REGEX = re.compile(r"\n(?=\d+(?:\.\d+){0,3}\.?\s+[A-ZÀ-Ú])")
+
+
 def _dividir_em_trechos(corpo: str) -> list[str]:
     # Divide por artigo (ex: "Art. 5º"), que é a unidade natural de citação
     # em atos normativos brasileiros. Divisão é aproximada: a extração de
     # texto de PDF pode introduzir quebras/espaçamento irregulares em
     # "Art. N" (ver docs/decisoes_arquitetura.md, Camada 5).
     partes = re.split(r"\n(?=Art\.\s*\d)", corpo)
-    return [p.strip() for p in partes if p.strip()]
+    partes = [p.strip() for p in partes if p.strip()]
+
+    trechos = []
+    for parte in partes:
+        if len(parte) <= _TAMANHO_MAXIMO_TRECHO:
+            trechos.append(parte)
+            continue
+        # Trecho anormalmente grande: tipicamente um "Art. N" seguido de um
+        # anexo técnico extenso sem mais nenhum "Art. N" no meio (ex: um
+        # manual anexo a uma Instrução Normativa, organizado por seção
+        # numerada em vez de artigo — ver docs/decisoes_arquitetura.md,
+        # Camada 5, extensão de 2026-09-23). Tenta subdividir por cabeçalho
+        # de seção antes de indexar como um único trecho gigante.
+        subpartes = [sp.strip() for sp in _SECAO_SPLIT_REGEX.split(parte) if sp.strip()]
+        trechos.extend(subpartes if len(subpartes) > 1 else [parte])
+    return trechos
 
 
 class KnowledgeBase:

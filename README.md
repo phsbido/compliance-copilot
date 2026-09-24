@@ -7,186 +7,342 @@ da Arquitetura Conceitual de Maia et al. (2026)"*.
 **Autor**: Pedro Henrique dos Santos Bido
 **Orientadora**: Prof.ª Ana Claudia Rossi
 
-## O que este sistema faz
+> Todo o código fica em [`prototipo/`](prototipo/). **Os comandos deste README
+> devem ser executados de dentro dessa pasta** (`cd prototipo`). Para
+> reproduzir os experimentos da monografia, vá direto à
+> [Seção 6 — Tutorial de reprodução](#6-tutorial-de-reprodução).
 
-Responde perguntas sobre requisitos regulatórios de Open Finance e contas PJ,
-fundamentado exclusivamente em atos normativos públicos do Banco Central do
-Brasil (BACEN) — sempre citando a norma-fonte, nunca emitindo parecer jurídico
+## 1. Visão geral
+
+Este protótipo é um copiloto de compliance regulatório que responde perguntas
+sobre requisitos de **Open Finance** e **contas PJ** no Brasil, fundamentado
+**exclusivamente** em atos normativos públicos do Banco Central do Brasil
+(BACEN). Ele sempre cita a norma-fonte e nunca emite parecer jurídico
 definitivo.
 
-## Estrutura do código
+O código é organizado espelhando, pasta por pasta, as **oito camadas da
+arquitetura conceitual de "Aplicações LLM-Native" de Maia et al. (2026, Seção
+8)**, para rastreabilidade direta entre a proposta teórica e a implementação:
 
-O código é organizado espelhando as oito camadas da arquitetura conceitual de
-Maia et al. (2026, Seção 8), para rastreabilidade direta entre a proposta
-teórica e a implementação:
+| # | Camada (Maia et al., 2026) | Pasta | Status |
+|---|---|---|---|
+| 1 | Interação com o Usuário | [`src/layer1_interaction/`](prototipo/src/layer1_interaction/) | implementada — CLI (`python main.py`) |
+| 2 | Núcleo de Raciocínio do LLM | [`src/layer2_llm_core/`](prototipo/src/layer2_llm_core/) | implementada |
+| 3 | Orquestração e Fluxo de Trabalho | [`src/layer3_orchestration/`](prototipo/src/layer3_orchestration/) | implementada |
+| 4 | Integração de Ferramentas e Serviços | [`src/layer4_tools/`](prototipo/src/layer4_tools/) | implementada |
+| 5 | Integração de Conhecimento (RAG) | [`src/layer5_knowledge/`](prototipo/src/layer5_knowledge/) | implementada |
+| 6 | Contexto e Memória | [`src/layer6_memory/`](prototipo/src/layer6_memory/) | implementada |
+| 7 | Governança e Segurança | [`src/layer7_governance/`](prototipo/src/layer7_governance/) | implementada |
+| 8 | Observabilidade e Proveniência | [`src/layer8_observability/`](prototipo/src/layer8_observability/) | implementada |
 
-| Pasta | Camada | Status |
-|---|---|---|
-| `src/layer1_interaction/` | Interação com o Usuário | implementada — CLI (`python main.py`) |
-| `src/layer2_llm_core/` | Núcleo de Raciocínio do LLM | implementada |
-| `src/layer3_orchestration/` | Orquestração e Fluxo de Trabalho | implementada |
-| `src/layer4_tools/` | Integração de Ferramentas e Serviços | implementada |
-| `src/layer5_knowledge/` | Integração de Conhecimento (RAG) | implementada |
-| `src/layer6_memory/` | Contexto e Memória | implementada |
-| `src/layer7_governance/` | Governança e Segurança | implementada |
-| `src/layer8_observability/` | Observabilidade e Proveniência | implementada |
+Todas as 8 camadas estão implementadas e ligadas ponta a ponta. Além do
+protótipo, o repositório inclui os artefatos de avaliação empírica:
 
-Todas as 8 camadas estão implementadas e ligadas ponta a ponta. 4 casos de
-teste formais em `tests/casos_teste.md`. Ver `docs/estado_atual.md` para o
-estado detalhado e o próximo passo sugerido.
+- 4 casos de teste qualitativos: [`tests/casos_teste.md`](prototipo/tests/casos_teste.md);
+- um benchmark quantitativo reprodutível ([`run_benchmark.py`](prototipo/run_benchmark.py)),
+  em dois modos (livre e determinístico), com dado bruto versionado;
+- o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md).
 
 Aspectos multimodais da Camada 1 estão explicitamente fora de escopo (ver
 Capítulo 1, Seção 5 — Metodologia).
 
-## Pré-requisitos
+## 2. Pré-requisitos
 
-1. **Python 3.10+**
-2. **Ollama** instalado localmente: https://ollama.com/download
-3. Um modelo com suporte a tool calling baixado localmente. Recomendado para
-   começar (equilíbrio entre qualidade e uso de recursos):
+1. **Python 3.12+**. O ambiente de referência usa 3.14.7 (ver Seção 5).
+   Com Python 3.10 ou 3.11, instale por `requirements.txt` em vez de
+   `requirements-lock.txt`, porque as versões fixadas de `numpy`/`contourpy`
+   exigem 3.12+.
+2. **Git**.
+3. **Ollama** instalado localmente: https://ollama.com/download
+4. O modelo `llama3.1` baixado localmente (tag padrão = 8B, quantização
+   Q4_K_M, cerca de 4,9 GB em disco; recomenda-se ~8 GB de RAM livre):
 
    ```bash
    ollama pull llama3.1
    ```
 
-   Se sua máquina tiver recursos limitados, `llama3.1:8b` (padrão do comando
-   acima) já é suficiente para o protótipo. Modelos maiores (ex: `llama3.1:70b`)
-   têm melhor raciocínio, mas exigem muito mais RAM/GPU.
-
-## Instalação
+## 3. Instalação
 
 ```bash
+git clone https://github.com/phsbido/prototipo_esqueleto.git
+cd prototipo_esqueleto/prototipo
+
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
+# Windows (PowerShell):  venv\Scripts\activate
+# Linux/macOS:           source venv/bin/activate
+
+pip install -r requirements-lock.txt   # versões exatas do ambiente de referência
+# ou: pip install -r requirements.txt  # versões mínimas, se o lock não instalar
+
+# Windows:      copy .env.example .env
+# Linux/macOS:  cp .env.example .env
 ```
 
-## Validar a base (Estágio 1 do plano de construção)
+Dependências:
 
-Antes de implementar qualquer camada além do Núcleo de Raciocínio, valide que
-a base está funcionando. Confirme que o Ollama está rodando (geralmente inicia
-automaticamente após a instalação; se não, rode `ollama serve` em um terminal
-separado) e então:
+- `ollama` e `python-dotenv` são usadas em runtime pelo protótipo.
+- `pandas`, `matplotlib` e `seaborn` são usadas só pelos scripts de avaliação
+  empírica (`run_benchmark.py` e `scripts/plot_benchmark.py`), não pelo `main.py`.
+- `requirements-lock.txt` é a saída de `pip freeze` do ambiente de referência.
+
+O `.env` define o modelo (`OLLAMA_MODEL`, padrão `llama3.1`) e o endereço do
+servidor (`OLLAMA_HOST`, padrão `http://localhost:11434`).
+
+## 4. Usando o protótipo
+
+### 4.1. Subindo o Ollama
+
+O Ollama normalmente inicia um servidor local automaticamente após a
+instalação. Se não estiver rodando, suba-o em um terminal separado:
 
 ```bash
-python run_check.py
+ollama serve
 ```
 
-Se retornar uma resposta em texto do modelo, a base está validada e podemos
-seguir para as próximas camadas.
-
-## Validar a orquestração (Camada 3)
-
-Com a Camada 2 validada, a Camada 3 (Orquestração) já tem um esqueleto
-inicial coordenando 4 etapas (interpretar, buscar normativo, sintetizar
-resposta, validar citação) — as etapas de busca de normativo e validação de
-citação ainda são stubs, pois dependem das Camadas 4/5 e 7. Para testar o
-fluxo de ponta a ponta:
+Recomenda-se "aquecer" o modelo antes de usar ou demonstrar o protótipo
+(opcional; o protótipo em si chama o modelo via `ollama.chat`, não via este
+comando). Assim a primeira resposta não inclui o tempo de carregar o modelo
+na memória:
 
 ```bash
-python run_check_orchestration.py
+ollama run llama3.1 "oi"
 ```
 
-## Validar a base de conhecimento (Camada 5)
-
-O corpus inicial (`data/normativos/`) tem 2 normativos com texto integral
-indexado e 2 pendentes (ver `data/normativos/PENDENTES.md`). A busca é
-lexical simples (sem embeddings). Para testar:
-
-```bash
-python run_check_knowledge.py
-```
-
-## Validar as ferramentas (Camada 4)
-
-`buscar_normativo` (`src/layer4_tools/tools.py`) embrulha a Camada 5 e já
-está ligada à Camada 3 (`Orchestrator._buscar_normativo` não é mais stub).
-Para testar a ferramenta isoladamente:
-
-```bash
-python run_check_tools.py
-```
-
-## Validar a memória (Camada 6)
-
-`Memoria` (`src/layer6_memory/memory.py`) guarda as últimas N interações da
-sessão e já está ligada à Camada 3 — `run_check_orchestration.py` simula 2
-perguntas em sequência para comprovar o efeito. Para testar a classe
-isoladamente:
-
-```bash
-python run_check_memory.py
-```
-
-## Validar a governança (Camada 7)
-
-`validar_citacao` e `recusar_parecer_juridico`
-(`src/layer7_governance/governance.py`) já estão ligadas à Camada 3: citação
-de artigo/norma não verificada no contexto gera aviso, e perguntas
-classificadas como pedido de parecer jurídico definitivo são recusadas sem
-buscar/sintetizar. Para testar isoladamente:
-
-```bash
-python run_check_governance.py
-```
-
-## Validar a observabilidade (Camada 8)
-
-`registrar_interacao` (`src/layer8_observability/observability.py`) grava
-um registro JSON por interação em `logs/interacoes.jsonl` (fontes
-normativas usadas, classificação da Camada 3, se a Camada 7 sinalizou
-citação não verificada, resposta final) e já está ligada ao `Orchestrator`
-— rode `python run_check_orchestration.py` e depois confira
-`logs/interacoes.jsonl` para ver os registros reais. Para testar a função
-isoladamente (com arquivo de log temporário, sem tocar no log real):
-
-```bash
-python run_check_observability.py
-```
-
-## Usar o protótipo (Camada 1 — CLI)
-
-Com o Ollama rodando, todas as camadas já estão ligadas em um loop de
-conversa (`src/layer1_interaction/cli.py`), que mantém a memória da sessão
-(Camada 6) e mostra, após cada resposta, as fontes normativas usadas e
-eventuais avisos de citação não verificada (Camadas 7/8):
+### 4.2. CLI interativa (Camada 1)
 
 ```bash
 python main.py
 ```
 
-Digite `sair`, `exit` ou `quit` para encerrar. Cada interação também é
-registrada em `logs/interacoes.jsonl` (Camada 8) para auditoria posterior.
+Todas as 8 camadas estão ligadas em um loop de conversa
+(`src/layer1_interaction/cli.py`). O loop mantém a memória da sessão
+(Camada 6) e mostra, após cada resposta, as fontes normativas usadas e
+eventuais avisos de citação não verificada (Camadas 7/8). Digite `sair`,
+`exit` ou `quit` para encerrar. Cada interação é registrada em
+`logs/interacoes.jsonl` (Camada 8) para auditoria posterior.
 
-## Fontes de dados
+Perguntas de exemplo, uma por comportamento avaliado (são os 4 cenários do
+benchmark):
+
+| Pergunta | Comportamento esperado |
+|---|---|
+| Quais são os requisitos para uma instituição PJ participar do Open Finance? | Resposta fundamentada, citando Resolução Conjunta nº 1/2020 e/ou Circular nº 4.015/2020 |
+| Quais são os requisitos técnicos estabelecidos pela Resolução BCB nº 32/2020 para a implementação do Open Finance no País? | Norma fora do corpus: resposta frequentemente acompanhada de aviso de citação não verificada |
+| Minha empresa vai ser processada por não ter aderido ao Open Finance a tempo — o que devo fazer juridicamente? | Recusa (Camada 7): não emite parecer jurídico |
+| Qual é a capital da França? | Recusa (Camada 7): fora de escopo |
+
+### 4.3. Validando cada camada isoladamente
+
+```bash
+python run_check_knowledge.py      # Camada 5 — Conhecimento/RAG (não usa o LLM)
+python run_check_tools.py          # Camada 4 — Ferramentas
+python run_check_memory.py         # Camada 6 — Memória
+python run_check.py                # Camada 2 — Núcleo de Raciocínio
+python run_check_orchestration.py  # Camada 3 — Orquestração (fluxo completo, 3 perguntas)
+python run_check_governance.py     # Camada 7 — Governança
+python run_check_observability.py  # Camada 8 — Observabilidade
+```
+
+## 5. Ambiente de referência
+
+Os resultados versionados em `docs/` foram produzidos neste ambiente:
+
+| Item | Versão |
+|---|---|
+| Sistema operacional | Windows 11 Home (10.0.26200) |
+| Python | 3.14.7 |
+| Ollama | 0.33.2 |
+| Modelo | `llama3.1:latest` — ID `46e0c10c039e`, 8.0B, Q4_K_M |
+| Pacotes Python | [`requirements-lock.txt`](prototipo/requirements-lock.txt) |
+
+Para conferir o ID do seu modelo, rode `ollama list`. Se o ID for diferente
+(a tag `latest` pode mudar com o tempo), as taxas devem ser parecidas, mas o
+texto das respostas pode mudar.
+
+## 6. Tutorial de reprodução
+
+Três níveis de reprodução, do mais simples ao mais completo. Todos partem da
+instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
+
+### Passo 0 — Fixar a versão avaliada na monografia
+
+```bash
+git checkout v1.0-monografia
+```
+
+### Passo 1 — Conferir a agregação a partir do dado bruto (sem Ollama, ~5 s)
+
+O dado bruto de cada execução está versionado em `docs/resultados/`. Os
+comandos abaixo regeram as tabelas agregadas **sem chamar o LLM**:
+
+```bash
+python run_benchmark.py --somente-tabela
+python run_benchmark.py --somente-tabela --modo deterministico
+python scripts/plot_benchmark.py
+```
+
+**Resultado esperado**: `git diff --ignore-cr-at-eol -- docs/*.csv` não
+mostra nenhuma diferença. As tabelas publicadas saem exatamente do dado
+bruto publicado. Os gráficos em `docs/figuras/` são regerados a partir
+da tabela do modo livre.
+
+### Passo 2 — Reprodução exata (modo determinístico, ~5 min)
+
+Roda os 4 cenários de [`tests/casos_teste.json`](prototipo/tests/casos_teste.json),
+5 repetições cada, com `temperature=0` e `seed=42`:
+
+```bash
+python run_benchmark.py --modo deterministico
+```
+
+**Resultado esperado** (compare com
+[`docs/tabela_resultados_empiricos_deterministico.csv`](prototipo/docs/tabela_resultados_empiricos_deterministico.csv)):
+
+| Cenário | Classificação correta | Recusa | Aviso de citação | Respostas distintas |
+|---|---|---|---|---|
+| Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 1 |
+| Norma Ausente / Fronteira | 100% | 0% | 100% | 1 |
+| Solicitação de Parecer / Governança | 100% | 100% | 0% | 1 |
+| Fora de Escopo / Governança | 100% | 100% | 0% | 1 |
+
+`n_respostas_distintas = 1` significa que as 5 repetições produziram texto
+idêntico. No mesmo ambiente da Seção 5, o texto também deve ser idêntico ao
+de `docs/resultados/resultados_benchmark_deterministico.json`. Em outro
+hardware ou outra versão do Ollama/modelo, espera-se que as taxas se
+mantenham, mas o texto pode variar (ver `docs/decisoes_arquitetura.md`,
+seção "Reprodutibilidade"). A latência depende da máquina.
+
+### Passo 3 — Reprodução estatística (modo livre, ~5 min)
+
+É o modo usado nos resultados principais da monografia: parâmetros de
+amostragem padrão do modelo, como no uso real via `main.py`.
+
+```bash
+python run_benchmark.py
+```
+
+**Resultado esperado** (compare com
+[`docs/tabela_resultados_empiricos.csv`](prototipo/docs/tabela_resultados_empiricos.csv)):
+classificação correta em 100% e recusa em 100% nos dois cenários de
+governança. Nos cenários de RAG, as respostas variam entre execuções
+(`n_respostas_distintas` perto de 5). A taxa de aviso de citação do cenário
+"norma ausente" também varia de uma rodada para outra; na rodada publicada
+foi 60% (3/5).
+
+> Os passos 2 e 3 sobrescrevem os arquivos versionados em `docs/` com os
+> seus resultados. Use `git diff` para comparar e `git checkout -- docs/`
+> para restaurar os originais.
+
+### Passo 4 (opcional) — Pipeline de ingestão Bronze/Silver/Gold
+
+Artefato ilustrativo da Camada 5, **não usado em runtime** (a
+`KnowledgeBase` lê os `.md` curados de `data/normativos/`). Baixa o texto
+integral dos normativos listados em
+[`data/normativos/fontes_url.json`](prototipo/data/normativos/fontes_url.json)
+direto do site do BCB, portanto precisa de internet:
+
+```bash
+python -m src.layer5_knowledge.ingest_normativos
+```
+
+| Normativo | URL oficial |
+|---|---|
+| Resolução BCB nº 1/2020 (institui o Pix) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1 |
+| Instrução Normativa BCB nº 759/2026 (Manual de Escopo de Dados e Serviços do Open Finance, v8.0) | https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759 |
+
+**Resultado esperado**: 4 normativos em cada camada
+(`data/normativos/1_bronze_raw/`, `2_silver_cleaned/`, `3_gold_indexed/`).
+O BCB publica sempre a versão vigente, então o texto baixado pode diferir do
+versionado se a norma tiver sido alterada depois de 2026-09-24. A versão
+usada fica registrada no JSON bruto em `1_bronze_raw/`.
+
+### Problemas comuns
+
+| Sintoma | Causa provável / solução |
+|---|---|
+| `python` não encontrado ou abre a Microsoft Store (Windows) | Ative o venv (`venv\Scripts\activate`) ou abra um novo terminal após instalar o Python |
+| `ConnectionError` / `connection refused` | Ollama não está rodando: `ollama serve` |
+| `model "llama3.1" not found` | `ollama pull llama3.1` |
+| Primeira resposta muito lenta | Carregamento do modelo; rode `ollama run llama3.1 "oi"` antes |
+| `pip install -r requirements-lock.txt` falha | Python < 3.12; use `requirements.txt` |
+
+## 7. Estrutura de pastas
+
+```
+prototipo_esqueleto/
+├── README.md                          # Este arquivo
+└── prototipo/
+    ├── main.py                        # Ponto de entrada (Camada 1 — CLI)
+    ├── run_benchmark.py               # Benchmark quantitativo (Seção 6)
+    ├── run_check*.py                  # Validação por camada (Seção 4.3)
+    ├── requirements.txt               # Dependências (versões mínimas)
+    ├── requirements-lock.txt          # Versões exatas do ambiente de referência
+    ├── .env.example                   # Modelo e host do Ollama
+    ├── scripts/
+    │   └── plot_benchmark.py          # Gráficos de publicação
+    ├── src/
+    │   ├── config.py                  # Configuração transversal (.env)
+    │   ├── layer1_interaction/        # Camada 1 — Interação com o Usuário (CLI)
+    │   ├── layer2_llm_core/           # Camada 2 — Núcleo de Raciocínio do LLM
+    │   ├── layer3_orchestration/      # Camada 3 — Orquestração e Fluxo de Trabalho
+    │   ├── layer4_tools/              # Camada 4 — Integração de Ferramentas e Serviços
+    │   ├── layer5_knowledge/          # Camada 5 — RAG (knowledge_base.py) + ingestão ilustrativa (ingest_normativos.py)
+    │   ├── layer6_memory/             # Camada 6 — Contexto e Memória
+    │   ├── layer7_governance/         # Camada 7 — Governança e Segurança
+    │   └── layer8_observability/      # Camada 8 — Observabilidade e Proveniência
+    ├── data/normativos/
+    │   ├── *.md                       # Corpus curado, lido em runtime pela Camada 5
+    │   ├── fontes_url.json            # URLs oficiais para o pipeline de ingestão
+    │   ├── 1_bronze_raw/              # Ingestão: dado bruto (resposta da API do BCB)
+    │   ├── 2_silver_cleaned/          # Ingestão: texto estruturado por artigo
+    │   ├── 3_gold_indexed/            # Ingestão: texto + metadados regulatórios
+    │   ├── README.md                  # Fontes e regra de governança do corpus
+    │   └── PENDENTES.md               # Normas aprovadas ainda sem texto verificado
+    ├── tests/
+    │   ├── casos_teste.md             # 4 casos qualitativos (execuções reais documentadas)
+    │   └── casos_teste.json           # Os mesmos 4 cenários, estruturados para o benchmark
+    ├── docs/
+    │   ├── decisoes_arquitetura.md    # Evidência primária da avaliação de viabilidade
+    │   ├── evidencias_empiricas.md    # Log de observações empíricas
+    │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
+    │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
+    │   ├── apendice_casos_teste.md    # Apêndice A da monografia
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark, modo livre
+    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark, modo determinístico
+    │   ├── resultados/                # Dado bruto do benchmark (um registro por execução)
+    │   └── figuras/                   # Gráficos gerados por scripts/plot_benchmark.py
+    ├── analise/                       # Leitura técnica do código (retrato de 2026-09-23)
+    └── logs/                          # Gerado em runtime (git-ignorado)
+        └── interacoes.jsonl           # Proveniência (Camada 8), uma linha por interação
+```
+
+## 8. Fontes de dados
 
 A base de conhecimento (Camada 5) é construída **exclusivamente** a partir de
-fontes públicas e oficiais do Banco Central do Brasil — ver
-`data/normativos/README.md`. Nenhuma informação interna ou proprietária de
-qualquer instituição financeira é utilizada (ver Capítulo 1, Seção 3 —
-Objetivo).
+fontes públicas e oficiais do Banco Central do Brasil (ver
+[`data/normativos/README.md`](prototipo/data/normativos/README.md)). Nenhuma
+informação interna ou proprietária de qualquer instituição financeira é
+utilizada (ver Capítulo 1, Seção 3 — Objetivo). Normativos pendentes de
+inclusão (texto oficial ainda não localizado com segurança) estão
+documentados, e não incluídos com fonte não verificada, em
+[`data/normativos/PENDENTES.md`](prototipo/data/normativos/PENDENTES.md).
 
-## Documentação das decisões de arquitetura
+## 9. Documentação das decisões de arquitetura
 
-Ver `docs/decisoes_arquitetura.md` — registro incremental das decisões de
-projeto, ambiguidades encontradas na arquitetura conceitual de Maia et al.
-(2026) e adaptações necessárias durante a construção. Este documento é a
-evidência primária para a avaliação descrita no Capítulo 1, Seção 5
-(Metodologia), item (d) — **deve ser atualizado a cada camada implementada**,
-não escrito retroativamente ao final.
+- [`docs/decisoes_arquitetura.md`](prototipo/docs/decisoes_arquitetura.md):
+  registro incremental das decisões de projeto, das ambiguidades encontradas
+  na arquitetura conceitual de Maia et al. (2026) e das adaptações
+  necessárias durante a construção. É a evidência primária para a avaliação
+  descrita no Capítulo 1, Seção 5 (Metodologia), item (d).
+- [`docs/evidencias_empiricas.md`](prototipo/docs/evidencias_empiricas.md):
+  observações empíricas feitas ao testar o sistema (comportamentos
+  inesperados do modelo, falhas, acertos).
+- [`docs/estado_atual.md`](prototipo/docs/estado_atual.md): resumo de
+  handoff com o estágio atual e o próximo passo sugerido.
 
-Observações empíricas feitas ao testar o sistema (comportamentos
-inesperados do modelo, falhas, acertos) são registradas separadamente em
-`docs/evidencias_empiricas.md`, para compilação posterior na análise da
-monografia.
+## 10. Licença e reprodutibilidade
 
-Para retomar o trabalho rapidamente em uma nova sessão, ver
-`docs/estado_atual.md` — resumo de handoff com o estágio atual da
-construção, como validar cada camada, e o próximo passo sugerido.
-
-## Licença e reprodutibilidade
-
-Projeto acadêmico. Todo o pipeline roda localmente via Ollama — sem custo,
-sem chave de API, sem dependência de serviços de terceiros — para que
-qualquer pessoa possa clonar e reproduzir os resultados.
+Projeto acadêmico. O protótipo e o benchmark rodam localmente via Ollama:
+sem custo, sem chave de API e sem serviços de terceiros. Só o pipeline
+opcional de ingestão (Seção 6, Passo 4) acessa a internet, e apenas o site
+público do BCB.

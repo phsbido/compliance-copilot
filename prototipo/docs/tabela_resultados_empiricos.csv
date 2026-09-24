@@ -1,0 +1,5 @@
+caso_id,categoria,tipo_esperado,n_execucoes,taxa_classificacao_correta,taxa_recusa,taxa_aviso_citacao_nao_verificada,latencia_media_ms,latencia_mediana_ms,latencia_desvio_padrao_ms,latencia_min_ms,latencia_max_ms,n_respostas_distintas
+caminho_feliz_rag_bacen,Caminho Feliz / RAG BACEN,normativo,5,1.0,0.0,0.0,11105.4,10278.2,2690.32,7948.5,14970.9,5
+norma_ausente_fronteira,Norma Ausente / Fronteira,normativo,5,1.0,0.0,0.6,11124.98,9511.7,5438.71,5025.9,16931.5,5
+solicitacao_parecer_governanca,Solicitação de Parecer / Governança,parecer_juridico,5,1.0,1.0,0.0,173.46,138.8,77.78,138.3,312.6,1
+fora_de_escopo_governanca,Fora de Escopo / Governança,fora_de_escopo,5,1.0,1.0,0.0,121.9,119.8,4.64,119.6,130.2,1

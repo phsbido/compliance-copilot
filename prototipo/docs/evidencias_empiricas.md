@@ -224,3 +224,112 @@ resolveu o problema com uma mudança pequena — evidência de que o desenho
 inicial da Camada 3 (stub explícito, depois um único desvio para
 `parecer_juridico`) já comportava essa generalização sem refatoração
 maior.
+
+---
+
+## 2026-09-22 — Primeira execução do benchmark quantitativo (20 execuções, todas as 8 camadas)
+
+**Camada relacionada**: transversal (Camadas 1-8 ligadas), avaliação
+quantitativa complementar aos 4 casos qualitativos de
+`tests/casos_teste.md` — ver `docs/decisoes_arquitetura.md` ("Benchmark
+Empírico") para a decisão de projeto por trás de `run_benchmark.py`.
+
+**Contexto**: `python run_benchmark.py`, 4 cenários
+(`tests/casos_teste.json`) x 5 repetições cada, `llama3.1` via Ollama local,
+uma instância nova de `Orchestrator` por execução (sem memória entre
+repetições). Dado bruto em `logs/resultados_benchmark.json`, agregado em
+`docs/tabela_resultados_empiricos.csv`.
+
+**Observação 1 — classificação (Camada 3) 100% estável nas 20 execuções**:
+todas as execuções, nos 4 cenários, classificaram como esperado
+(`normativo`/`parecer_juridico`/`fora_de_escopo`). Diferente dos erros de
+conteúdo já documentados nas entradas anteriores (número distorcido, artigo
+errado), a etapa de *classificação de intenção* não mostrou variação entre
+repetições neste conjunto de perguntas — evidência de que o risco de
+alucinação observado até aqui está concentrado na etapa de síntese
+(`_sintetizar_resposta`), não na de interpretação (`_interpretar`).
+
+**Observação 2 — cenário de fronteira (norma ausente) gera aviso de
+citação não verificada em 3 das 5 execuções (60%)**: a pergunta sobre a
+Resolução BCB nº 32/2020 (não indexada no corpus, ver
+`data/normativos/PENDENTES.md`) fez a Camada 5 retornar, por sobreposição
+lexical, trechos de normativos *diferentes* (os 2 realmente indexados) como
+"contexto normativo". Em 3 execuções, a resposta sintetizada citou
+artigo(s) não presentes nesse contexto retornado, e a Camada 7 sinalizou
+corretamente o aviso; nas outras 2, não citou nenhum artigo fora do
+contexto (ex: respondeu de forma mais genérica, sem número específico) e
+não houve aviso. Não observado: o sistema nunca afirmou ter a Resolução BCB
+nº 32/2020 em si — o comportamento de risco aqui não é "citar a norma
+ausente como se existisse no corpus", e sim citar, com confiança, um número
+de artigo específico tirado do contexto (irrelevante) recuperado por engano.
+
+**Relevância para a pesquisa**: quantifica, pela primeira vez com múltiplas
+repetições, uma taxa de ocorrência (60%) para a classe de erro já descrita
+qualitativamente nas entradas de 2026-08-14 ("art. 51" recorrente) — antes
+só havia evidência de que o padrão *se repetia*, não de *com que
+frequência*. Também mostra que a Camada 7, desenhada para o cenário "corpus
+tem a norma certa mas o modelo erra o artigo", generaliza razoavelmente bem
+para o cenário "corpus não tem a norma perguntada e retorna a errada por
+engano" — mesmo mecanismo de checagem (citação vs. contexto do turno) pega
+os dois casos, sem ajuste adicional.
+
+**Observação 3 — latência ~80x menor nos fluxos de recusa que no fluxo
+normativo**: recusas (`parecer_juridico`: média 173ms; `fora_de_escopo`:
+média 122ms) só fazem uma chamada ao LLM (`_interpretar`, texto curto de
+saída). O fluxo normativo (média ~11.1s nos dois cenários que o
+exercitaram) faz uma segunda chamada, `_sintetizar_resposta`, com prompt
+maior (contexto normativo + histórico + pergunta) e saída mais longa. A
+variabilidade também é maior no fluxo normativo (desvio padrão até
+~5.4s no cenário de norma ausente, contra <100ms nos dois cenários de
+recusa) — plausivelmente porque prompts/saídas de tamanho variável (a
+resposta muda a cada chamada, mesmo com a mesma pergunta) dominam o tempo
+de geração token a token, enquanto a recusa é um texto fixo sem geração.
+
+**Relevância para a pesquisa**: evidência quantitativa de que o desvio de
+fluxo da Camada 7 (`_RECUSAS`, ver Camada 3/7 em
+`docs/decisoes_arquitetura.md`) não é só uma decisão de correção de
+conteúdo — tem um efeito de custo/latência mensurável e favorável, já que
+evita a chamada mais cara ao LLM (síntese) quando a pergunta não deveria
+ser respondida de qualquer forma. Relevante para a discussão de viabilidade
+sobre custo operacional de aplicações LLM-Native em produção, não só sobre
+qualidade de resposta.
+
+---
+
+## 2026-09-24 — Benchmark em modo determinístico (temperature=0, seed=42)
+
+**Contexto**: mesmos 4 cenários × 5 repetições do benchmark de 2026-09-22,
+agora com `python run_benchmark.py --modo deterministico` (ver
+`docs/decisoes_arquitetura.md`, "Reprodutibilidade"). Dado bruto em
+`docs/resultados/resultados_benchmark_deterministico.json`, agregado em
+`docs/tabela_resultados_empiricos_deterministico.csv`. Mesmo ambiente do
+modo livre (Ollama 0.33.2, `llama3.1:latest` ID `46e0c10c039e`, Q4_K_M).
+
+| Cenário | Respostas distintas (livre → determ.) | Aviso de citação (livre → determ.) | Latência média (livre → determ.) |
+|---|---|---|---|
+| Caminho Feliz / RAG BACEN | 5 → 1 | 0% → 0% | 11,1s → 11,5s |
+| Norma Ausente / Fronteira | 5 → 1 | 60% → 100% | 11,1s → 13,1s |
+| Solicitação de Parecer | 1 → 1 | 0% → 0% | 173ms → 155ms |
+| Fora de Escopo | 1 → 1 | 0% → 0% | 122ms → 135ms |
+
+Classificação correta e taxa de recusa: 100% e idênticas nos dois modos.
+
+**Observação 1 — a variação textual do modo livre vem da amostragem**: com
+temperatura zero e seed fixa, cada cenário produziu uma única resposta nas 5
+repetições (antes: 5 respostas diferentes em cada cenário de RAG). A
+reprodução exata é possível no mesmo ambiente.
+
+**Observação 2 — a taxa de 60% de aviso de citação não é uma propriedade
+estável do cenário**: no modo determinístico, o cenário "norma ausente"
+disparou o aviso da Camada 7 em 5/5 execuções, porque a única resposta
+gerada contém a atribuição de artigo indevida. Ou seja, os 60% do modo livre
+medem a frequência com que a amostragem leva o modelo a esse erro, e o modo
+determinístico "congela" um dos resultados possíveis. Para a monografia:
+reportar o modo livre como a medida de comportamento em uso e o determinístico
+como evidência de reprodutibilidade, sem tratar o 100% como taxa de erro.
+
+**Observação 3 — a variância de latência cai no fluxo normativo quando a
+saída é fixa** (desvio padrão de 5,4s para 0,6s no cenário "norma ausente"),
+o que confirma a explicação dada em 2026-09-22 de que o tamanho variável da
+resposta domina a variação de tempo. A primeira execução do caminho feliz
+(16,4s) inclui o carregamento do modelo na memória.

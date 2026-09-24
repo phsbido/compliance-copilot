@@ -1,0 +1,83 @@
+{
+  "titulo": "Circular nº 4.015, de 4 de maio de 2020",
+  "artigos": [
+    {
+      "identificador": "Art. 1º",
+      "texto": "Art. 1º Esta Circular disciplina o escopo de dados e serviços do Sistema Financeiro\nAberto (Open Banking).",
+      "paragrafos": []
+    },
+    {
+      "identificador": "Art. 2º",
+      "texto": "Art. 2º Os dados sobre os canais de atendimento objeto de compartilhamento de\nque trata o art. 5º, inciso I, alínea \"a\", da Resolução Conjunta nº 1, de 4 de maio de 2020,\nabrangem, no mínimo, aqueles obrigatoriamente divulgados na forma de dados abertos, de que\ntrata a regulamentação vigente, no caso de dependências próprias e correspondentes no País,\nbem como:\nI - canais eletrônicos:\na) tipo de canal;\nb) forma de acesso; e\nc) serviços prestados; e\nII - demais canais disponíveis aos clientes:\na) tipo de canal;\nb) forma de acesso; e\nc) serviços prestados.",
+      "paragrafos": []
+    },
+    {
+      "identificador": "Art. 3º",
+      "texto": "Art. 3º Os dados sobre os produtos e serviços objeto de compartilhamento de que\ntrata o art. 5º, inciso I, alínea \"b\", da Resolução Conjunta nº 1, de 2020, abrangem, no mínimo:\nI - contas de depósitos à vista, de poupança e de pagamento pré-pagas:\na) tipos de conta;\nb) tarifas:\n1. denominação;\n2. fato gerador de cobrança;\n3. valor; e\n4. sigla identificadora;\nc) pacotes de serviços disponibilizados:\n1. denominação;\n2. serviços incluídos;\n3. quantidade de eventos previstos; e\n4. valor;\nd) formas de movimentação;\ne) termos e condições contratuais:\n1. saldo mínimo;\n2. critérios de elegibilidade; e\n3. procedimentos de encerramento;\nf) canais disponíveis para abertura e encerramento;\ng) público-alvo; e\nh) forma de remuneração e taxa de rendimento;\nII - contas de pagamento pós-pagas:\na) tipo de conta:\n1. denominação;\n2. classificação; e\n3. arranjo de pagamento;\nb) programas de benefícios e recompensas;\nc) tarifas:\n1. denominação;\n2. fato gerador de cobrança;\n3. valor; e\n4. sigla identificadora;\nd) taxas de remuneração:\n1. de crédito rotativo;\n2. de parcelamento de saldo devedor da fatura; e\n3. outras operações de crédito;\ne) público-alvo; e\nf) termos e condições contratuais:\n1. regra de pagamento mínimo de saldo devedor da fatura;\n2. critérios de elegibilidade; e\n3. procedimentos de encerramento; e\nIII - operações de crédito:\na) modalidades de operações de crédito;\nb) tarifas:\n1. denominação;\n2. fato gerador de cobrança;\n3. valor; e\n4. sigla identificadora;\nc) taxa de juros remuneratórios:\n1. taxa referencial ou indexador; e\n2. valor;\nd) público-alvo;\ne) tipo de garantia exigíveis; e\nf) termos e condições contratuais.\nIV - operações de câmbio: (Incluído pela Resolução BCB nº 138, de 9/9/2021)\na) valor efetivo total (VET): (Incluída pela Resolução BCB nº 138, de 9/9/2021)\n1. tipo de operação (compra ou venda);\n2. moeda estrangeira;\n3. natureza da operação;\n4. forma de entrega da moeda estrangeira;\n5. faixa de valor da operação; e\n6. valor do VET;\nb) taxa de câmbio: (Incluída pela Resolução BCB nº 138, de 9/9/2021)\n1. tipo de operação (compra ou venda);\n2. moeda estrangeira;\n3. natureza da operação;\n4. forma de entrega da moeda estrangeira; e\n5. valor da taxa;\nV - serviços de credenciamento em arranjos de pagamento: taxas e tarifas por\nserviços: (Incluído pela Resolução BCB nº 138, de 9/9/2021)\na) denominação;\nb) fato gerador;\nc) valor; e\nd) sigla identificadora, se houver;\nVI - contas de depósito a prazo e outros produtos com natureza de investimento:\n(Incluído pela Resolução BCB nº 138, de 9/9/2021)\na) produtos relacionados a contas de depósito a prazo e outros produtos com\nnatureza de investimento:\n1. identificação e características do produto;\n2. taxas, indexadores e características de remuneração;\n3. condições de investimento e de resgate; e\n4. tributação;\nb) taxas ou tarifas de serviços de corretagem e relativos à atuação da instituição\nenquanto agente de custódia relacionados a contas de depósito a prazo e a outros produtos com\nnatureza de investimento, de que trata este inciso:\n1. denominação;\n2. fato gerador;\n3. valor; e\n4. sigla identificadora, se houver;\nVII - seguros, previdência complementar aberta e capitalização. (Incluído pela\nResolução BCB nº 138, de 9/9/2021)",
+      "paragrafos": [
+        {
+          "identificador": "§ 1º",
+          "texto": "§ 1º As modalidades de operações de crédito de que trata a alínea \"a\", inciso III,\ndo caput abrangem, no mínimo:\nI - adiantamento a depositantes;\nII - empréstimos:\na) crédito pessoal;\n1. crédito consignado; e\n2. crédito sem consignação;\nb) cheque especial;\nc) conta garantida;\nd) capital de giro;\ne) microcrédito; e\nf) home equity;\nIII - direitos creditórios descontados:\na) desconto de duplicatas;\nb) desconto de cheques;\nc) antecipação de recebíveis de cartão de crédito; e\nd) desconto de nota promissória; e\nIV - financiamentos:\na) aquisições de bens móveis;\nb) imobiliários:\n1. Sistema Financeiro da Habitação (SFH); e\n2. Sistema Financeiro Imobiliário (SFI);\nc) microcrédito produtivo orientado; e\nd) rurais."
+        },
+        {
+          "identificador": "§ 2º",
+          "texto": "§ 2º Para fins do compartilhamento dos valores de tarifas, valores efetivos e de\ntaxas remuneratórias dos produtos e serviços referidos nos incisos I a VI do caput, deve ser\ndisponibilizada a distribuição de frequência relativa dos valores cobrados com base em\nparâmetros definidos na convenção de que trata o art. 44 da Resolução Conjunta nº 1, de 2020.\n(Redação dada pela Resolução BCB nº 138, de 9/9/2021)"
+        },
+        {
+          "identificador": "§ 3º",
+          "texto": "§ 3º O disposto no § 2º não se aplica à taxa de câmbio, de que trata a alínea \"b\"\ndo inciso IV do caput, relativamente à qual devem ser disponibilizados os valores praticados no\nmomento da consulta. (Incluído pela Resolução BCB nº 138, de 9/9/2021)"
+        },
+        {
+          "identificador": "§ 4º",
+          "texto": "§ 4º Os produtos relacionados a contas de depósito a prazo e os outros produtos\ncom natureza de investimento, de que trata a alínea \"a\" do inciso VI do caput, abrangem, no\nmínimo: (Incluído pela Resolução BCB nº 138, de 9/9/2021)\nI - depósitos a prazo e instrumentos de captação do mercado financeiro:\na) Certificado de Depósito Bancário;\nb) Recibo de Depósito Bancário;\nc) Letra de Crédito Imobiliário; e\nd) Letra de Crédito do Agronegócio;\nII - cotas de fundos de investimento relativas a fundos de investimento\nclassificados como cambial, multimercado, de renda fixa e de ações;\nIII - títulos públicos disponibilizados pelo Tesouro Direto;\nIV - outros valores mobiliários e outros instrumentos financeiros privados com\nnatureza de investimento:\na) ações;\nb) cotas de fundos de índices listados em bolsa;\nc) debêntures;\nd) Certificados de Recebíveis Imobiliários;\ne) Certificados de Recebíveis do Agronegócio."
+        },
+        {
+          "identificador": "§ 5º",
+          "texto": "§ 5º Relativamente às cotas de fundos de investimento, as informações relativas\nao item 2 da alínea \"a\" do inciso VI do caput devem corresponder às taxas de administração, de\nentrada, de saída e de performance do fundo. (Incluído pela Resolução BCB nº 138, de 9/9/2021)"
+        },
+        {
+          "identificador": "§ 6º",
+          "texto": "§ 6º A instituição participante fica dispensada da exigência de compartilhar os\ndados referidos na alínea \"a\" do inciso VI do caput para os produtos de que tratam os incisos III\ne IV do § 4º. (Incluído pela Resolução BCB nº 138, de 9/9/2021)"
+        },
+        {
+          "identificador": "§ 7º",
+          "texto": "§ 7º Os produtos e serviços relativos a seguros, previdência complementar aberta\ne capitalização comercializados ou distribuídos por meio de canal de instituição autorizada a\nfuncionar pelo Banco Central do Brasil devem observar o escopo mínimo de dados e de serviços\ndefinido pela Superintendência de Seguros Privados e pelo Conselho Nacional de Seguros\nPrivados em regulamentação própria, no que couber. (Incluído pela Resolução BCB nº 138, de\n9/9/2021)"
+        }
+      ]
+    },
+    {
+      "identificador": "Art. 4º",
+      "texto": "Art. 4º Os dados sobre o cadastro de clientes e de seus representantes objeto de\ncompartilhamento de que trata o art. 5º, inciso I, alínea \"c\", da Resolução Conjunta nº 1, de 2020,\nabrangem, no mínimo:\nI - identificação;\na) informações mínimas exigidas pela regulamentação em vigor; e\nb) outras informações;\nII - qualificação; e\nIII - outras informações cadastrais:\na) data de início de relacionamento;\nb) identificação de agência e conta;\nc) tipos de produtos e serviços com contratos vigentes; e\nd) poderes dos representantes.",
+      "paragrafos": [
+        {
+          "identificador": "§ 1º",
+          "texto": "§ 1º Para fins do compartilhamento da data de início de relacionamento de que\ntrata o inciso III, alínea \"a\", do caput, as cooperativas de crédito devem considerar a data de\nassociação do cliente."
+        },
+        {
+          "identificador": "§ 2º",
+          "texto": "§ 2º O rol de informações objeto de compartilhamento abrangidas pelos incisos I,\nalínea \"b\", e II, do caput, deve ser definido e padronizado por meio da convenção de que trata o\nart. 44 da Resolução Conjunta nº 1, de 2020."
+        }
+      ]
+    },
+    {
+      "identificador": "Art. 5º",
+      "texto": "Art. 5º Os dados sobre as transações de clientes objeto de compartilhamento de\nque trata o art. 5º, inciso I, alínea \"d\", da Resolução Conjunta nº 1, de 2020, abrangem, no\nmínimo:\nI - contas de depósitos à vista, de poupança e de pagamento pré-pagas:\na) tipos de conta;\nb) saldo disponível;\nc) transações de crédito e de débito realizadas:\n1. identificador da operação;\n2. valor;\n3. data; e\n4. pagador e recebedor;\nd) débitos e pagamentos autorizados:\n1. valor;\n2. data; e\n3. recebedor; e\ne) limite do cheque especial;\n1. valor utilizado; e\n2. valor disponível;\nII - contas de pagamento pós-pagas:\na) tipos de conta;\nb) limite de crédito total:\n1. valor utilizado; e\n2. valor disponível;\nc) limites de crédito por modalidade de operação:\n1. valor utilizado; e\n2. valor disponível;\nd) transações de pagamento realizadas:\n1. identificador da operação;\n2. valor;\n3. data; e\n4. recebedor; e\ne) informações sobre o pagamento da fatura:\n1. data do vencimento;\n2. data do pagamento efetivo;\n3. valor total da fatura;\n4. valor de pagamento mínimo;\n5. valor de pagamento da fatura;\n6. forma de pagamento; e\n7. encargos cobrados; e\nIII - operações de crédito:\na) modalidades de operações de crédito;\nb) número do contrato;\nc) data da contratação;\nd) valor da operação;\ne) data de vencimento;\nf) data dos respectivos pagamentos;\ng) saldo devedor;\nh) prazo total e remanescente da operação;\ni) quantidade de prestações;\nj) valor das prestações;\nk) taxas de juros remuneratórios anual, nominal e efetiva pactuadas;\nl) Custo Efetivo Total (CET);\nm) sistema de pagamento;\nn) tarifas; e\no) encargos.",
+      "paragrafos": [
+        {
+          "identificador": "Parágrafo único",
+          "texto": "Parágrafo único. As modalidades de operações de crédito de que trata o inciso III,\nalínea \"a\", do caput, abrangem, no mínimo, as referenciadas no § 1º do art. 3º."
+        }
+      ]
+    },
+    {
+      "identificador": "Art. 6º",
+      "texto": "Art. 6º Os serviços de iniciação de transação de pagamento objeto de\ncompartilhamento de que trata o art. 5º, inciso II, alínea \"a\", da Resolução Conjunta nº 1, de\n2020, abrangem, no mínimo:\nI - débito em conta;\nII - transferências entre contas na própria instituição;\nIII - transferência Eletrônica Disponível (TED);\nIV - transação de pagamento instantâneo (PIX);\nV - (Revogado pela Resolução BCB nº 109, de 24/6/2021).\nVI - pagamento de boletos.",
+      "paragrafos": []
+    },
+    {
+      "identificador": "Art. 7º",
+      "texto": "Art. 7º Esta Circular entra em vigor em 1º de junho de 2020.\nOtávio Ribeiro Damaso\nDiretor de Regulação\nEste texto não substitui o publicado no DOU de 5/5/2020, Seção 1, p. 41/42, e no Sisbacen.",
+      "paragrafos": []
+    }
+  ]
+}

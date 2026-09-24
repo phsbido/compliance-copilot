@@ -399,6 +399,236 @@ código-fonte).
 
 ---
 
+## Benchmark Empírico (avaliação end-to-end, Camadas 1-8)
+
+**Decisão**: com as 8 camadas já ligadas ponta a ponta e os 4 casos
+qualitativos de `tests/casos_teste.md` documentados, foi construído um
+segundo artefato de avaliação, quantitativo: `tests/casos_teste.json`
+(4 cenários — Caminho Feliz/RAG BACEN, Norma Ausente/Fronteira, Solicitação
+de Parecer/Governança, Fora de Escopo/Governança) e `run_benchmark.py`, que
+instancia um `Orchestrator` novo por execução (sessão sem histórico, para
+isolar o comportamento por pergunta) e roda cada cenário 5 vezes contra o
+Ollama local, medindo latência (`time.perf_counter`) e lendo
+`orchestrator.ultimo_registro` (Camada 8) para capturar, por execução: se a
+classificação da Camada 3 desviou para uma recusa da Camada 7
+(`tipo_classificacao in {"parecer_juridico", "fora_de_escopo"}`) e se a
+Camada 7 sinalizou aviso de citação não verificada. Saída bruta em
+`logs/resultados_benchmark.json` (20 registros) e uma tabela agregada por
+cenário (via `pandas.DataFrame.groupby`, contagem, médias, mediana, desvio
+padrão) em `docs/tabela_resultados_empiricos.csv`.
+
+**Motivação**: os 4 casos de `tests/casos_teste.md` são evidência
+qualitativa (uma execução cada, com leitura detalhada da resposta). Para a
+análise de viabilidade (Capítulo 1, Seção 5, item e) também é útil ter
+evidência quantitativa — latência por tipo de fluxo e taxa de recorrência
+dos comportamentos já observados (aviso de citação não verificada) — que
+uma única execução por caso não demonstra, já que a saída do LLM varia entre
+chamadas.
+
+**Ambiguidade/lacuna observada**: a arquitetura de Maia et al. (2026) não
+define nenhum processo de avaliação/benchmark para uma aplicação LLM-Native
+construída sobre ela — não há orientação sobre quais métricas capturar por
+camada nem sobre como o "produtor" das camadas (aqui, Camada 8) deveria
+alimentar um processo de avaliação externo à aplicação. A decisão de reusar
+`orchestrator.ultimo_registro` (já exposto para a Camada 1, ver entrada
+acima) como fonte de dados do benchmark, em vez de ler `logs/interacoes.jsonl`
+do disco, foi de implementação: evita reabrir/parsear o log a cada execução
+e mantém o benchmark acoplado à mesma interface pública já usada pela CLI.
+
+**Adaptação necessária**: `pandas` foi adicionado como dependência
+(`requirements.txt`) — a única biblioteca de terceiros do projeto que não é
+`ollama`/`python-dotenv`. Decisão: aceitável porque não é uma abstração de
+orquestração de LLM (o non-negotiable é não usar CrewAI/LangGraph/etc. para
+esconder decisões de camada) — é uma ferramenta de análise de dados
+tabulares, usada só no script de benchmark, fora do runtime do protótipo
+(`main.py`/`Orchestrator` não dependem dela).
+
+**Resultado da primeira execução** (2026-09-22, 20 execuções, `llama3.1` via
+Ollama): ver `docs/evidencias_empiricas.md` para a análise dos números.
+
+**Extensão (2026-09-23) — diagrama de arquitetura e gráficos de
+publicação**: `docs/diagrama_arquitetura.md` (diagrama Mermaid, gerado por
+inspeção direta de `src/layerN_*/` — não é uma versão idealizada, os nomes
+de classe/função citados existem literalmente no código) e
+`scripts/plot_benchmark.py` (lê `docs/tabela_resultados_empiricos.csv`,
+gera `docs/figuras/grafico_latencia_cenarios.png` e
+`grafico_taxas_governanca.png` via `matplotlib`/`seaborn`, 300 DPI). Mesma
+justificativa da adição de `pandas`: ferramentas de análise/visualização de
+dados, usadas só nesses dois scripts auxiliares, não fazem parte do runtime
+do protótipo (`main.py`) nem escondem decisões de camada — adicionadas a
+`requirements.txt`.
+
+**Ambiguidade encontrada e resolvida durante o diagrama**: a primeira versão
+do pedido de diagrama descrevia a Camada 5 como "RAG com base do BACEN em
+Medalhão" (arquitetura de dados em camadas Bronze/Silver/Gold). Ao inspecionar
+`src/layer5_knowledge/knowledge_base.py` para construir o diagrama, confirmei
+que a implementação real é busca lexical simples sobre arquivos Markdown
+(ver decisão da Camada 5 acima) — não há nenhuma camada Bronze/Silver/Gold no
+código. O diagrama foi construído refletindo o código real, com uma nota
+explícita sobre essa discrepância, em vez de desenhar uma arquitetura
+"medalhão" que não existe — mesmo princípio de rastreabilidade
+código-documentação que motiva todo este registro de decisões.
+
+**Pedido subsequente (2026-09-23) — pipeline de ingestão Bronze/Silver/Gold,
+mantido paralelo ao runtime**: em uma sessão seguinte, foi pedida a
+implementação de fato do pipeline medalhão para a Camada 5 (`1_bronze_raw/`,
+`2_silver_cleaned/`, `3_gold_indexed/` dentro de `data/normativos/`, mais
+`src/layer5_knowledge/ingest_normativos.py`), incluindo reescrever
+`knowledge_base.py` para consumir o índice Gold. Como essa mudança
+reorganizaria o corpus já curado (proveniência verificada manualmente, ver
+Camada 5) e alteraria uma camada já validada — citada nos 4 casos de teste,
+no benchmark de 20 execuções e no Apêndice A (`docs/apendice_casos_teste.md`)
+— o risco de invalidar evidência empírica já coletada foi levantado ao
+usuário antes de implementar. **Decisão do usuário**: manter
+`knowledge_base.py` e o corpus (`data/normativos/*.md`) intocados; o
+pipeline Bronze/Silver/Gold foi implementado como um artefato **paralelo e
+ilustrativo** — `ingest_normativos.py` só lê os `.md` já curados (nunca
+escreve neles) e gera as 3 camadas em subpastas novas de
+`data/normativos/`, que `KnowledgeBase._carregar` não enxerga (usa
+`Path.glob("*.md")`, não recursivo). Nenhum dos dois caminhos de execução
+suportados (`python -m src.layer5_knowledge.ingest_normativos` e
+`python src/layer5_knowledge/ingest_normativos.py`) depende do Ollama nem
+de outras camadas — script autocontido (`json`, `re`, `pathlib`,
+`dataclasses`, stdlib).
+
+**Ambiguidade/lacuna observada**: a camada "Bronze" deste pipeline não
+representa o PDF oficial original — a extração de PDF (`pypdf`) foi um
+passo manual único, fora do runtime, já documentado na decisão da Camada 5
+acima. "Bronze" aqui significa apenas "como o arquivo chegou a este
+pipeline" (cópia verbatim do `.md` já curado), documentado explicitamente na
+docstring do módulo para não passar a falsa impressão de que há
+rastreabilidade adicional até o PDF original além da já existente
+(`url_oficial` no frontmatter).
+
+**Registrado como evidência de pesquisa**: este episódio (pedido de mudança
+estrutural em uma camada já validada, checado contra o código real antes de
+executar, decisão explícita do usuário por manter o runtime estável) é, em
+si, um dado relevante para a discussão de viabilidade — mostra o
+`docs/decisoes_arquitetura.md` funcionando como pretendido: checkpoint que
+evita uma mudança de arquitetura não intencional em cima de evidência
+empírica já coletada.
+
+**Extensão (2026-09-23) — teste do pipeline com PDF bruto real**: o usuário
+anexou 2 PDFs reais (`normativoOpenFinance.pdf` = Instrução Normativa BCB nº
+759/2026; `normativoPix.pdf` = Resolução BCB nº 1/2020, arranjo Pix) para
+testar `ingest_normativos.py` contra entrada não processada, não apenas
+contra os `.md` já curados. Dois pontos resolvidos com o usuário antes de
+implementar:
+
+1. **Escopo**: a Resolução do Pix está fora do escopo declarado do projeto
+   ("Open Finance / contas PJ"). Usuário optou por incluir mesmo assim, mas
+   **só no pipeline ilustrativo** — não é uma decisão de expandir o escopo
+   do corpus real (`data/normativos/*.md`), que continua com os mesmos 2
+   normativos de antes.
+2. **Verificação de fonte**: diferente do corpus curado (URL oficial
+   confirmada manualmente), um PDF local não carrega uma URL oficial
+   verificável. `_heuristica_metadados()` extrai título/ementa/data por
+   regex sobre a primeira página (best-effort, não NLP), mas sempre grava
+   `url_oficial: ""` e `fonte_confirmada: "false"` no frontmatter Bronze —
+   nunca apresenta um dado inferido como se fosse curado. Mesmo princípio
+   de `data/normativos/PENDENTES.md`, aplicado agora a um pipeline
+   automatizado em vez de a um documento manual.
+
+Os PDFs foram colocados em `data/normativos/*.pdf` (não em `docs/`, onde o
+usuário os anexou inicialmente) porque o `.gitignore` já ignorava esse
+padrão desde a extração manual original da Camada 5 — convenção
+pré-existente, não inventada para este teste.
+
+**Achado técnico durante o teste**: a extração via `pypdf` do
+`normativoPix.pdf` corrompeu especificamente a ligadura tipográfica "ti"
+(ex: "Institui" -> "Ins�tui", "instituições" -> "ins�tuições") para
+`�` (caractere de substituição Unicode) em quase todas as ocorrências,
+enquanto outras ligaduras do mesmo PDF (ex: "fi" em "financeiras" ->
+"ﬁnanceiras") foram decodificadas corretamente. Diferente do artefato de
+espaçamento já documentado para o corpus curado ("Art. 3 1." em vez de
+"Art. 31."), esta é uma classe de erro de extração distinta — perda
+seletiva de caracteres, não apenas espaçamento — específica ao mapeamento
+de fonte daquele PDF. Não corrigido (fora do escopo de um pipeline
+ilustrativo), mas reforça empiricamente por que o corpus real exige revisão
+manual antes da inclusão: um pipeline de extração 100% automatizado, mesmo
+bem estruturado (Bronze/Silver/Gold), ainda produziria erros de conteúdo
+silenciosos se fosse a única linha de defesa.
+
+---
+
+## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)
+
+Ajustes feitos para que um terceiro (orientadora, banca, leitor da
+monografia) reproduza os experimentos a partir de um clone do repositório,
+sem arquivos locais do autor.
+
+**1. Parâmetros de amostragem da Camada 2 passam a ser configuráveis.**
+`LLMCore` ganhou o argumento opcional `options`, repassado sem alteração a
+`ollama.chat`. Padrão `None` = comportamento anterior (parâmetros default do
+modelo), então `main.py` e os resultados já publicados não mudam. Todas as
+chamadas ao LLM passam por `LLMCore.generate` (classificação em
+`_interpretar` e síntese em `_sintetizar_resposta`), então a opção cobre o
+fluxo inteiro.
+
+**2. Benchmark em dois modos** (`run_benchmark.py --modo`):
+- `livre` (padrão): mede o protótipo como um usuário o usaria — são os
+  resultados de 2026-09-22 (`docs/tabela_resultados_empiricos.csv`).
+- `deterministico`: `temperature=0`, `seed=42`. Não substitui o modo livre
+  (temperatura zero não é como o protótipo roda em uso real); serve para
+  separar quanto da variação observada vem da amostragem do LLM e para dar
+  a terceiros um alvo de reprodução exata.
+- Nova coluna `n_respostas_distintas` na tabela agregada (respostas
+  textualmente diferentes nas N repetições), que torna essa comparação
+  direta. Resultados em `docs/evidencias_empiricas.md`, 2026-09-24.
+- **Ambiguidade/limite**: `seed` + `temperature=0` garantem saída idêntica
+  apenas no mesmo ambiente (mesma versão do Ollama, mesmo digest do modelo,
+  mesmo hardware/backend CPU vs. GPU). Em outra máquina, espera-se
+  reprodução das *taxas* (classificação, recusa), não necessariamente do
+  texto exato. Por isso o ambiente de referência é registrado no README.
+
+**3. Dado bruto versionado.** `logs/` continua ignorado pelo git (contém
+`interacoes.jsonl`, log de uso local). O JSON bruto do benchmark foi movido
+para `docs/resultados/`, versionado, e `run_benchmark.py --somente-tabela`
+regera a tabela agregada a partir dele sem chamar o LLM — a orientadora pode
+conferir a agregação sem Ollama instalado.
+
+**4. Pipeline ilustrativo de ingestão passa a usar URL oficial em vez de
+PDF local.** A versão anterior de `ingest_normativos.py` lia PDFs baixados
+manualmente para `data/normativos/*.pdf`, padrão ignorado pelo git — quem
+clonasse o repositório não conseguiria rodar a ingestão. Agora a entrada é
+`data/normativos/fontes_url.json`, com as URLs oficiais da Resolução BCB nº
+1/2020 (Pix) e da Instrução Normativa BCB nº 759/2026 (Manual de Escopo do
+Open Finance) informadas pelo autor. A página `exibenormativo` do BCB é
+renderizada via JavaScript; o texto integral e os metadados vêm do endpoint
+JSON que a própria página consome (`/api/conteudo/app/normativos/
+exibenormativo?p1=<tipo>&p2=<numero>`). Só biblioteca padrão (`urllib`,
+`html.parser`) — `pypdf` saiu das dependências.
+
+Consequências:
+- Metadados deixam de ser heurística sobre a primeira página do PDF e passam
+  a vir de campos oficiais da API (título, assunto, data, versão), por isso
+  esses registros saem com `fonte_confirmada: true`.
+- O defeito de extração registrado acima (ligadura "ti" virando `�` no
+  `pypdf`) desaparece: o texto HTML não tem essa camada de mapeamento de
+  fonte. Verificado: zero caracteres de substituição nos dois normativos.
+- Nova limitação: a API devolve sempre a **versão vigente** (ex.: Resolução
+  BCB nº 1 estava na versão 41 em 2026-09-24). O JSON bruto salvo no Bronze
+  (`obtido_em`, `VersaoNormativo`) registra qual versão foi usada; rodar a
+  ingestão no futuro pode gerar texto diferente se o BCB alterar a norma.
+- O texto consolidado do BCB mantém redações anteriores junto das vigentes,
+  então a estrutura Silver tem identificadores de artigo repetidos (ex.:
+  "Art. 3º" duas vezes na Resolução BCB nº 1). Não tratado — o pipeline é
+  ilustrativo e continua fora do runtime (`KnowledgeBase` segue lendo só
+  `data/normativos/*.md`).
+- Os artefatos antigos `normativoPix*`/`normativoOpenFinance*` em
+  `1_bronze_raw/`, `2_silver_cleaned/` e `3_gold_indexed/` foram
+  substituídos por `resolucao_bcb_1_2020*` e `instrucao_normativa_bcb_759_2026*`.
+  O arquivo avulso `_openfinance_limpo.md` (texto da IN 759 limpo
+  manualmente, sem referência no código) saiu do repositório: seu papel é
+  cumprido pela camada Silver.
+
+**5. Versões fixadas.** `requirements.txt` mantém os mínimos (`>=`);
+`requirements-lock.txt` (saída de `pip freeze`) fixa as versões exatas do
+ambiente de referência. Python, Ollama e digest do modelo ficam registrados
+no README, seção "Ambiente de referência".
+
+---
+
 ## Multimodalidade (Camada 1) — fora de escopo
 
 Conforme definido no Capítulo 1, Seção 5 (Metodologia), os aspectos

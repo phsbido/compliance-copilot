@@ -16,8 +16,15 @@ from src.config import settings
 
 
 class LLMCore:
-    def __init__(self, model: str | None = None):
+    def __init__(self, model: str | None = None, options: dict | None = None):
+        """`options` é repassado ao Ollama sem alteração (ex:
+        {"temperature": 0, "seed": 42}). Padrão None = parâmetros de
+        amostragem default do modelo — é o modo usado por main.py e pelo
+        benchmark "livre". O modo "deterministico" do run_benchmark.py fixa
+        temperatura e seed para avaliar reprodutibilidade (ver
+        docs/decisoes_arquitetura.md, "Reprodutibilidade")."""
         self.model = model or settings.ollama_model
+        self.options = options
 
     def generate(self, prompt: str, system: str | None = None) -> str:
         """Envia uma única mensagem ao modelo e retorna a resposta em texto.
@@ -32,5 +39,5 @@ class LLMCore:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
-        response = ollama.chat(model=self.model, messages=messages)
+        response = ollama.chat(model=self.model, messages=messages, options=self.options)
         return response["message"]["content"]

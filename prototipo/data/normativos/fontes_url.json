@@ -1,0 +1,13 @@
+{
+  "_descricao": "Normativos ingeridos a partir da URL oficial do BCB por src/layer5_knowledge/ingest_normativos.py. 'arquivo' é o nome-base dos artefatos gerados em 1_bronze_raw/, 2_silver_cleaned/ e 3_gold_indexed/.",
+  "fontes": [
+    {
+      "arquivo": "resolucao_bcb_1_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1"
+    },
+    {
+      "arquivo": "instrucao_normativa_bcb_759_2026",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Instru%C3%A7%C3%A3o%20Normativa%20BCB&numero=759"
+    }
+  ]
+}

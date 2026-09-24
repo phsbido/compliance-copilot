@@ -1,0 +1,3 @@
+# Arquivos compactados (backups locais, não versionar)
+*.rar
+*.zip
