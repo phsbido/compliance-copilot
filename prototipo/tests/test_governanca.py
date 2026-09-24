@@ -105,6 +105,8 @@ class TestNormaAusente(unittest.TestCase):
             "Não estou com os requisitos técnicos da Resolução BCB nº 32/2020 disponíveis. "
             "Apenas tenho acesso a informações da Resolução Conjunta nº 1/2020.",
             "Não há menção à Resolução BCB nº 32/2020 no contexto fornecido.",
+            # benchmark v3.1 (livre, rep. 4)
+            "Além disso, não há informações sobre a existência de uma Resolução BCB nº 32/2020.",
         ):
             r = validar_resposta(resposta, self.contexto)
             self.assertEqual(r.normas_nao_verificadas, [], resposta)

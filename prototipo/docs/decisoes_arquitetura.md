@@ -502,9 +502,21 @@ camada, mas, na prática, ela precisou atuar em três pontos do fluxo
 "camada" de governança aqui é um conjunto de políticas com pontos de
 aplicação distribuídos, não uma etapa do pipeline.
 
+**Ajustes pós-benchmark (v3.1)**: (1) a detecção de ausência deixou de ser
+uma lista fechada de expressões e passou a ser "negação + termo de
+disponibilidade" (encontrar, disponível, menção, contexto, informação…),
+depois de falsos positivos achados na leitura das respostas v3 e v3.1;
+(2) a regra 3 da política deixou de pedir a citação "como aparece no
+cabeçalho entre colchetes" — o modelo passou a copiar cabeçalhos para
+artigos fora do contexto — e pede a citação entre parênteses, sem copiar os
+colchetes nem mencionar artigo fora do contexto. Ver
+`docs/evidencias_empiricas.md`, entradas v3 e v3.1.
+
 **Limites declarados**: verificação lexical — não detecta afirmação falsa
 que não cite norma, artigo ou valor; não verifica o histórico da conversa;
-os marcadores de ausência são uma lista fechada. Um verificador semântico
+a detecção de ausência é heurística (negar algo *sobre o conteúdo* de uma
+norma, "a norma X não exige Y", é tratado como citação, mas frases
+ambíguas podem ser classificadas errado). Um verificador semântico
 (ex.: LLM-juiz) cobriria parte disso, ao custo do determinismo — registrado
 como trabalho futuro.
 

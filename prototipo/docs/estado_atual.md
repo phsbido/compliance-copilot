@@ -237,6 +237,12 @@ Detalhes em `docs/decisoes_arquitetura.md` (Camada 7, "Camada 7 v2") e
   ausente = 100% ausência declarada, 0 invenção. Novo modo de falha: 1/5
   livre imitou o cabeçalho da Gold para artigos fora do contexto (regra 3
   da política) — candidato a ajuste.
+- v3.1 (tag `v3.1-monografia`): regra 3 reescrita — 0 cabeçalhos copiados;
+  detecção de ausência ampliada ("informação", "existência") após novo falso
+  positivo; correção: invenções da Res. 32 na v1 livre são 2/5, não 3/5.
+- **Aprovado, a planejar**: v4 — temperatura/seed explícitas em `.env`
+  (classificação 0, síntese baixa), registradas na Camada 8; benchmark com
+  modo "produção" + sensibilidade a 0,8.
 - **Próximo (aprovado pelo usuário)**: busca híbrida BM25 + densa + RRF na
   Camada 5, *com avaliação*: montar conjunto rotulado (~25 perguntas com o
   artigo esperado), medir Recall@3/MRR e só adotar se melhorar. Trazer o

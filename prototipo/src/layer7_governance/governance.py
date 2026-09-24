@@ -44,8 +44,10 @@ POLITICA_SINTESE = (
     "2. Se a pergunta mencionar uma norma que não aparece no contexto, diga "
     "explicitamente que ela não está disponível no corpus consultado e não "
     "descreva o conteúdo dela.\n"
-    "3. Ao afirmar um requisito, indique a norma e o artigo (ou a seção) de "
-    "onde ele vem, como aparecem no cabeçalho entre colchetes de cada trecho.\n"
+    "3. Ao afirmar um requisito, indique entre parênteses a norma e o artigo "
+    "(ou a seção do anexo) de onde ele vem, usando as informações do cabeçalho "
+    "do trecho. Não copie os cabeçalhos entre colchetes e não mencione artigos "
+    "que não aparecem no contexto.\n"
     "4. Reproduza valores numéricos (prazos, limites, quantidades, "
     "percentuais) exatamente como estão no texto, sem arredondar nem converter.\n"
     "5. Se o contexto não for suficiente para responder, diga isso.\n"
@@ -145,7 +147,7 @@ _AUSENCIA_EXPLICITA = re.compile(
 _NEGACAO = re.compile(r"\b(?:n[ãa]o|nenhum|nenhuma)\b", re.IGNORECASE)
 _DISPONIBILIDADE = re.compile(
     r"encontr|localiz|identific|dispon[ií]ve|\bconsta|men[çc][ãa]o|mencion|contexto|corpus"
-    r"|fornecid|acesso|poss[ií]vel|\bposso\b",
+    r"|fornecid|acesso|poss[ií]vel|\bposso\b|informa[çc][ãõ]|exist[êe]ncia",
     re.IGNORECASE,
 )
 

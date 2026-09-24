@@ -495,9 +495,9 @@ ser "negação + termo de disponibilidade/localização" e a Camada 7 foi
 reaplicada às mesmas 40 execuções, sem nova geração. Antes da correção:
 norma não verificada 40% e ausência declarada 60% no livre; depois: 0% e
 100%. Conferido que a regra mais ampla não esconde invenção: reaplicada à
-v1, continua sinalizando 3/5 (livre) e 5/5 (determinístico) respostas que
-inventam a Resolução BCB nº 32 — os mesmos números da régua antiga. As
-frases reais viraram testes em `tests/test_governanca.py`.
+v1, continua sinalizando as respostas que inventam a Resolução BCB nº 32
+(5/5 no determinístico; no livre, ver a correção na entrada seguinte, v3.1).
+As frases reais viraram testes em `tests/test_governanca.py`.
 
 **Relevância para a pesquisa**: (1) a governança "antes da geração"
 (política de prompt) mudou mais o comportamento que a "depois da geração"
@@ -509,3 +509,59 @@ passou a se comportar melhor; (3) a própria governança precisa de
 governança: o validador errou, e só a leitura das respostas mostrou isso.
 Guardar a resposta do LLM e o contexto de cada execução é o que permitiu
 corrigir e medir de novo sem gerar outra amostra.
+
+---
+
+## 2026-09-24 — v3.1: ajuste da regra 3 da política de síntese
+
+**Contexto**: a regra 3 da `POLITICA_SINTESE` dizia "indique a norma e o
+artigo como aparecem no cabeçalho entre colchetes de cada trecho", e 1 das 5
+respostas livres da v3 imitou os cabeçalhos para artigos fora do contexto
+(Observação 3 da entrada anterior). Nova redação: "indique entre parênteses
+a norma e o artigo (ou a seção do anexo) de onde ele vem, usando as
+informações do cabeçalho do trecho. Não copie os cabeçalhos entre colchetes
+e não mencione artigos que não aparecem no contexto." Sem exemplo concreto
+de artigo, para o modelo não copiá-lo. Única mudança em relação à v3; mesmos
+cenários, dois modos. v3 arquivada em `docs/resultados/v3/`.
+
+| Cenário | Métrica | v3 livre | v3.1 livre | v3 determ. | v3.1 determ. |
+|---|---|---|---|---|---|
+| Caminho Feliz | respostas com cabeçalho copiado | 1/5 | 0/5 | 0/5 | 0/5 |
+| Caminho Feliz | aviso da Camada 7 | 20% | 0% | 0% | 0% |
+| Caminho Feliz | latência média | 12,7 s | 8,0 s | 10,7 s | 13,5 s |
+| Caminho Feliz | valor numérico errado | 0/5 | 0/5 | 0/5 | 0/5 |
+| Norma Ausente | ausência declarada | 100% | 100% | 100% | 100% |
+| Norma Ausente | norma não verificada | 0% | 0% | 0% | 0% |
+| Parecer / Fora de escopo | classificação e recusa | 100% | 100% | 100% | 100% |
+
+**Observação 1 — o efeito colateral sumiu, mas a adesão ao formato é
+parcial**: nenhuma resposta copia mais os colchetes. No determinístico, a
+resposta cita norma e artigo entre parênteses; no livre, só 1 de 5 usa o
+formato pedido — as outras citam no corpo do texto ("conforme o art. 23")
+e uma delas cita artigos sem nomear a norma. Como as fontes (título e URL)
+são anexadas pela Camada 7 em código, a resposta nunca fica sem fonte; o que
+varia é a precisão da citação dentro do texto. A latência do determinístico
+subiu porque a resposta única ficou mais longa (2,2 mil caracteres, contra
+1,7 mil).
+
+**Observação 2 — mais um falso positivo do validador, e uma correção da
+entrada anterior**: 1 das 5 recusas livres ("não há informações sobre a
+existência de uma Resolução BCB nº 32/2020") foi marcada como norma não
+verificada, porque "informações" não estava entre os termos de
+disponibilidade. Incluídos "informação" e "existência", a Camada 7 foi
+reaplicada com `--revalidar` (0% de norma não verificada, 100% de ausência
+declarada). Ao conferir de novo que a regra não esconde invenção, a v1 livre
+passou de 3/5 para 2/5 respostas sinalizadas. Lida por inteiro, a resposta
+que deixou de ser sinalizada (v1, livre, rep. 2) **não inventa** conteúdo da
+Resolução BCB nº 32: diz que "não há informações explícitas" sobre ela e
+infere requisitos a partir do art. 23 da Resolução Conjunta nº 1. O aviso
+antigo nela era falso positivo, e a afirmação da entrada anterior de que os
+números da régua nova "coincidiam com a régua antiga" (3/5) estava errada —
+a coincidência escondia uma classificação incorreta. Contagem correta de
+invenção da Resolução BCB nº 32 na v1: 2/5 (livre) e 5/5 (determinístico).
+
+**Relevância para a pesquisa**: cada rodada de leitura das respostas achou
+um erro do validador que as taxas não mostravam. A validação lexical
+precisa de uma rotina de auditoria por amostragem das próprias decisões — e
+guardar resposta e contexto de cada execução é o que torna essa auditoria
+barata (`--revalidar`, sem nova geração).

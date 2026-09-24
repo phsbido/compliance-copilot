@@ -182,16 +182,17 @@ da instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
 
 ### Passo 0 — Escolher a versão
 
-O protótipo tem três versões avaliadas. Cada uma muda uma camada em relação à anterior:
+Versões avaliadas. Cada uma muda uma única coisa em relação à anterior:
 
 | Tag | Camada 5 | Resultados |
 |---|---|---|
-| `v3.0-monografia` (atual) | Camada 5 da v2 + **Camada 7 v2**: política de síntese, recusa sem base, verificação de norma/artigo/valor, ausência declarada, fontes anexadas | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v3.1-monografia` (atual) | v3 com a regra 3 da política de síntese reescrita (citação entre parênteses, sem copiar cabeçalhos) | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v3.0-monografia` | Camada 5 da v2 + **Camada 7 v2**: política de síntese, recusa sem base, verificação de norma/artigo/valor, ausência declarada, fontes anexadas | `docs/resultados/v3/` |
 | `v2.0-monografia` | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/resultados/v2/` |
 | `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout v3.0-monografia
+git checkout v3.1-monografia
 ```
 
 ### Passo 1 — Conferir a base de conhecimento e as tabelas sem internet e sem Ollama (~10 s)
@@ -265,8 +266,7 @@ classificação correta em 100% e recusa em 100% nos dois cenários de
 governança. Nos cenários de RAG, as respostas variam entre execuções
 (`n_respostas_distintas` perto de 5). Na rodada publicada: "norma
 ausente" com 100% de ausência declarada e 0% de norma não verificada;
-caminho feliz com 20% de aviso da Camada 7 (uma resposta que imitou o
-cabeçalho dos trechos para artigos fora do contexto).
+caminho feliz sem aviso da Camada 7.
 
 > A coluna `taxa_aviso_citacao_nao_verificada` usa a régua da v1/v2, que
 > conta como aviso qualquer menção a norma fora do contexto — inclusive a
@@ -366,9 +366,10 @@ prototipo_esqueleto/
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
-    │   ├── tabela_resultados_empiricos.csv                # Benchmark v3, modo livre
-    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v3, modo determinístico
-    │   ├── resultados/                # Dado bruto do benchmark v3 (resposta do LLM, contexto, validação)
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark v3.1, modo livre
+    │   ├── tabela_resultados_empiricos_deterministico.csv # Benchmark v3.1, modo determinístico
+    │   ├── resultados/                # Dado bruto do benchmark v3.1 (resposta do LLM, contexto, validação)
+    │   │   ├── v3/                    # Dado bruto e tabelas da v3 (tag v3.0-monografia)
     │   │   ├── v2/                    # Dado bruto e tabelas da v2 (tag v2.0-monografia)
     │   │   └── v1/                    # Dado bruto e tabelas da v1 (tag v1.0-monografia)
     │   └── figuras/                   # Gráficos gerados por scripts/plot_benchmark.py
