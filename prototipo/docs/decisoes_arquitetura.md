@@ -87,6 +87,23 @@ registra.
 ambiente (versão do Ollama, ID do modelo, hardware); em outra máquina,
 espera-se reproduzir as taxas, não necessariamente o texto.
 
+### Adendo (2026-10-01): lacuna e adaptação desta camada
+
+Os campos "Ambiguidade/lacuna observada" e "Adaptação necessária" do início
+desta seção ficaram com o texto provisório de 2026-08-14. Completados a
+partir do que foi registrado depois e do confronto com o texto da Seção 8
+(ver "Confronto com o texto da Seção 8", no fim deste documento):
+
+- **Ambiguidade/lacuna**: o controle de aleatoriedade do modelo. A Figura 4
+  cita *Guardrails & Model Controls* nesta camada, mas o texto não diz quais
+  controles nem com que critério. Resolvido na v4 (subseção acima).
+- **Adaptação necessária**: `LLMCore.generate` passou a aceitar opções por
+  chamada (v4), para que a Camada 3 use uma temperatura por etapa.
+- **Prescrito e não implementado**: a camada não gera planos, chamadas de
+  ferramenta nem saídas estruturadas ("plans, tool calls, decision
+  rationales"). O LLM só classifica a pergunta e sintetiza texto, e o fluxo
+  é fixo na Camada 3.
+
 ---
 
 ## Camada 1 — Interação com o Usuário
@@ -606,6 +623,29 @@ domínio de compliance regulatório, não operar o sistema em produção.
 já descrita. `logs/` foi adicionado ao `.gitignore` (dado de execução, não
 código-fonte).
 
+### Adendo (2026-10-01): campos atuais do registro
+
+A decisão acima descreve o registro da v1. Campos acrescentados depois,
+registrados em outras seções:
+
+- `desfecho` (`resposta`, `recusa_parecer_juridico`,
+  `recusa_fora_de_escopo`, `recusa_sem_base`) e `validacao` (categorias do
+  `ResultadoValidacao`: norma não verificada, ausência declarada, artigo não
+  verificado, artigo fora da norma, valor não verificado). Origem: Camada 7
+  v2. O campo `aviso_citacao_nao_verificada` foi mantido com a régua da
+  v1/v2, para comparação entre versões.
+- `parametros_llm` (modelo, ID do modelo, temperaturas de classificação e
+  de síntese, seed). Origem: v4, ver Camada 2.
+- O registro passou a ser gravado em todos os desfechos de `responder()`:
+  as três recusas e a resposta normal.
+
+Em relação ao texto da Seção 8 (ver "Confronto com o texto da Seção 8"), o
+log de runtime **não registra** o prompt, os trechos recuperados (guardados
+só pelo benchmark, em `docs/resultados/`), os acessos à memória nem a
+versão do índice. Também não há monitoramento, alertas ou *feedback*. A
+ambiguidade registrada acima ("não distingue proveniência de telemetria")
+foi reclassificada naquela entrada como implementação parcial.
+
 ---
 
 ## Benchmark Empírico (avaliação end-to-end, Camadas 1-8)
@@ -840,6 +880,104 @@ Consequências:
 `requirements-lock.txt` (saída de `pip freeze`) fixa as versões exatas do
 ambiente de referência. Python, Ollama e digest do modelo ficam registrados
 no README, seção "Ambiente de referência".
+
+---
+
+## Confronto com o texto da Seção 8 (2026-10-01)
+
+**Contexto**: até aqui, as entradas deste diário registravam a prescrição
+de Maia et al. por paráfrase de uma linha ("Maia et al. atribuem à Camada X
+…"). Na consolidação da evidência de independência
+(`docs/validacao_independencia.md`), cada ambiguidade registrada foi
+confrontada com o texto da Seção 8 (8.1 a 8.3, pp. 15–17) e com a Figura 4.
+O confronto mostrou que parte das "ambiguidades" eram prescrições do artigo
+que a paráfrase havia perdido.
+
+**Esta entrada não reescreve as anteriores.** Elas continuam como registro
+do que se sabia em cada data. Aqui, cada ponto é reclassificado em uma de
+três categorias, e o que foi confirmado é registrado à parte.
+
+**Ambiguidade genuína encontrada no confronto: numeração das camadas.** O
+texto da 8.1 apresenta as camadas sem número, na ordem Interação, LLM Core,
+Orquestração, Ferramentas e Serviços, Conhecimento, Contexto e Memória,
+Governança, Observabilidade. A Figura 4 numera 4 = Knowledge Integration,
+5 = Context & Memory e 6 = Tool & Service Integration. O protótipo segue a
+ordem do texto (`layer4_tools`, `layer5_knowledge`, `layer6_memory`).
+Decisão: manter a numeração do texto e citar a divergência na monografia.
+
+### 1. Ambiguidades genuínas (resistem ao texto)
+
+| Camada | Ambiguidade | Por que resiste |
+|---|---|---|
+| 1 | Expor ou não, na interface, artefatos de outras camadas (a proveniência). | O texto trata a interface como fonte de sinais de intenção, mas não fala do que ela devolve ao usuário. |
+| 2 | Controle de aleatoriedade (temperatura e seed). | A Figura 4 cita *Model Controls*; o texto não diz quais controles nem com que critério. |
+| 3 | Comportamento durante a construção incremental, com camadas ainda ausentes. | O texto descreve o sistema completo. A forma de implementação é dada como lista de opções (motor de *workflow*, máquina de estados, *planner-executor*, multiagente). |
+| 5 | Qual representação da fonte é a vigente: o HTML da página do BCB traz a redação original de normas anteriores a 2021, e o texto vigente só existe no PDF consolidado. | O texto pressupõe fontes prontas para ingestão. |
+| 6 | Tamanho da janela, formato de injeção e critério de seleção. | "Relevance filtering" é citado sem critério. |
+| 7 | O que validar e como: citação de norma, artigo e valor, ausência declarada. Alcance da validação diante da memória. | "Output validation" é prescrita sem conteúdo. |
+| 8 | Formato e granularidade do registro. | O texto lista o que registrar, não como. |
+
+### 2. Desvios (decisão diferente do que o texto prescreve)
+
+Nenhum desses desvios foi tomado com o texto completo à vista. Os
+desvios com motivação registrada que continua válida estão marcados como
+**justificados**; os demais, como **não intencionais**.
+
+| Camada | O texto prescreve | O protótipo fez | Tipo |
+|---|---|---|---|
+| 4 | "Typed and auditable interfaces"; a Prática 1 pede ferramentas como subsistemas com interface explícita. | `buscar_normativo` devolve `str` pronta para o prompt. | Não intencional. A motivação registrada (um único caso de uso, sem abstração prematura) não trata da tipagem. |
+| 5 | Pipeline com *embeddings*, busca híbrida e *reranking*. | BM25 lexical. | Justificado: auditabilidade e decisão explícita de não esconder a recuperação (Camada 5, v1 e v2). |
+| 6 | A memória "actively shapes orchestration and reasoning". | O histórico só entra na síntese. | Não intencional. A entrada da Camada 6 trata o ponto como lacuna da arquitetura. |
+| 6 | A memória de longo prazo faz parte da camada. | Só memória de processo, sem persistência. | Justificado como corte de escopo (sem caso de uso), mas registrado antes como lacuna, e não como corte. |
+
+### 3. Componentes prescritos e não implementados
+
+| Camada | Não implementado |
+|---|---|
+| 1 | Sinais estruturados de intenção, restrições e *feedback*; *dashboards*, voz e APIs. |
+| 2 | Planos, chamadas de ferramenta, saídas estruturadas e justificativas de decisão: o LLM só classifica e sintetiza texto. |
+| 3 | Planejamento, delegação, *retries*, *checkpointing* e tratamento de falha parcial (não há `try`/`except` no fluxo). |
+| 4 | APIs externas, *sandboxes* de código, bancos de dados, tratamento de erro e *fallback* de ferramenta. |
+| 5 | Avaliação da recuperação como subsistema (planejada: conjunto rotulado com Recall@3/MRR) e observabilidade própria da recuperação. |
+| 6 | Resultados intermediários de ferramentas e rastros de execução no contexto; memória de longo prazo. |
+| 7 | Checagem de permissão, aprovação humana ativa (há só o aviso fixo), checagem de viés, regras de privacidade e controle de acesso. |
+| 8 | Prompt, trechos recuperados (guardados só pelo benchmark), acessos à memória e versão do índice no log de runtime; monitoramento, alertas, métricas de qualidade em operação e *feedback loops*. |
+
+### 4. Confirmações da arquitetura
+
+- **Governança transversal (Camada 7).** O que a entrada "Camada 7 v2"
+  registrou como ambiguidade (a governança atuar em ingestão, prompt e
+  pós-geração, dentro de outras camadas) é o que a Figura 4 prescreve: a
+  governança marcada como *cross-cutting*.
+- **Prática 3.** "Cannot rely on prompt-level constraints alone": o
+  protótipo combina política no prompt com validadores em código. O dado
+  empírico da v3 acrescenta uma nuance: a política no prompt mudou mais o
+  comportamento, enquanto os validadores mediram e sinalizaram (ver
+  `evidencias_empiricas.md`, Camada 7 v2).
+- **Prática 2.** O fluxo está em código (`responder`, `_RECUSAS`), não no
+  prompt.
+- **Prática 4.** O modelo e a sua versão são registrados por interação
+  desde a v4.
+- **Prática 5.** "Safe response templates": `recusar_sem_base` e as demais
+  recusas fixas.
+- **Fluxo da 8.2.** O fluxo do protótipo (interpretar, recuperar, sintetizar,
+  validar, registrar) segue as etapas (ii) a (vi), sem a decomposição de
+  tarefa.
+
+**Causa (achado metodológico)**: a paráfrase curta da prescrição,
+registrada no início de cada seção e não revisitada, fez com que lacunas de
+leitura fossem registradas como lacunas da arquitetura. Para a lacuna 3 da
+monografia (suficiência como guia de projeto), só a categoria 1 conta como
+insuficiência do artigo. As categorias 2 e 3 descrevem o alcance do
+protótipo.
+
+**Pendências deste diário identificadas no confronto**:
+
+- a seção "Camada 2" mantém a lacuna em branco ("*(preencher…)*") e
+  "Adaptação necessária: nenhuma até o momento";
+- a seção "Camada 8" descreve os campos da v1; os campos `desfecho`,
+  `validacao` e `parametros_llm` estão registrados só nas seções das
+  Camadas 2 e 7.
 
 ---
 
