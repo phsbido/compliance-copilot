@@ -1,7 +1,8 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-09-24 (v4 — temperatura e seed explícitas,
-benchmark nos modos produção e sensibilidade; ver seção "v4" abaixo).
+**Última atualização**: 2026-10-01 (v4.1 — limpeza do texto de PDF na
+ingestão; validação da lacuna 1 e confronto do diário com a Seção 8; ver
+seção "v4.1 e lacuna 1" abaixo).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -250,6 +251,31 @@ Detalhes em `docs/decisoes_arquitetura.md` (Camada 7, "Camada 7 v2") e
   Camada 5, *com avaliação*: montar conjunto rotulado (~25 perguntas com o
   artigo esperado), medir Recall@3/MRR e só adotar se melhorar. Trazer o
   plano da Camada 5 para aprovação antes do código.
+
+## v4.1 e lacuna 1 (2026-10-01)
+
+- **v4.1** (tag `v4.1-monografia`): `_limpar_artefatos_pdf` na ingestão
+  (espaço antes do hífen; palavra partida, usando o próprio documento como
+  dicionário), só para texto de PDF. Corrigiu o falso positivo da Camada 7
+  para "art. 22-A". `tests/test_ingestao.py` (8 testes; 33 no total).
+  Benchmark: taxas iguais às da v4; mesma recuperação; redação das
+  respostas mudou. v4 arquivada em `docs/resultados/v4/`. Resíduos: "refere
+  m", "especializ ada".
+- **Demonstração**: `docs/roteiro_apresentacao.md` e
+  `scripts/acompanhar_log.ps1`; `run_check_governance.py` cobre a Camada 7
+  v2; `run_check.py` é a linha de base (modelo puro).
+- **Lacuna 1 (independência)**: `docs/validacao_independencia.md`. O código
+  do SCRIBE é público (`gesad-science/SCRIBE-CREW`) e **não deve ser
+  consultado**: a independência depende disso.
+- **Confronto com a Seção 8**: entrada no fim de `decisoes_arquitetura.md`.
+  Das ambiguidades registradas, as das camadas 4, 6, 7 e 8 (e parte das 3 e
+  5) eram prescrições do artigo. Para a lacuna 3, só as 7 ambiguidades
+  genuínas e a numeração (texto x Figura 4) contam. O protótipo segue a
+  ordem do texto: Camadas 4 = Ferramentas, 5 = Conhecimento, 6 = Memória.
+- **Próximo**: lacunas 2 (generalização de domínio) e 3 (suficiência), a
+  partir da entrada de confronto. A busca híbrida com conjunto rotulado
+  continua aprovada e não feita (é também o que o texto pede para a
+  Camada 5: avaliar a recuperação como subsistema).
 
 ## Próximo passo sugerido
 

@@ -39,7 +39,7 @@
         "IV - instituição receptora de dados: instituição participante que apresenta solicitação de compartilhamento à instituição transmissora de dados para recepção dos dados do escopo desta Resolução Conjunta;",
         "V - instituição detentora de conta: instituição participante que mantém conta de depósitos à vista ou de poupança ou conta de pagamento pré-paga de cliente;",
         "VI - instituição iniciadora de transação de pagamento: instituição participante que presta serviço de iniciação de transação de pagamento sem deter em momento algum os fundos transferidos na prestação do serviço;",
-        "VII - serviço de iniciação de transação de pagamento: serviço que possibilita a iniciação da instrução de uma transação de pagamento, ordenado pelo cliente, relativamente a uma conta de depósitos ou de pagamento pré -paga, comandada por instituição não dete ntora da conta à instituição que a detém;",
+        "VII - serviço de iniciação de transação de pagamento: serviço que possibilita a iniciação da instrução de uma transação de pagamento, ordenado pelo cliente, relativamente a uma conta de depósitos ou de pagamento pré-paga, comandada por instituição não detentora da conta à instituição que a detém;",
         "VIII - consentimento: manifestação livre, informada, prévia e inequívoca de vontade, feita por meio eletrônico, pela qual o cliente concorda com o compartilhamento de dados ou de serviços para finalidades determinadas;",
         "IX - chamada de interface: requisição de dados e de serviços apresentada pela instituição receptora de dados ou iniciadora de transação de pagamento à instituição transmissora de dados ou detentora de conta;",
         "X - assinatura de método: é a identificação única de cada método, que consiste na definição do nome do método, bem como dos parâmetros de entrada e saída em uma função de programação;",
@@ -161,7 +161,7 @@
         "a) sobre produtos e serviços contratados ou distribuídos por meio da instituição transmissora de dados; e",
         "b) acessíveis por meio dos seus canais de atendimento eletrônicos, inclusive no tocante aos limites de crédito eventualmente contratados; e",
         "II - abrange, no mínimo, os dados e o histórico de transações realizadas nos últimos doze meses com relação aos produtos e serviços com contratos vigentes nesse período.",
-        "§ 6º Para fins do compartilhamento de dados sobre canais de atendimento, produtos e serviços de que trata o inciso I, alíneas \"a\" e \"b\", do caput, a confederação constituída por cooperativas centrais de crédito em sistema de três níveis e a cooperativa central de crédito em sistema de dois níveis podem incumbir -se da disponibilização das informações de forma agregada de suas filiadas, mantida a res ponsabilidade de cada filiada sobre as informações compartilhadas a ela relacionadas."
+        "§ 6º Para fins do compartilhamento de dados sobre canais de atendimento, produtos e serviços de que trata o inciso I, alíneas \"a\" e \"b\", do caput, a confederação constituída por cooperativas centrais de crédito em sistema de três níveis e a cooperativa central de crédito em sistema de dois níveis podem incumbir-se da disponibilização das informações de forma agregada de suas filiadas, mantida a responsabilidade de cada filiada sobre as informações compartilhadas a ela relacionadas."
       ],
       "anotacoes": [
         "Redação dada, a partir de 2/5/2022, pela Resolução Conjunta nº 4, de 24/3/2022.",
@@ -195,15 +195,15 @@
         "b) de forma voluntária, as demais instituições detentoras de conta de que trata o art. 1º; e",
         "IV - no caso do compartilhamento de serviço de portabilidade de operações de crédito de que trata o art. 5º, caput, inciso II, alínea \"c\":",
         "a) de forma obrigatória, na função de instituição credora original, as instituições individuais e as instituições pertencentes a conglomerados que possuam operações de crédito vigentes conforme modalidades de crédito previstas no escopo de implementação definido pelo Banco Central do Brasil e participem, de forma obrigatória ou voluntária, do compartilhamento de dados de que trata o art. 5º, caput, inciso I; e",
-        "b) de forma voluntária, na função de instituição credora original ou de instituição proponente, as demais instituições de que trata o art. 1º que ofertem ou possuam operações de crédito vigentes conforme modalidades de crédito previstas no escopo de implem entação definido pelo Banco Central do Brasil, observada a regulamentação vigente.",
+        "b) de forma voluntária, na função de instituição credora original ou de instituição proponente, as demais instituições de que trata o art. 1º que ofertem ou possuam operações de crédito vigentes conforme modalidades de crédito previstas no escopo de implementação definido pelo Banco Central do Brasil, observada a regulamentação vigente.",
         "§ 1º É obrigatório o compartilhamento dos dados e dos serviços:.",
         "I - em formato para o acesso pelo público, conforme disposto no art. 23, § 2º, para os dados do art. 5º, inciso I, alíneas “a” e “b”; e",
         "II - entre as instituições participantes de cada caso mencionado nos incisos I e II do caput para os dados do art. 5º, incisos I, alíneas “c” e “d”, e II, alínea “a”.",
         "§ 2º Excetuam-se da exigência de participação obrigatória de que trata o inciso I, alínea \"a\", do caput, as instituições integrantes de conglomerados prudenciais que não prestem os serviços a que se refere m os dados de transações de clientes previstos no art. 5º, inciso I, alínea \"d\".",
         "§ 3º A participação voluntária de que trata o inciso I, alínea \"b\", do caput, pressupõe a disponibilidade de interface dedicada de que trata o art. 23 na condição de instituição transmissora de dados.",
-        "§ 4º Excetuam -se das exigências de participação obrigatória de que tratam os incisos I a IV do caput as instituições assim dispensadas pelo Banco Central do Brasil, com base em critérios relacionados à quantidade e à natureza de clientes, aos tipos de serviços contratados e distribuídos, bem como aos canais de acesso eletrônicos disponíveis e utilizados pelos clientes, observados os objetivos e princípios constantes desta Resolução Conjunta.",
+        "§ 4º Excetuam-se das exigências de participação obrigatória de que tratam os incisos I a IV do caput as instituições assim dispensadas pelo Banco Central do Brasil, com base em critérios relacionados à quantidade e à natureza de clientes, aos tipos de serviços contratados e distribuídos, bem como aos canais de acesso eletrônicos disponíveis e utilizados pelos clientes, observados os objetivos e princípios constantes desta Resolução Conjunta.",
         "§ 5º As instituições de que trata o art. 1º que superarem o limite de que trata o inciso I, alínea \"a\", item 2, do caput, ou que se enquadrarem como participantes obrigatórias no Pix, nos termos do inciso II, alínea \"a\", item 1, do caput, terão prazo de seis meses para se tornarem instituições participantes do Open Finance.",
-        "§ 6º Para fins do disposto no § 5º, considera -se que uma instituição superou o limite de que trata o inciso I, alínea \"a\", item 2, do caput, caso ela tenha ficado acima do referido limite por dois trimestres consecutivos.",
+        "§ 6º Para fins do disposto no § 5º, considera-se que uma instituição superou o limite de que trata o inciso I, alínea \"a\", item 2, do caput, caso ela tenha ficado acima do referido limite por dois trimestres consecutivos.",
         "§ 7º Caso uma instituição opte por ser participante de forma voluntária, nos termos do inciso I, alínea \"b\", do caput, as demais instituições integrantes de seu conglomerado devem tornar-se participantes do Open Finance.",
         "§ 8º A participação voluntária de que trata o inciso IV, alínea \"b\", do caput, na condição de instituição proponente, pressupõe a disponibilidade de interface dedicada na condição de instituição credora original."
       ],
@@ -275,7 +275,7 @@
         "I - as etapas de que trata o art. 8º, caput;",
         "II - os procedimentos associados às etapas de que trata o inciso I; e",
         "III - o redirecionamento para outros ambientes ou sistemas eletrônicos, inclusive de outras instituições, quando aplicável.",
-        "Parágrafo único. Admite -se o compartilhamento do serviço de iniciação de transação de pagamento de que trata o art. 5º, caput, inciso II, alínea “a”, sem o redirecionamento para outros ambientes ou sistemas eletrônicos, inclusive de outras instituições, de que trata o inciso III do caput, observado o disposto em regulamentação específica."
+        "Parágrafo único. Admite-se o compartilhamento do serviço de iniciação de transação de pagamento de que trata o art. 5º, caput, inciso II, alínea “a”, sem o redirecionamento para outros ambientes ou sistemas eletrônicos, inclusive de outras instituições, de que trata o inciso III do caput, observado o disposto em regulamentação específica."
       ],
       "anotacoes": [
         "Incluído pela Resolução Conjunta nº 10, de 4/7/2024."
@@ -290,7 +290,7 @@
         "Seção II Do Consentimento"
       ],
       "paragrafos": [
-        "Art. 10. A instituiç ão receptora de dados ou iniciadora de transação de pagamento, p reviamente ao compartilhamento de que trata esta Resolução Conjunta, deve identificar o cliente e obter o seu consentimento.",
+        "Art. 10. A instituiç ão receptora de dados ou iniciadora de transação de pagamento, previamente ao compartilhamento de que trata esta Resolução Conjunta, deve identificar o cliente e obter o seu consentimento.",
         "§ 1º O consentimento mencionado no caput deve:",
         "I - ser solicitado por meio de linguagem clara, objetiva e adequada;",
         "II - referir-se a finalidades determinadas;",
@@ -382,7 +382,7 @@
         "Seção II Do Consentimento"
       ],
       "paragrafos": [
-        "Art. 13 -A. Excetua -se do disposto no art. 13 o consentimento relativo às transações de pagamento ocorridas na forma do compartilhamento disposto no art. 9º, parágrafo único, que deve contemplar, no mínimo, as seguintes informações:",
+        "Art. 13-A. Excetua-se do disposto no art. 13 o consentimento relativo às transações de pagamento ocorridas na forma do compartilhamento disposto no art. 9º, parágrafo único, que deve contemplar, no mínimo, as seguintes informações:",
         "I - a forma de pagamento;",
         "II - o prazo de validade do consentimento; e",
         "III - os valores máximos por transação e por dia que o cliente deseja autorizar.",
@@ -462,7 +462,7 @@
         "Seção III Da Autenticação"
       ],
       "paragrafos": [
-        "Art. 16 -A. No caso de transações de pagamento ocorridas na forma do compartilhamento disposto no art. 9º, parágrafo único, a instituição iniciadora de transação de pagamento deve adotar procedimentos e controles para assegurar a confiabilidade, a integridade, a disponibilidade, a segurança e o sigilo de ambientes e sistemas eletrônicos sob sua responsabilidade, ao participar da execução dos procedimentos e controles de que trata o art. 16, caput, inciso I."
+        "Art. 16-A. No caso de transações de pagamento ocorridas na forma do compartilhamento disposto no art. 9º, parágrafo único, a instituição iniciadora de transação de pagamento deve adotar procedimentos e controles para assegurar a confiabilidade, a integridade, a disponibilidade, a segurança e o sigilo de ambientes e sistemas eletrônicos sob sua responsabilidade, ao participar da execução dos procedimentos e controles de que trata o art. 16, caput, inciso I."
       ],
       "anotacoes": [
         "Incluído pela Resolução Conjunta nº 10, de 4/7/2024."
@@ -628,7 +628,7 @@
         "Seção IV-A Dos requisitos para a portabilidade de operações de crédito"
       ],
       "paragrafos": [
-        "Art. 22 -B. A instituição credora original da operação de crédito objeto da portabilidade de crédito deve adotar procedimentos e controles para autenticação da instituição proponente, bem como observar as regras dispostas na regulamentação vigente relativa s à solicitação de compartilhamento de dados, conforme o art. 22 -A, caput, inciso II."
+        "Art. 22-B. A instituição credora original da operação de crédito objeto da portabilidade de crédito deve adotar procedimentos e controles para autenticação da instituição proponente, bem como observar as regras dispostas na regulamentação vigente relativa s à solicitação de compartilhamento de dados, conforme o art. 22-A, caput, inciso II."
       ],
       "anotacoes": [
         "Incluído pela Resolução Conjunta nº 15, de 28/11/2025."
@@ -643,7 +643,7 @@
         "Seção IV-A Dos requisitos para a portabilidade de operações de crédito"
       ],
       "paragrafos": [
-        "Art. 22 -C. Fica facultada à instituição credora original da operação de crédito objeto da portabilidade de crédito a oferta ao cliente de contrapropostas antes do prazo previsto para a efetivação da liquidação da operação."
+        "Art. 22-C. Fica facultada à instituição credora original da operação de crédito objeto da portabilidade de crédito a oferta ao cliente de contrapropostas antes do prazo previsto para a efetivação da liquidação da operação."
       ],
       "anotacoes": [
         "Incluído pela Resolução Conjunta nº 15, de 28/11/2025."
@@ -658,7 +658,7 @@
         "Seção IV-A Dos requisitos para a portabilidade de operações de crédito"
       ],
       "paragrafos": [
-        "Art. 22 -D. A instituição credora original e a instituição proponente devem assegurar que o cliente:",
+        "Art. 22-D. A instituição credora original e a instituição proponente devem assegurar que o cliente:",
         "I - possa desistir da solicitação de portabilidade da operação de crédito a qualquer momento antes da efetivação da liquidação da operação; e",
         "II - seja informado com relação ao progresso da solicitação da portabilidade."
       ],
@@ -677,7 +677,7 @@
         "Seção IV-A Dos requisitos para a portabilidade de operações de crédito"
       ],
       "paragrafos": [
-        "Art. 22 -E. A instituição proponente e a instituição credora original devem observar, além das regras da regulamentação do Open Finance, as regras e os prazos estabelecidos na regulamentação específica que disciplina a portabilidade de operações de crédito, especialmente no que se refere a:",
+        "Art. 22-E. A instituição proponente e a instituição credora original devem observar, além das regras da regulamentação do Open Finance, as regras e os prazos estabelecidos na regulamentação específica que disciplina a portabilidade de operações de crédito, especialmente no que se refere a:",
         "I - encaminhamento da proposta pela instituição proponente e da contraproposta pela instituição credora original;",
         "II - solicitação e cancelamento da portabilidade;",
         "III - transferência de recursos entre as instituições para fins da liquidação do saldo devedor da operação de crédito objeto da portabilidade;",
@@ -1295,7 +1295,7 @@
         "a) entregas de conteúdo da convenção de que trata o art. 47; e.",
         "b) implementação do Open Finance; e",
         "XI - outros aspectos necessários à implementação do Open Finance, de acordo com as competências legais do Banco Central do Brasil.",
-        "Parágrafo único. Os parâmetros relativos à indisponibilidade e ao desempenho eventualmente definidos de acordo com o caput, inciso II, de vem ser compatíveis com a regulamentação vigente, inclusive com o regulamento ou instrumento que discipline o funcionamento do arranjo de pagamento referente à respectiva transação de pagamento."
+        "Parágrafo único. Os parâmetros relativos à indisponibilidade e ao desempenho eventualmente definidos de acordo com o caput, inciso II, devem ser compatíveis com a regulamentação vigente, inclusive com o regulamento ou instrumento que discipline o funcionamento do arranjo de pagamento referente à respectiva transação de pagamento."
       ],
       "anotacoes": [
         "Redação dada, a partir de 2/5/2022, pela Resolução Conjunta nº 4, de 24/3/2022.",

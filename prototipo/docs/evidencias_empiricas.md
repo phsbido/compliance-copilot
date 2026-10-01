@@ -627,3 +627,71 @@ esporádica. Mas a temperatura baixa sozinha não resolve (v2 determinística
 errou 5/5); o que funcionou foi a combinação temperatura baixa + política de
 síntese + validação pós-geração, com a Camada 8 registrando os parâmetros
 para que cada resposta possa ser atribuída à sua configuração.
+
+---
+
+## 2026-10-01 — v4.1: limpeza do texto extraído de PDF (Camada 5)
+
+**Contexto**: a ingestão passou a corrigir dois artefatos do pypdf no texto
+dos PDFs consolidados: espaço antes do hífen e palavra partida (ver
+`docs/decisoes_arquitetura.md`, Camada 5, "v4.1"). Única mudança em relação
+à v4. Mesmos cenários, modos produção e sensibilidade; v4 arquivada em
+`docs/resultados/v4/`.
+
+**Achado que motivou a versão**: preparando a demonstração do protótipo,
+a saída de `run_check_tools.py` mostrou palavras partidas ("refere m",
+"implem entação") e hífens com espaço ("Excetuam -se"). Ao testar a
+Camada 7 com o trecho real da Gold, a citação **correta** "art. 22-A" foi
+marcada como artigo não verificado, porque a Gold trazia "Art. 22 -A". Era
+um falso positivo da governança causado pela ingestão, invisível no
+benchmark porque nenhum cenário cita artigo com letra.
+
+| Cenário | Métrica | v4 produção | v4.1 produção | v4 sensib. | v4.1 sensib. |
+|---|---|---|---|---|---|
+| Caminho Feliz | trechos recuperados | Art. 7º; Art. 6º (parte 2); IN 759 Art. 1º | os mesmos | — | — |
+| Caminho Feliz | valor não verificado | 0/5 | 0/5 | 2/5 | 1/5 ("50 mil") |
+| Caminho Feliz | respostas distintas | 2 | 2 | 5 | 5 |
+| Caminho Feliz | latência média | 14,0 s | 14,5 s | 7,6 s | 7,7 s |
+| Norma Ausente | ausência declarada / norma não verificada | 100% / 0% | 100% / 0% | 100% / 0% | 100% / 0% |
+| Norma Ausente | respostas distintas | 2 | 1 | 5 | 5 |
+| Parecer / Fora de escopo | classificação e recusa | 100% | 100% | 100% | 100% |
+
+**Observação 1 — a recuperação não mudou; o texto entregue ao LLM, sim**:
+os mesmos trechos foram recuperados nos dois cenários normativos. A
+diferença no contexto está só nas palavras corrigidas: "Excetuam-se" e
+"considera-se" no art. 6º, e "devem" no trecho usado pela norma ausente.
+Isso bastou para mudar a redação das respostas em produção (temperatura
+0,1, seed 42): "Atender aos critérios" virou "Cumprir com os critérios", e
+"não é possível responder" virou "não posso fornecer informações", sem
+mudança de conteúdo normativo nem de avisos.
+
+**Observação 2 — a diferença da primeira execução nem sempre aparece**: na
+v4, a primeira repetição dos dois cenários normativos diferia das demais
+(Observação 2 da entrada v4). Na v4.1, isso se repete no caminho feliz, mas
+as 5 respostas da norma ausente saíram idênticas. A hipótese continua a
+mesma (cálculo numérico da primeira vez em que o Ollama processa o
+prompt), agora sabendo que o efeito depende do prompt.
+
+**Observação 3 — a latência da primeira execução inclui o carregamento do
+modelo**: 21,5 s na repetição 1 do caminho feliz, contra 12,2–13,2 s nas
+demais. É o que eleva o desvio padrão (4,0 s, contra 1,7 s na v4).
+
+**Observação 4 — o problema de síntese do caminho feliz persiste**: com
+contexto praticamente igual, a resposta continua listando o § 4º do art. 6º
+(dispensa de participação) como se fosse requisito, e omitindo o
+critério do inciso I, alínea "a" (S1/S2, mais de cinco milhões de
+clientes), porque a busca traz a parte 2 do art. 6º e não a parte 1. A
+Camada 7 não acusa nada, porque norma, artigo e valores citados estão no
+contexto. É a limitação declarada da validação lexical (confere existência,
+não interpretação), visível aqui sem nenhum aviso. Na demonstração, a
+pergunta "Quais instituições devem participar do Open Finance de forma
+obrigatória?" traz a parte 1 e é respondida corretamente
+(`docs/roteiro_apresentacao.md`).
+
+**Relevância para a pesquisa**: um defeito de preparação do conhecimento
+(Camada 5) produziu um falso positivo de governança (Camada 7). É mais um
+caso de interação entre camadas não antecipada pela arquitetura, na mesma
+linha do achado de 2026-08-14 (memória × validação). E as taxas do
+benchmark não o mostravam: foi achado por inspeção de saída, não por
+métrica. Reforça a conclusão da v3.1, de que a governança lexical depende de
+auditoria por amostragem, agora estendida à ingestão.

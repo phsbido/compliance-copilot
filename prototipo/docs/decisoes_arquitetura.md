@@ -375,6 +375,51 @@ lacuna original desta camada, acima).
   "existe", "significa"…) como stopwords. Cabeçalho de contexto mantido no
   índice: testado sem ele, a recuperação piorou.
 
+### v4.1: limpeza do texto extraído de PDF (2026-10-01)
+
+Plano apresentado e aprovado pelo usuário antes do código. É a única
+mudança em relação à v4.
+
+**Decisão**: nova etapa `_limpar_artefatos_pdf`, aplicada só ao texto que
+vem do PDF consolidado (Resolução Conjunta nº 1/2020 e Circular nº
+4.015/2020). As normas lidas do HTML não passam por ela. Duas regras:
+
+1. **Espaço antes do hífen**: "palavra -palavra" vira "palavra-palavra".
+   Corrigiu 14 casos: pronomes enclíticos ("Excetuam -se", "considera -se"),
+   "pré -paga" e identificadores de artigo ("Art. 13 -A", "22 -A" a "22 -E",
+   "6º -A"). O inciso com travessão ("I - no caso") não é afetado, porque
+   tem espaço depois do hífen.
+2. **Palavra partida**: "X Y" vira "XY" quando "XY" aparece em outro ponto
+   do mesmo documento e uma das partes é rara nele (até 2 ocorrências). O
+   próprio texto da norma serve de dicionário, sem dependência nova.
+   Corrigiu 7 casos ("implem entação", "dete ntora", "res ponsabilidade",
+   "p reviamente", "de vem", "Ce ntral").
+
+**Motivação**: os artefatos tinham dois efeitos. Na Camada 5, "implem" e
+"entação" não casam com "implementação" na busca BM25. Na Camada 7, a
+citação correta "art. 22-A" gerava aviso de artigo não verificado, porque o
+contexto trazia "22 -A". O defeito estava na ingestão, e a governança
+acusava o modelo por ele.
+
+**Alternativa descartada**: o modo `layout` do pypdf resolve mais palavras
+partidas, mas altera a estrutura de linhas usada na reconstrução de
+parágrafos e não resolve "implem entação".
+
+**Resíduo conhecido**: "refere m" e "especializ ada" continuam na Silver,
+porque a forma inteira não aparece em outro ponto do documento. Mantidos
+de propósito: uma regra para um caso único não generaliza.
+
+**Também verificado**: o salto do inciso II para o IV no art. 6º da
+Resolução Conjunta nº 1/2020 é correto. O inciso III foi revogado pela
+Resolução Conjunta nº 15/2025, e a anotação de revogação é removida do
+texto pela Silver.
+
+**Testes**: `tests/test_ingestao.py` (8 testes). Cobrem as duas regras, o
+inciso com travessão, palavras frequentes que não devem ser juntadas, o
+resíduo conhecido, a ausência dos artefatos na Gold e a citação "art. 22-A"
+sem aviso, com o trecho real da Gold. Resultados em
+`docs/evidencias_empiricas.md`, v4.1.
+
 ---
 
 ## Camada 6 — Contexto e Memória

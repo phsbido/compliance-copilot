@@ -23,7 +23,8 @@ cada uma, se entra no corpus de runtime (`corpus_runtime`).
 
 **Silver** (`2_silver_cleaned/<arquivo>.json`, texto vigente estruturado):
 - remove texto tachado do HTML (redações revogadas), rodapés de página e
-  artefatos de espaçamento do PDF;
+  artefatos de espaçamento do PDF (incluindo espaço antes do hífen e
+  palavras partidas — `_limpar_artefatos_pdf`);
 - reconstrói parágrafos (HTML e PDF quebram linhas no meio da frase);
 - separa as anotações de alteração ("(Redação dada pela...)", "(Incluído
   pela...)", "(Revogado pela...)") do texto e as guarda como metadado —
@@ -255,6 +256,38 @@ def _limpar_artefatos(texto: str) -> str:
     return texto
 
 
+_PALAVRA = r"[A-Za-zÀ-ÖØ-öø-ÿ]+"
+# Uma parte de palavra partida pelo pypdf quase nunca ocorre sozinha no
+# documento; uma palavra legítima ao lado de outra, sim.
+_MAX_OCORRENCIAS_FRAGMENTO = 2
+
+
+def _limpar_artefatos_pdf(texto: str) -> str:
+    """Artefatos de espaçamento da extração do pypdf, só para texto vindo de
+    PDF (ver docs/evidencias_empiricas.md, v4.1).
+
+    - Espaço antes do hífen: "Excetuam -se", "pré -paga" e identificadores
+      de artigo ("Art. 22 -A"), que geravam falso positivo na Camada 7 para
+      a citação correta "art. 22-A".
+    - Palavra partida: "implem entação" vira "implementação" quando a
+      palavra inteira aparece em outro ponto do mesmo documento e uma das
+      partes é rara nele. Fica de fora a palavra partida cuja forma inteira
+      não aparece em outro ponto (ex: "refere m").
+    """
+    texto = re.sub(r"(?<=\w) -(?=\w)", "-", texto)
+    vocabulario = Counter(p.lower() for p in re.findall(_PALAVRA, texto))
+
+    def juntar(m: re.Match) -> str:
+        a, b = m.groups()
+        if vocabulario[(a + b).lower()] and (
+            min(vocabulario[a.lower()], vocabulario[b.lower()]) <= _MAX_OCORRENCIAS_FRAGMENTO
+        ):
+            return a + b
+        return m.group(0)
+
+    return re.sub(rf"\b({_PALAVRA}) ([a-zà-öø-ÿ]+)\b", juntar, texto)
+
+
 def _reconstruir_paragrafos(texto: str) -> list[str]:
     """Junta linhas quebradas no meio da frase. Uma linha continua a anterior
     se não começa um dispositivo (ver `_INICIO_ESTRUTURAL`) e a anterior não
@@ -441,16 +474,16 @@ def etapa_silver() -> list[Path]:
 
         pdf = bruto.get("pdf_consolidado")
         if pdf:
-            texto = _texto_do_pdf(BRONZE_DIR / f"{bruto['arquivo']}.pdf")
+            texto = _limpar_artefatos_pdf(_limpar_artefatos(_texto_do_pdf(BRONZE_DIR / f"{bruto['arquivo']}.pdf")))
             fonte_texto = f"PDF consolidado {pdf['arquivo']}"
             versao = f"consolidada v{pdf['versao']}, obtida em {data_coleta}"
         else:
-            texto = _texto_do_html(registro["Texto"])
+            texto = _limpar_artefatos(_texto_do_html(registro["Texto"]))
             fonte_texto = "HTML da página (texto tachado removido)"
             v = registro.get("VersaoNormativo")
             versao = f"versão {int(v)} da página, obtida em {data_coleta}" if isinstance(v, (int, float)) else f"obtida em {data_coleta}"
 
-        unidades = _estruturar(_reconstruir_paragrafos(_limpar_artefatos(texto)))
+        unidades = _estruturar(_reconstruir_paragrafos(texto))
         silver = {
             "arquivo": bruto["arquivo"],
             "titulo": titulo,

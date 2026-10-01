@@ -152,8 +152,8 @@ benchmark):
 
 ### 4.3. Validando cada camada isoladamente
 
-Testes automatizados da governança (Camada 7), sem LLM, com casos reais dos
-benchmarks:
+Testes automatizados da governança (Camada 7) e da limpeza da ingestão
+(Camada 5), sem LLM, com casos reais dos benchmarks e da extração dos PDFs:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -199,14 +199,15 @@ Versões avaliadas. Cada uma muda uma única coisa em relação à anterior:
 
 | Tag | Camada 5 | Resultados |
 |---|---|---|
-| `v4.0-monografia` (atual) | v3.1 com **temperatura e seed explícitas** (classificação 0, síntese 0,1, seed 42) e registradas na Camada 8; benchmark nos modos `producao` e `sensibilidade` | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v4.1-monografia` (atual) | v4 com **limpeza do texto extraído de PDF** na ingestão (espaço antes do hífen, palavras partidas) | `docs/tabela_resultados_empiricos*.csv`, `docs/resultados/*.json` |
+| `v4.0-monografia` | v3.1 com **temperatura e seed explícitas** (classificação 0, síntese 0,1, seed 42) e registradas na Camada 8; benchmark nos modos `producao` e `sensibilidade` | `docs/resultados/v4/` |
 | `v3.1-monografia` | v3 com a regra 3 da política de síntese reescrita (citação entre parênteses, sem copiar cabeçalhos) | `docs/resultados/v3.1/` |
 | `v3.0-monografia` | Camada 5 da v2 + **Camada 7 v2**: política de síntese, recusa sem base, verificação de norma/artigo/valor, ausência declarada, fontes anexadas | `docs/resultados/v3/` |
 | `v2.0-monografia` | Gold do pipeline Bronze/Silver/Gold ingerido por URL + busca BM25 | `docs/resultados/v2/` |
 | `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout v4.0-monografia
+git checkout v4.1-monografia
 ```
 
 ### Passo 1 — Conferir a base de conhecimento e as tabelas sem internet e sem Ollama (~10 s)
@@ -251,7 +252,7 @@ python run_benchmark.py
 | Cenário | Classificação correta | Recusa | Ausência declarada | Aviso da Camada 7 | Respostas distintas |
 |---|---|---|---|---|---|
 | Caminho Feliz / RAG BACEN | 100% | 0% | 0% | 0% | 2 |
-| Norma Ausente / Fronteira | 100% | 0% | 100% | 0% | 2 |
+| Norma Ausente / Fronteira | 100% | 0% | 100% | 0% | 1 |
 | Solicitação de Parecer / Governança | 100% | 100% | 0% | 0% | 1 |
 | Fora de Escopo / Governança | 100% | 100% | 0% | 0% | 1 |
 
@@ -259,9 +260,10 @@ No cenário "norma ausente", o modelo responde que a Resolução BCB nº 32/2020
 não está no contexto e não descreve o conteúdo dela; a Camada 7 registra
 isso como *ausência declarada*, não como citação não verificada.
 
-As repetições 2 a 5 de cada cenário saem idênticas; a primeira difere num
+No caminho feliz, as repetições 2 a 5 saem idênticas e a primeira difere num
 trecho acessório (primeira vez em que o Ollama processa aquele prompt —
-ver `docs/evidencias_empiricas.md`, v4). No mesmo ambiente da Seção 5, o
+ver `docs/evidencias_empiricas.md`, v4); na rodada da v4.1, as 5 respostas
+da norma ausente saíram idênticas. No mesmo ambiente da Seção 5, o
 texto deve bater com `docs/resultados/resultados_benchmark.json`; em outro
 hardware ou outra versão do Ollama/modelo, espera-se que as taxas se
 mantenham, mas o texto pode variar. A latência depende da máquina.
@@ -279,9 +281,10 @@ python run_benchmark.py --modo sensibilidade
 **Resultado esperado** (compare com
 [`docs/tabela_resultados_empiricos_sensibilidade.csv`](prototipo/docs/tabela_resultados_empiricos_sensibilidade.csv)):
 classificação correta e recusas em 100%; respostas diferentes a cada
-repetição (`n_respostas_distintas` perto de 5). Na rodada publicada, 2 das 5
-respostas do caminho feliz inventaram o limite de clientes ("3,5 milhões",
-"100 mil") e foram sinalizadas pela Camada 7 como valor não verificado. Por
+repetição (`n_respostas_distintas` perto de 5). Na rodada publicada (v4.1), 1 das 5
+respostas do caminho feliz inventou o limite de clientes ("50 mil") e foi
+sinalizada pela Camada 7 como valor não verificado (na v4, 2 de 5: "3,5
+milhões" e "100 mil"). Por
 ser aleatório, esse número varia de uma rodada para outra.
 
 > A coluna `taxa_aviso_citacao_nao_verificada` usa a régua da v1/v2, que
@@ -354,7 +357,8 @@ prototipo_esqueleto/
     ├── requirements-lock.txt          # Versões exatas do ambiente de referência
     ├── .env.example                   # Modelo e host do Ollama
     ├── scripts/
-    │   └── plot_benchmark.py          # Gráficos de publicação
+    │   ├── plot_benchmark.py          # Gráficos de publicação
+    │   └── acompanhar_log.ps1         # Acompanha o log da Camada 8 em tempo real
     ├── src/
     │   ├── config.py                  # Configuração transversal (.env)
     │   ├── layer1_interaction/        # Camada 1 — Interação com o Usuário (CLI)
@@ -374,6 +378,7 @@ prototipo_esqueleto/
     │   └── PENDENTES.md               # Normas aprovadas ainda sem texto verificado
     ├── tests/
     │   ├── test_governanca.py         # Testes automatizados da Camada 7 (unittest, sem LLM)
+    │   ├── test_ingestao.py           # Testes da limpeza de texto de PDF (Camada 5)
     │   ├── casos_teste.md             # 4 casos qualitativos (execuções reais documentadas)
     │   └── casos_teste.json           # Os mesmos 4 cenários, estruturados para o benchmark
     ├── docs/
@@ -382,9 +387,11 @@ prototipo_esqueleto/
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
-    │   ├── tabela_resultados_empiricos.csv                # Benchmark v4, modo produção
-    │   ├── tabela_resultados_empiricos_sensibilidade.csv  # Benchmark v4, modo sensibilidade (0,8)
-    │   ├── resultados/                # Dado bruto do benchmark v4 (resposta do LLM, contexto, validação, parâmetros)
+    │   ├── roteiro_apresentacao.md    # Roteiro de demonstração para a banca
+    │   ├── tabela_resultados_empiricos.csv                # Benchmark v4.1, modo produção
+    │   ├── tabela_resultados_empiricos_sensibilidade.csv  # Benchmark v4.1, modo sensibilidade (0,8)
+    │   ├── resultados/                # Dado bruto do benchmark v4.1 (resposta do LLM, contexto, validação, parâmetros)
+    │   │   ├── v4/                    # Dado bruto e tabelas da v4 (tag v4.0-monografia)
     │   │   ├── v3.1/                  # Dado bruto e tabelas da v3.1 (tag v3.1-monografia)
     │   │   ├── v3/                    # Dado bruto e tabelas da v3 (tag v3.0-monografia)
     │   │   ├── v2/                    # Dado bruto e tabelas da v2 (tag v2.0-monografia)

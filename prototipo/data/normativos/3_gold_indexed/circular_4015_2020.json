@@ -771,7 +771,7 @@
       "anotacoes": [
         "Incluído pela Resolução BCB nº 526, de 3/12/2025"
       ],
-      "texto": "[Circular nº 4.015/2020 — Art. 6º-A]\nArt. 6º -A Os serviços de portabilidade de operações de crédito, objeto de compartilhamento de que trata o art. 5º, caput, inciso II, alínea \"c\", da Resolução Conjunta nº 1, de 4 de maio de 2020, abrangem as modalidades de operações de crédito contratadas por pessoa natural, bem como operações de crédito contratadas por empresário individual ou por pessoa jurídica passíveis de contratação por pessoa natural, conforme definido pelo Banco Ce ntral do Brasil.",
+      "texto": "[Circular nº 4.015/2020 — Art. 6º-A]\nArt. 6º-A Os serviços de portabilidade de operações de crédito, objeto de compartilhamento de que trata o art. 5º, caput, inciso II, alínea \"c\", da Resolução Conjunta nº 1, de 4 de maio de 2020, abrangem as modalidades de operações de crédito contratadas por pessoa natural, bem como operações de crédito contratadas por empresário individual ou por pessoa jurídica passíveis de contratação por pessoa natural, conforme definido pelo Banco Central do Brasil.",
       "n_tokens": 44,
       "frequencia_tokens": {
         "circul": 1,
@@ -804,7 +804,7 @@
         "conforme": 1,
         "defin": 1,
         "banc": 1,
-        "ntral": 1,
+        "central": 1,
         "brasil": 1
       }
     },
