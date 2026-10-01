@@ -1,11 +1,17 @@
 """
 Script de validação — Camada 7 (Governança e Segurança).
 
-Testa `validar_citacao`, `recusar_parecer_juridico` e `recusar_fora_de_escopo`
-isoladamente, com casos construídos a partir dos achados empíricos registrados
-em docs/evidencias_empiricas.md: um artigo citado que não está no contexto
-(reproduz o achado da Camada 4/6) e uma citação que bate com o contexto
-(não deve gerar aviso de citação, só o aviso padrão de validação humana).
+Mostra, sem LLM, as três frentes da governança (ver docs/decisoes_arquitetura.md,
+Camada 7 v2):
+
+- antes da geração: recusa de parecer jurídico, de pergunta fora de escopo e
+  de pergunta sem base no corpus;
+- depois da geração: `validar_resposta` confere norma, artigo e valor citados
+  contra o contexto recuperado, e distingue ausência declarada de citação
+  inventada. Os casos reproduzem os achados de docs/evidencias_empiricas.md;
+- na ingestão: só fontes de domínios do BCB são aceitas.
+
+Os testes exaustivos ficam em tests/test_governanca.py.
 
 Uso:
     python run_check_governance.py
@@ -13,41 +19,75 @@ Uso:
 from src.layer7_governance.governance import (
     recusar_fora_de_escopo,
     recusar_parecer_juridico,
-    validar_citacao,
+    recusar_sem_base,
+    validar_fonte_publica,
+    validar_resposta,
 )
 
+URL_RC1 = "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20Conjunta&numero=1"
+
 CONTEXTO_REAL = (
-    "Fonte: Resolução Conjunta nº 1, de 4 de maio de 2020 "
-    "(https://normativos.bcb.gov.br/Lists/Normativos/Attachments/51028/Res_Conj_0001_v7_L.pdf)\n"
-    "Art. 6º São participantes do Open Finance: instituições com número de "
+    f"Fonte: Resolução Conjunta nº 1, de 4 de maio de 2020 ({URL_RC1})\n"
+    "[Resolução Conjunta nº 1/2020 — Seção II Da Participação no Open Finance — Art. 6º]\n"
+    "Art. 6º São participantes do Open Finance as instituições com número de "
     "clientes superior a cinco milhões."
 )
 
+CASOS = [
+    # (descrição, resposta simulada do LLM, campo esperado com aviso ou None)
+    ("Citação correta (art. 6º e valor presentes no contexto)",
+     "Participam as instituições com mais de 5 milhões de clientes (Resolução Conjunta nº 1/2020, art. 6º).",
+     None),
+    ("Artigo que não está no contexto",
+     "Esse requisito está no art. 51 da Resolução Conjunta nº 1.",
+     "artigos_nao_verificados"),
+    ("Valor distorcido (achado real: 'cinco milhões' -> '3 milhões')",
+     "Participam as instituições com mais de 3 milhões de clientes.",
+     "valores_nao_verificados"),
+    ("Norma inventada (achado real da v1)",
+     "Segundo a Resolução BCB nº 32/2020, as interfaces devem ser padronizadas.",
+     "normas_nao_verificadas"),
+    ("Ausência declarada (comportamento correto, sem aviso)",
+     "Não encontrei a Resolução BCB nº 32/2020 no contexto consultado.",
+     "normas_declaradas_ausentes"),
+]
+
+
+def _mostrar(descricao: str, resposta: str, campo: str | None) -> None:
+    r = validar_resposta(resposta, CONTEXTO_REAL)
+    print(f"- {descricao}")
+    print(f"  resposta: {resposta}")
+    if campo is None:
+        assert not r.possui_aviso, "citação correta não deve gerar aviso"
+        print("  [OK] sem aviso\n")
+    elif campo == "normas_declaradas_ausentes":
+        assert not r.possui_aviso and getattr(r, campo), campo
+        print(f"  [OK] registrada como ausência declarada: {getattr(r, campo)}\n")
+    else:
+        assert r.possui_aviso and getattr(r, campo), campo
+        print(f"  [OK] aviso em {campo}: {getattr(r, campo)}\n")
+
+
 if __name__ == "__main__":
-    print("Testando validar_citacao (Camada 7) com citação incorreta de artigo...")
-    resposta_com_erro = "Esse requisito está no art. 51 da Resolução Conjunta nº 1."
-    resultado = validar_citacao(resposta_com_erro, CONTEXTO_REAL)
-    print(resultado)
-    assert "art. 51" in resultado and "não aparece nos trechos normativos" in resultado
-    print("\n[OK] Citação incorreta foi sinalizada.\n")
+    print("1) Antes da geração: recusas\n")
+    print(f"- Parecer jurídico:\n  {recusar_parecer_juridico()}\n")
+    print(f"- Fora de escopo:\n  {recusar_fora_de_escopo()}\n")
+    print(f"- Sem base no corpus:\n  {recusar_sem_base()}\n")
 
-    print("Testando validar_citacao com citação correta (art. 6º, presente no contexto)...")
-    resposta_correta = "Esse requisito está no art. 6º da Resolução Conjunta nº 1."
-    resultado2 = validar_citacao(resposta_correta, CONTEXTO_REAL)
-    print(resultado2)
-    assert "não aparece nos trechos normativos" not in resultado2
-    assert "não consta nos trechos normativos" not in resultado2, (
-        "falso positivo: o ponto final da frase não deve ser confundido com "
-        "parte do número da norma"
-    )
-    print("\n[OK] Citação correta não gerou aviso de inconsistência.\n")
+    print("2) Depois da geração: verificação da resposta contra o contexto\n")
+    for caso in CASOS:
+        _mostrar(*caso)
 
-    print("Testando recusar_parecer_juridico...")
-    print(recusar_parecer_juridico())
-    print("\n[OK] Recusa de parecer jurídico funcionando.")
+    print("Texto final entregue ao usuário (caso do artigo inexistente):")
+    print(validar_resposta(CASOS[1][1], CONTEXTO_REAL).texto_final)
 
-    print("\nTestando recusar_fora_de_escopo...")
-    print(recusar_fora_de_escopo())
-    print("\n[OK] Recusa de pergunta fora de escopo funcionando.")
+    print("\n3) Na ingestão: só fontes públicas do BCB\n")
+    validar_fonte_publica(URL_RC1)
+    print(f"- {URL_RC1}\n  [OK] aceita")
+    try:
+        validar_fonte_publica("https://blog-qualquer.com/resumo-open-finance")
+        raise AssertionError("fonte fora do BCB deveria ser recusada")
+    except ValueError as erro:
+        print(f"- https://blog-qualquer.com/resumo-open-finance\n  [OK] recusada: {erro}")
 
     print("\nGovernança validada.")

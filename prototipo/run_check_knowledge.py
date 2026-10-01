@@ -1,8 +1,9 @@
 """
 Script de validação — Camada 5 (Conhecimento/RAG).
 
-Carrega o corpus de data/normativos/ e testa a busca lexical simples com uma
-pergunta de teste, exibindo os trechos mais relevantes e suas fontes.
+Carrega a camada Gold (data/normativos/3_gold_indexed/) e testa a busca BM25
+com uma pergunta de teste, exibindo os trechos mais relevantes e suas fontes.
+Não usa o LLM.
 
 Uso:
     python run_check_knowledge.py
