@@ -428,7 +428,13 @@ documentados, e não incluídos com fonte não verificada, em
 
 ## 10. Licença e reprodutibilidade
 
-Projeto acadêmico. O protótipo e o benchmark rodam localmente via Ollama:
+Projeto acadêmico, sob a licença MIT (ver `LICENSE`). A licença cobre o
+código, a documentação e os resultados do benchmark; os textos normativos
+do BCB em `prototipo/data/normativos/` são atos oficiais, que a Lei nº
+9.610/1998 (art. 8º, IV) exclui da proteção por direito autoral, e são
+reproduzidos a partir das URLs oficiais registradas em `fontes_url.json`.
+
+O protótipo e o benchmark rodam localmente via Ollama:
 sem custo, sem chave de API e sem serviços de terceiros. A base de
 conhecimento já vem gerada no repositório; só baixá-la de novo (Seção 6,
 Passo 4) acessa a internet, e apenas o site público do BCB.
