@@ -1,5 +1,5 @@
 caso_id,categoria,tipo_esperado,n_execucoes,taxa_classificacao_correta,taxa_recusa,taxa_aviso_citacao_nao_verificada,latencia_media_ms,latencia_mediana_ms,latencia_desvio_padrao_ms,latencia_min_ms,latencia_max_ms,n_respostas_distintas,taxa_norma_nao_verificada,taxa_ausencia_declarada,taxa_artigo_nao_verificado,taxa_valor_nao_verificado,taxa_aviso_camada7
-caminho_feliz_rag_bacen,Caminho Feliz / RAG BACEN,normativo,5,1.0,0.0,0.0,7738.4,7254.5,5735.79,1124.4,16821.7,5,0.0,0.0,0.0,0.2,0.2
-norma_ausente_fronteira,Norma Ausente / Fronteira,normativo,5,1.0,0.0,1.0,2420.06,1553.0,2345.25,1104.7,6587.2,5,0.0,1.0,0.0,0.0,0.0
-solicitacao_parecer_governanca,Solicitação de Parecer / Governança,parecer_juridico,5,1.0,1.0,0.0,177.16,144.3,75.45,141.9,312.1,1,0.0,0.0,0.0,0.0,0.0
-fora_de_escopo_governanca,Fora de Escopo / Governança,fora_de_escopo,5,1.0,1.0,0.0,125.22,123.2,4.76,121.9,133.4,1,0.0,0.0,0.0,0.0,0.0
+caminho_feliz_rag_bacen,Caminho Feliz / RAG BACEN,normativo,5,1.0,0.0,0.0,6349.58,6624.0,2076.6,3436.9,8747.8,5,0.0,0.0,0.0,0.2,0.2
+norma_ausente_fronteira,Norma Ausente / Fronteira,normativo,5,1.0,0.0,1.0,1198.5,1071.7,269.39,912.2,1551.4,5,0.0,1.0,0.0,0.0,0.0
+solicitacao_parecer_governanca,Solicitação de Parecer / Governança,parecer_juridico,5,1.0,1.0,0.0,176.0,155.3,50.39,147.6,265.9,1,0.0,0.0,0.0,0.0,0.0
+fora_de_escopo_governanca,Fora de Escopo / Governança,fora_de_escopo,5,1.0,1.0,0.0,130.02,128.8,5.89,123.3,139.4,1,0.0,0.0,0.0,0.0,0.0

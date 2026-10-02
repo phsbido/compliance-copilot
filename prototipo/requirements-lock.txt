@@ -21,7 +21,6 @@ pyparsing==3.3.3
 pypdf==6.19.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.3
-seaborn==0.13.2
 six==1.17.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0

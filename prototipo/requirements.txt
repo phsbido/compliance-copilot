@@ -2,5 +2,4 @@ ollama>=0.4.0
 python-dotenv>=1.0.0
 pandas>=2.0.0
 matplotlib>=3.8.0
-seaborn>=0.13.0
 pypdf>=4.0.0
