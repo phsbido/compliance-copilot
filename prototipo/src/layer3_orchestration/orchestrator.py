@@ -58,12 +58,16 @@ class Orchestrator:
         llm: LLMCore | None = None,
         memoria: Memoria | None = None,
         amostragem: ParametrosAmostragem | None = None,
+        limiar_bm25: float | None = None,
     ):
         self.llm = llm or LLMCore()
         # Temperaturas de classificação e de síntese e seed (v4). Padrão:
         # os valores do .env (src/config.py); o benchmark passa outros para
         # a análise de sensibilidade.
         self.amostragem = amostragem or settings.amostragem
+        # Limiar de pontuação da Camada 5 (v6). Padrão: o do .env
+        # (LIMIAR_BM25; ausente = desligado); o benchmark passa outro valor.
+        self.limiar_bm25 = limiar_bm25 if limiar_bm25 is not None else settings.limiar_bm25
         self.memoria = memoria or Memoria()
         # Registro de proveniência (Camada 8) da última chamada a
         # responder() — exposto para camadas superiores (ex: Camada 1)
@@ -132,7 +136,7 @@ class Orchestrator:
         return Interpretacao(pergunta_original=pergunta, tipo=tipo)
 
     def _buscar_normativo(self, interpretacao: Interpretacao) -> str:
-        return buscar_normativo(interpretacao.pergunta_original)
+        return buscar_normativo(interpretacao.pergunta_original, limiar=self.limiar_bm25)
 
     def _sintetizar_resposta(self, pergunta: str, normativo: str) -> str:
         # A política vem da Camada 7: a governança define as regras, a

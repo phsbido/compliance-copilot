@@ -21,14 +21,15 @@ _kb = KnowledgeBase()
 NENHUM_TRECHO_ENCONTRADO = "Nenhum trecho normativo relevante foi encontrado no corpus indexado."
 
 
-def buscar_normativo(pergunta: str, top_k: int = 3) -> str:
+def buscar_normativo(pergunta: str, top_k: int = 3, limiar: float | None = None) -> str:
     """Busca trechos normativos relevantes e retorna um texto citável.
 
     Retorna uma string pronta para ser usada como contexto normativo na
     síntese de resposta (Camada 3), com cada trecho identificado por fonte
-    e URL oficial.
+    e URL oficial. `limiar`: pontuação BM25 mínima do melhor trecho (Camada
+    5, v6); `None` desliga.
     """
-    resultados = _kb.buscar(pergunta, top_k=top_k)
+    resultados = _kb.buscar(pergunta, top_k=top_k, limiar=limiar)
     if not resultados:
         return NENHUM_TRECHO_ENCONTRADO
 

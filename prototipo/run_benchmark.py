@@ -230,11 +230,23 @@ def avaliar_sucesso(r: dict) -> bool:
 _KB: KnowledgeBase | None = None
 
 
-def recuperar(pergunta: str) -> list[dict]:
+def _kb() -> KnowledgeBase:
     global _KB
     if _KB is None:
         _KB = KnowledgeBase()
-    return [{"norma": d.titulo, "trecho": d.identificador} for d in _KB.buscar(pergunta, top_k=TOP_K)]
+    return _KB
+
+
+def recuperar(pergunta: str, limiar: float | None = None) -> list[dict]:
+    """Os trechos que a Camada 4 entrega à síntese, com o mesmo limiar (v6):
+    abaixo dele, nenhum — e a recuperação conta como erro nos casos rotulados."""
+    return [{"norma": d.titulo, "trecho": d.identificador}
+            for d in _kb().buscar(pergunta, top_k=TOP_K, limiar=limiar)]
+
+
+def pontuacao_melhor_trecho(pergunta: str) -> float:
+    pontuados = _kb().buscar_pontuado(pergunta, top_k=1)
+    return round(pontuados[0][0], 4) if pontuados else 0.0
 
 
 def avaliar(r: dict, caso: dict) -> dict:
@@ -277,8 +289,8 @@ def filtrar_casos(casos: list[dict], grupo: str | None, ids: str | None) -> list
     return casos
 
 
-def rodar_caso(caso: dict, repeticao: int, modo: str) -> dict:
-    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo))
+def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None = None) -> dict:
+    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo), limiar_bm25=limiar_bm25)
 
     inicio = time.perf_counter()
     resposta = orchestrator.responder(caso["pergunta"])
@@ -305,7 +317,10 @@ def rodar_caso(caso: dict, repeticao: int, modo: str) -> dict:
         "contexto_normativo": orchestrator.ultimo_contexto,
         # Os mesmos top-3 da Camada 4, identificados por norma + trecho, para
         # as métricas de recuperação (a busca é determinística).
-        "trechos_recuperados": recuperar(caso["pergunta"]),
+        "trechos_recuperados": recuperar(caso["pergunta"], orchestrator.limiar_bm25),
+        # v6: limiar efetivo da Camada 5 e pontuação do melhor trecho.
+        "limiar_bm25": orchestrator.limiar_bm25,
+        "pontuacao_melhor_trecho": pontuacao_melhor_trecho(caso["pergunta"]),
     }
     return avaliar(r, caso)
 
@@ -412,13 +427,13 @@ def exportar_tabelas(resultados: list[dict], caminhos: dict[str, Path]) -> tuple
     return por_grupo, confusao
 
 
-def avaliar_recuperacao(casos: list[dict]) -> pd.DataFrame:
+def avaliar_recuperacao(casos: list[dict], limiar: float | None = None) -> pd.DataFrame:
     """Camada 5 isolada: Acerto@3, Recall@3 e RR por caso rotulado, sem LLM."""
     linhas = []
     for caso in casos:
         if not caso.get("relevantes"):
             continue
-        recuperados = recuperar(caso["pergunta"])
+        recuperados = recuperar(caso["pergunta"], limiar)
         linhas.append({
             "caso_id": caso["id"],
             "grupo": caso["grupo"],
@@ -447,6 +462,8 @@ if __name__ == "__main__":
                         help="não chama o LLM; regera as tabelas a partir do JSON bruto já salvo")
     parser.add_argument("--revalidar", action="store_true",
                         help="não chama o LLM; reaplica a Camada 7 atual ao JSON bruto salvo e regera as tabelas")
+    parser.add_argument("--limiar-bm25", type=float,
+                        help="limiar de pontuação do melhor trecho (Camada 5, v6); padrão: LIMIAR_BM25 do .env")
     parser.add_argument("--saida", type=Path,
                         help="pasta de saída de todos os artefatos (v6 em diante); sem ela, os caminhos do v5")
     args = parser.parse_args()
@@ -454,8 +471,9 @@ if __name__ == "__main__":
     parcial = bool(args.grupo or args.casos)
     caminhos = caminhos_saida(args.modo, parcial=parcial, saida=args.saida)
 
+    limiar = args.limiar_bm25 if args.limiar_bm25 is not None else settings.limiar_bm25
     casos = carregar_casos()
-    tabela_rec = avaliar_recuperacao(casos)
+    tabela_rec = avaliar_recuperacao(casos, limiar)
     caminhos["recuperacao"].parent.mkdir(parents=True, exist_ok=True)
     tabela_rec.to_csv(caminhos["recuperacao"], index=False, encoding="utf-8")
     print(f"Recuperação (Camada 5): {resumo_recuperacao(tabela_rec)}; tabela em {caminhos['recuperacao']}")
@@ -474,7 +492,8 @@ if __name__ == "__main__":
     else:
         selecionados = filtrar_casos(casos, args.grupo, args.casos)
         total = len(selecionados) * args.repeticoes
-        print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()})")
+        print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()}; "
+              f"limiar BM25: {limiar if limiar is not None else 'desligado'})")
         print(f"{len(selecionados)} casos de {CASOS_FILE}, {args.repeticoes} repetições cada "
               f"({total} execuções no total).\n")
 
@@ -482,7 +501,7 @@ if __name__ == "__main__":
         for caso in selecionados:
             for repeticao in range(1, args.repeticoes + 1):
                 print(f"[{len(resultados) + 1}/{total}] [{caso['id']}] rep {repeticao}...", end=" ", flush=True)
-                r = rodar_caso(caso, repeticao, args.modo)
+                r = rodar_caso(caso, repeticao, args.modo, limiar)
                 resultados.append(r)
                 print(
                     f"tipo={r['tipo_obtido']} desfecho={r['desfecho']} "

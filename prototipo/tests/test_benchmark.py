@@ -190,6 +190,73 @@ class TestBateria(unittest.TestCase):
                     self.assertTrue(c.get("relevantes"))
 
 
+class TestLimiarBM25(unittest.TestCase):
+    """Limiar da Camada 5 (v6): decide pelo melhor trecho; desligado = v5."""
+    PERGUNTA = "Quais são os fatores de autenticação do cliente no Open Finance?"
+
+    @classmethod
+    def setUpClass(cls):
+        from src.layer5_knowledge.knowledge_base import KnowledgeBase
+        cls.kb = KnowledgeBase()
+        cls.melhor = cls.kb.buscar_pontuado(cls.PERGUNTA, top_k=1)[0][0]
+
+    def test_desligado_igual_a_v5(self):
+        self.assertEqual(self.kb.buscar(self.PERGUNTA, limiar=None), self.kb.buscar(self.PERGUNTA))
+        self.assertEqual(len(self.kb.buscar(self.PERGUNTA)), 3)
+
+    def test_no_limiar_devolve_os_tres(self):
+        self.assertEqual(self.kb.buscar(self.PERGUNTA, limiar=self.melhor), self.kb.buscar(self.PERGUNTA))
+
+    def test_acima_do_melhor_nao_devolve_nada(self):
+        self.assertEqual(self.kb.buscar(self.PERGUNTA, limiar=self.melhor + 0.001), [])
+
+    def test_camada_4_devolve_a_constante_de_recusa(self):
+        from src.layer4_tools.tools import NENHUM_TRECHO_ENCONTRADO, buscar_normativo
+        self.assertEqual(buscar_normativo(self.PERGUNTA, limiar=self.melhor + 0.001), NENHUM_TRECHO_ENCONTRADO)
+
+    def test_recuperacao_vazia_conta_como_erro(self):
+        recuperados = recuperar(self.PERGUNTA, limiar=self.melhor + 0.001)
+        self.assertEqual(recuperados, [])
+        m = metricas_recuperacao(recuperados, [{"norma": "Resolução Conjunta nº 1", "trecho": "Art. 17"}])
+        self.assertFalse(m["acerto_recuperacao"])
+        self.assertEqual(m["rr_recuperacao"], 0.0)
+
+
+class TestConjuntoCalibracao(unittest.TestCase):
+    """tests/calibracao_limiar.json (v6): independente dos 66 casos."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cal = json.loads((RAIZ / "tests" / "calibracao_limiar.json").read_text(encoding="utf-8"))["perguntas"]
+
+    def test_metade_respondivel_metade_sem_resposta(self):
+        grupos = [p["grupo"] for p in self.cal]
+        self.assertEqual(grupos.count("respondivel"), 20)
+        self.assertEqual(grupos.count("sem_resposta"), 20)
+        self.assertEqual(len({p["id"] for p in self.cal}), 40)
+
+    def test_nenhuma_pergunta_dos_66_casos(self):
+        perguntas_casos = {c["pergunta"].strip().lower() for c in CASOS}
+        for p in self.cal:
+            self.assertNotIn(p["pergunta"].strip().lower(), perguntas_casos)
+
+    def test_rotulos_existem_na_gold_e_nao_sao_rotulos_dos_casos(self):
+        identificadores = set()
+        for arquivo in GOLD_DIR.glob("*.json"):
+            gold = json.loads(arquivo.read_text(encoding="utf-8"))
+            for trecho in gold.get("trechos", []):
+                identificadores.add((gold["titulo"], trecho["identificador"]))
+        rotulos_casos = {(r["norma"], r["trecho"]) for c in CASOS for r in c.get("relevantes") or []}
+        for p in self.cal:
+            if p["grupo"] != "respondivel":
+                self.assertFalse(p.get("relevantes"))
+                continue
+            for r in p["relevantes"]:
+                self.assertTrue(any(t.startswith(r["norma"] + ",") and i == r["trecho"]
+                                    for t, i in identificadores), (p["id"], r))
+                self.assertNotIn((r["norma"], r["trecho"]), rotulos_casos, p["id"])
+
+
 class TestCaminhosSaida(unittest.TestCase):
     def test_sem_saida_usa_os_caminhos_do_v5(self):
         c = caminhos_saida("producao")

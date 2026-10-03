@@ -24,6 +24,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _limiar_do_ambiente() -> float | None:
+    """LIMIAR_BM25 (v6): pontuação mínima do melhor trecho da Camada 5;
+    vazio ou ausente = desligado (comportamento da v5)."""
+    valor = os.getenv("LIMIAR_BM25", "").strip()
+    return float(valor) if valor else None
+
+
 def _seed_do_ambiente() -> int | None:
     valor = os.getenv("OLLAMA_SEED", "42").strip()
     return int(valor) if valor else None  # vazio = seed aleatória
@@ -59,6 +66,7 @@ class Settings:
         temperatura_sintese=float(os.getenv("OLLAMA_TEMPERATURA_SINTESE", "0.1")),
         seed=_seed_do_ambiente(),
     )
+    limiar_bm25: float | None = _limiar_do_ambiente()
 
 
 settings = Settings()

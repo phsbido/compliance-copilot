@@ -16,6 +16,14 @@ sem embeddings e sem biblioteca de vector DB.
 A interface (`buscar()` -> `list[Documento]` com título, ementa, URL oficial
 e trecho) é a mesma da versão anterior, que lia os `.md` curados e contava
 palavras em comum — as Camadas 4, 7 e 8 não mudam.
+
+Limiar de pontuação (v6, 2026-10-02; ver docs/decisoes_arquitetura.md,
+"Tarefa A"): o BM25 sempre devolve os k melhores trechos, por pior que seja
+o casamento, então a recusa sem base da Camada 7 quase nunca disparava. Com
+`limiar`, se o **melhor** trecho pontuar abaixo dele, a busca não devolve
+nada; acima, devolve os k melhores como antes (o limiar não filtra trecho a
+trecho, para não mudar o contexto das perguntas respondíveis). `None`
+desliga o limiar — o padrão, que mantém a v5 reprodutível.
 """
 import json
 import math
@@ -88,7 +96,9 @@ class KnowledgeBase:
                 pontuacao += self._idf.get(token, 0.0) * tf * (self._k1 + 1) / (tf + normalizacao)
         return pontuacao
 
-    def buscar(self, pergunta: str, top_k: int = 3) -> list[Documento]:
+    def buscar_pontuado(self, pergunta: str, top_k: int = 3) -> list[tuple[float, Documento]]:
+        """Os k melhores trechos com a pontuação BM25 de cada um, sem limiar
+        (usado na calibração do limiar e por `buscar`)."""
         tokens_pergunta = set(tokenizar(pergunta))
         pontuados = []
         for doc in self.documentos:
@@ -96,4 +106,10 @@ class KnowledgeBase:
             if pontuacao > 0:
                 pontuados.append((pontuacao, doc))
         pontuados.sort(key=lambda par: par[0], reverse=True)
-        return [doc for _, doc in pontuados[:top_k]]
+        return pontuados[:top_k]
+
+    def buscar(self, pergunta: str, top_k: int = 3, limiar: float | None = None) -> list[Documento]:
+        pontuados = self.buscar_pontuado(pergunta, top_k)
+        if limiar is not None and (not pontuados or pontuados[0][0] < limiar):
+            return []
+        return [doc for _, doc in pontuados]

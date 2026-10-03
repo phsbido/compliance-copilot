@@ -959,6 +959,51 @@ o texto gerado depende do estado do cache de prompts do servidor
 (`diagnostico_falhas_v5.md`, Seção 3). Por isso a comparação com o v5 é
 feita sobre métricas, não sobre a identidade dos textos.
 
+#### Tarefa A — limiar de pontuação BM25 na Camada 5 (2026-10-02)
+
+**Problema**: o BM25 devolve sempre os k melhores trechos, por pior que
+seja o casamento com a pergunta. Por isso a `recusar_sem_base` da Camada 7
+(que só dispara quando a Camada 4 devolve `NENHUM_TRECHO_ENCONTRADO`)
+praticamente nunca dispara, e perguntas sobre normas ausentes chegam à
+síntese com três trechos sem relação.
+
+**Decisão de projeto**:
+
+- `KnowledgeBase.buscar(..., limiar=None)`: o limiar decide pelo **melhor**
+  trecho. Abaixo dele, a busca não devolve nada; acima, devolve os k
+  melhores como antes. Não filtra trecho a trecho, porque isso mudaria
+  também o contexto das perguntas respondíveis e misturaria dois efeitos na
+  comparação com o v5.
+- Configuração: `LIMIAR_BM25` no `.env`. Vazio ou ausente desliga o limiar,
+  e esse é o padrão, para o v5 continuar reprodutível. O `Orchestrator`
+  recebe `limiar_bm25`, como já recebe a amostragem, e o repassa à Camada 4.
+  O benchmark aceita `--limiar-bm25`, registra o limiar e a pontuação do
+  melhor trecho em cada execução e aplica o mesmo limiar ao Acerto@3:
+  recuperação vazia conta como erro nos casos rotulados.
+
+**Calibração, pré-registrada** (este texto e `tests/calibracao_limiar.json`
+foram commitados antes de qualquer pontuação ser calculada):
+
+- conjunto próprio de 40 perguntas, independente dos 66 casos: 20
+  respondíveis pela Gold (só dispositivos que nenhum caso rotula) e 20 sem
+  resposta no corpus (12 normas ausentes, diferentes das do grupo
+  `norma_ausente`, e 8 temas regulatórios fora do corpus). Algumas sem
+  resposta compartilham vocabulário com o corpus de propósito (câmbio,
+  portabilidade, sigilo, gerenciamento de riscos);
+- **critério**: limiar = pontuação do melhor trecho da (k+1)-ésima menor
+  pergunta respondível, com k = ⌊0,05 × 20⌋ = 1. É o maior limiar que recusa
+  no máximo 5% das respondíveis. Vale para todas as respondíveis, tenham ou
+  não o trecho rotulado entre os 3. A taxa de recusa das perguntas sem
+  resposta é consequência, não critério. Escolhido pelo autor, em vez do
+  máximo de Youden, porque recusar pergunta válida é o custo que se quer
+  limitar: a v5 já mostrou que o modelo não inventa conteúdo de norma
+  ausente (6 de 6 casos);
+- o critério é aplicado uma única vez. Só depois o limiar é ligado nos 66
+  casos (`docs/resultados/v6/`);
+- **viés declarado**: o assistente que redigiu as perguntas também aplica
+  o critério. O commit prévio registra a ordem dos passos, mas não elimina
+  a possibilidade de ter redigido perguntas "fáceis" de separar.
+
 ---
 
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)
