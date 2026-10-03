@@ -985,3 +985,60 @@ entre os 3.
   calibração ficaram mais fáceis que as do benchmark, e portanto que a taxa
   de recusas indevidas nos 66 casos pode passar de 5%. A rodada v6 mede
   isso.
+
+---
+
+## 2026-10-02 — v6, Tarefa A: limiar BM25 ligado nos 66 casos
+
+**Contexto**: `run_benchmark.py --limiar-bm25 13.8059 --saida docs/resultados/v6`,
+modo produção, 66 casos × 3. Rodada iniciada em 2026-10-02T23:20:38-03:00,
+com o servidor Ollama 0.33.2 reiniciado antes (mesmo ambiente do v5). O
+limiar foi fixado na calibração (entrada anterior) antes desta rodada e não
+foi ajustado depois. Comparação em `docs/resultados/v6/comparacao_v5_v6.csv`
+e `casos_recusados_v6.csv` (`scripts/comparar_v5_v6.py`).
+
+**Observação**:
+
+| Grupo | Métrica | v5 | v6 |
+|---|---|---|---|
+| Norma ausente (6 casos) | recusas sem base (corretas) | 0/18 | 12/18 (4 casos) |
+| | sucesso por caso | 5/6 | 6/6 |
+| Normativo no corpus (39) | recusas sem base (indevidas) | 0/117 | 63/117 (21 casos) |
+| | sucesso por caso | 39/39 | 18/39 |
+| | Acerto@3 | 0,795 | 0,436 |
+| Parecer e fora de escopo mal classificados (3 casos) | recusa sem base | 0/9 | 9/9 |
+| Robustez (7) | recusas sem base | 0/21 | 18/21 |
+| Total (66) | Acerto@3 (44 rotulados) | 0,750 | 0,386 |
+| | latência mediana | 1,66 s | 0,14 s |
+
+Dos 21 casos normativos recusados, a auditoria v5 tinha 11 como
+"correta", 3 "parcial", 4 "abstenção" e 3 "incorreta". As 2 normas ausentes
+que passam (`norma_ausente_fronteira`, 15,92, e `ausente_res_cmn_4893`,
+14,91) têm vocabulário do corpus. Nos 18 casos normativos não recusados,
+todas as execuções tiveram sucesso.
+
+**Causa da diferença em relação à calibração** (5% de recusas indevidas
+previstas, 54% observadas): a pontuação BM25 é a soma das contribuições
+dos termos da pergunta. As perguntas do benchmark são mais curtas e
+diretas (mediana do melhor trecho nos normativos: 13,66, contra 17,29 nas
+respondíveis da calibração). Um limiar sobre a pontuação bruta não
+transfere entre conjuntos de perguntas com perfis diferentes. A calibração
+já tinha dado sinal disso: Acerto@3 de 1,0, contra 0,80 nos normativos do
+v5.
+
+**Relevância para a pesquisa**:
+
+- O limiar faz o que se propunha para normas ausentes e ainda contém os
+  erros de classificação da Camada 3 antes da síntese. Mas, calibrado
+  dessa forma, recusa mais da metade das perguntas válidas: com o v5 como
+  linha de base, a troca é desfavorável. A v6 com limiar **não** é
+  recomendada como configuração de uso.
+- Achado de método: calibrar um limiar de recuperação exige um conjunto
+  com a mesma distribuição de perguntas do uso. A independência em relação
+  aos casos de teste é necessária, mas não basta. Para trabalho futuro,
+  a alternativa é normalizar a pontuação (pelo número de termos da pergunta
+  ou pela pontuação máxima possível) antes de aplicar o limiar.
+- A Seção 8 de Maia et al. trata a recuperação como subsistema com
+  "evaluation requirements" próprios. Este resultado mostra um requisito
+  concreto: o ponto de corte da recuperação também precisa ser avaliado
+  fora da amostra de calibração.

@@ -1,0 +1,13 @@
+versao,grupo,execucoes,recusa_sem_base,taxa_recusa_sem_base,sucesso_execucoes,casos_sucesso_total,n_casos,acerto_recuperacao_3,latencia_mediana_ms,latencia_p95_ms
+v5,normativo_corpus,117,0,0.0,1.0,39,39,0.795,2655.1,14304.4
+v6,normativo_corpus,117,63,0.538,0.462,18,39,0.436,240.0,8163.2
+v5,norma_ausente,18,0,0.0,0.833,5,6,,1158.9,1845.8
+v6,norma_ausente,18,12,0.667,1.0,6,6,,79.4,1941.9
+v5,parecer_juridico,21,0,0.0,0.714,5,7,,172.8,15702.7
+v6,parecer_juridico,21,6,0.286,0.714,5,7,,153.5,11372.3
+v5,fora_de_escopo,21,0,0.0,0.857,6,7,,136.0,1517.7
+v6,fora_de_escopo,21,3,0.143,0.857,6,7,,129.3,173.5
+v5,robustez,21,0,0.0,0.857,6,7,0.4,1846.9,6610.1
+v6,robustez,21,18,0.857,0.286,2,7,0.0,75.6,389.9
+v5,total,198,0,0.0,0.924,61,66,0.75,1664.2,13741.5
+v6,total,198,102,0.515,0.561,37,66,0.386,144.4,7820.6
