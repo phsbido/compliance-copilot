@@ -1,8 +1,8 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-10-01 (v4.1 — limpeza do texto de PDF na
-ingestão; validação da lacuna 1 e confronto do diário com a Seção 8; ver
-seção "v4.1 e lacuna 1" abaixo).
+**Última atualização**: 2026-10-02 (benchmark v5 — bateria ampliada para 66
+casos, métricas de recuperação e auditoria manual das respostas; ver seção
+"Benchmark v5" abaixo).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -21,9 +21,9 @@ só resume o estado para retomar o trabalho rapidamente, em nova sessão.
 8. ✅ Camada 8 (Observabilidade) — `src/layer8_observability/observability.py`
 9. ✅ Camada 1 (Interação/CLI) — `src/layer1_interaction/cli.py` (`python main.py`)
 10. ✅ Casos de teste documentados em `tests/casos_teste.md` (4 casos)
-11. ✅ Benchmark quantitativo (`tests/casos_teste.json` + `run_benchmark.py`), 20
-    execuções (4 cenários x 5 repetições) rodadas com sucesso — ver seção
-    "Benchmark quantitativo" abaixo.
+11. ✅ Benchmark quantitativo (`tests/casos_teste.json` + `run_benchmark.py`):
+    4 cenários x 5 repetições até a v4.1; **66 casos x 3 repetições x 2 modos
+    desde a v5** (2026-10-02) — ver seção "Benchmark v5" abaixo.
 
 Cada camada implementada tem: código em `src/layerN_*/`, script de
 validação `run_check_*.py` na raiz, entrada em
@@ -276,6 +276,45 @@ Detalhes em `docs/decisoes_arquitetura.md` (Camada 7, "Camada 7 v2") e
   partir da entrada de confronto. A busca híbrida com conjunto rotulado
   continua aprovada e não feita (é também o que o texto pede para a
   Camada 5: avaliar a recuperação como subsistema).
+
+## Benchmark v5 — bateria ampliada (2026-10-02)
+
+Detalhes em `docs/decisoes_arquitetura.md` ("Benchmark v5") e
+`docs/evidencias_empiricas.md` (2026-10-02). Runtime **não mudou** (igual à
+v4.1); v4.1 arquivada em `docs/resultados/v4.1/`. Ainda sem tag e sem commit
+ao fim da sessão.
+
+- `tests/casos_teste.json`: 66 casos, 5 grupos (normativo_corpus 39,
+  norma_ausente 6, parecer_juridico 7, fora_de_escopo 7, robustez 7); os 4
+  primeiros são os cenários antigos. Campos novos: `grupo`,
+  `comportamento_esperado`, `tipos_aceitos`, `relevantes` (rótulo de
+  recuperação, 44 casos), `termos_esperados`.
+- `run_benchmark.py`: `--repeticoes` (padrão 3), `--grupo`, `--casos`
+  (saída parcial em `logs/benchmark_parcial/`), `--somente-recuperacao`.
+  Métricas: sucesso por caso, Acerto@3/Recall@3/MRR, cobertura de termos,
+  IC 95% de Wilson sobre casos, matriz de confusão. Saídas:
+  `tabela_resultados_empiricos*`, `tabela_resultados_por_grupo*`,
+  `matriz_confusao_classificacao*`, `tabela_recuperacao.csv`.
+- `tests/test_benchmark.py` (24 testes; 57 no total). `scripts/auditoria_v5.py`
+  gera `docs/auditoria_respostas_v5.csv` (vereditos manuais do assistente —
+  **o autor precisa revisá-los** antes de citar). `scripts/plot_benchmark.py`
+  agora por grupo, + `grafico_sucesso_grupos.png` e
+  `grafico_auditoria_recuperacao.png`.
+- Resultados: sucesso automático 61/66 (produção) e 57/66 (sensibilidade);
+  nenhuma norma inventada. Recuperação: Acerto@3 0,75, MRR 0,67. Auditoria
+  dos normativos: 63% corretas, 11% incorretas sem aviso; com trecho certo
+  79% corretas, sem ele 0%. Camada 3 erra para `normativo` (2 pareceres, 1
+  código), contido pela política de síntese; na sensibilidade, também
+  recusa perguntas "é permitido...?".
+- Novos limites da Camada 7 (não corrigidos): falso positivo de valor citado
+  para refutar ("dez anos"); falso positivo em "Se você puder fornecer...
+  sobre a Circular nº 3.978"; ausência de norma mencionada por outra norma
+  não registrada; atribuição de artigo por remissão não detectada.
+- **Próximo (sugerido, não aprovado)**: (1) revisão da auditoria pelo autor;
+  (2) busca híbrida na Camada 5, agora com os 44 rótulos como avaliação
+  (o gargalo de correção é a recuperação); (3) eventuais ajustes da Camada
+  7 para os falsos positivos de "citar para negar", medidos com
+  `--revalidar`. Cada um com plano antes do código.
 
 ## Próximo passo sugerido
 

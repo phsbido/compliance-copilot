@@ -79,15 +79,26 @@
 - **Disclaimer de validação humana**: texto fixo sempre anexado ao final de
   toda resposta do fluxo normativo, lembrando que a resposta não é parecer
   jurídico definitivo (`AVISO_VALIDACAO_HUMANA`, `governance.py:30-34`).
-- **`casos_teste.md` vs. `casos_teste.json`**: o mesmo conjunto de 4
-  cenários em dois formatos — `.md` é leitura qualitativa detalhada com
-  execuções reais transcritas; `.json` é a versão estruturada consumida
-  programaticamente por `run_benchmark.py`.
-- **CT01–CT04**: identificadores dos 4 cenários de teste usados no Apêndice
-  A da monografia (`docs/apendice_casos_teste.md`) — correspondem, na
-  ordem, a `caminho_feliz_rag_bacen`, `norma_ausente_fronteira`,
+- **`casos_teste.md` vs. `casos_teste.json`**: `.md` é a leitura
+  qualitativa detalhada de 4 casos, com execuções reais transcritas; `.json`
+  é a bateria estruturada consumida por `run_benchmark.py` — 4 cenários até
+  a v4.1, **66 casos em cinco grupos desde a v5** (2026-10-02), dos quais os
+  4 primeiros são os cenários originais.
+- **CT01–CT04**: identificadores dos 4 cenários originais no Apêndice A
+  (`docs/apendice_casos_teste.md`) — correspondem, na ordem, a
+  `caminho_feliz_rag_bacen`, `norma_ausente_fronteira`,
   `solicitacao_parecer_governanca`, `fora_de_escopo_governanca` em
-  `tests/casos_teste.json`.
+  `tests/casos_teste.json`. Na v5, o Apêndice A organiza a bateria por grupo.
+- **Grupo (v5)**: unidade de agregação do benchmark —
+  `normativo_corpus`, `norma_ausente`, `parecer_juridico`, `fora_de_escopo`,
+  `robustez` (`docs/tabela_resultados_por_grupo.csv`).
+- **Sucesso (v5)**: o comportamento esperado do caso foi observado na
+  execução (`resposta_fundamentada`, `ausencia_declarada`, `recusa` ou
+  `sem_alucinacao`; `run_benchmark.py`, `avaliar_sucesso`).
+- **Acerto@3, Recall@3, MRR**: métricas da recuperação da Camada 5 sobre os
+  rótulos `relevantes` (norma + trecho da Gold) — algum relevante entre os 3
+  trechos entregues à síntese; fração dos rótulos recuperada; média do
+  inverso da posição do primeiro relevante (`docs/tabela_recuperacao.csv`).
 - **`run_check_*.py`**: convenção de nome para os scripts de validação
   manual de uma camada isolada — um por camada implementada (exceto Camada
   1, que não tem script próprio, já que é testada indiretamente por todos

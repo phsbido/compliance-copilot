@@ -10,6 +10,16 @@ perguntas) ou `python main.py` / chamada direta a `Orchestrator.responder`
 (Caso 4). Datas e achados relacionados remetem a
 `docs/evidencias_empiricas.md`, a fonte primária das observações.
 
+> **Relação com o benchmark (v5, 2026-10-02).** Estes 4 casos são a leitura
+> qualitativa, com uma execução cada. A avaliação quantitativa usa a bateria
+> de `tests/casos_teste.json`, que desde a v5 tem **66 casos em cinco
+> grupos** (normativo no corpus, norma ausente, parecer jurídico, fora de
+> escopo e robustez), com rótulos de recuperação e termos esperados, rodados
+> 3 vezes cada por `run_benchmark.py`. Os 4 primeiros casos da bateria são
+> as perguntas dos Casos 1, 3 e 4 abaixo e o cenário de norma ausente, com
+> os mesmos ids das versões v1–v4.1. Resultados e leitura: `docs/apendice_casos_teste.md`
+> e `docs/evidencias_empiricas.md` (2026-10-02).
+
 Formato por caso:
 
 ## Caso 1 — (título da pergunta/cenário)

@@ -130,7 +130,9 @@ inventada; ausência declarada sem aviso; só aceita fontes do BCB.
 python -m unittest discover -s tests
 ```
 
-Camada 7: 25 testes, construídos a partir de respostas reais do benchmark.
+57 testes: 25 da Camada 7, construídos a partir de respostas reais do
+benchmark; 8 da limpeza da ingestão; 24 das métricas do benchmark v5 e da
+integridade da bateria (rótulos de recuperação existentes na Gold).
 
 ---
 
@@ -157,6 +159,8 @@ exatamente as mesmas tabelas. Mostrar `docs/figuras/`.
 
 ## Não fazer ao vivo
 
-- `python run_benchmark.py` sem `--revalidar` (~5 min e sobrescreve `docs/`).
+- `python run_benchmark.py` sem `--revalidar` (bateria v5: 198 execuções,
+  ~1 h por modo, e sobrescreve `docs/`). Para mostrar a recuperação ao vivo,
+  `python run_benchmark.py --somente-recuperacao` roda em segundos, sem LLM.
 - Prometer que a Camada 7 garante a interpretação correta: ela confere se
   norma, artigo e valor existem no contexto, não se foram bem interpretados.

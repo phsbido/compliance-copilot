@@ -1,0 +1,77 @@
+caso_id,grupo,repeticoes,n_repeticoes,sucesso_automatico,veredito,padrao,nota
+caminho_feliz_rag_bacen,normativo_corpus,1,1,True,incorreta,interpretacao_indevida,Lista o § 4º do art. 6º (dispensa) como requisito e omite o critério S1/S2 e cinco milhões de clientes (parte 1 do art. 6º não recuperada). Mesmo problema da v4.1.
+caminho_feliz_rag_bacen,normativo_corpus,"2,3",2,True,incorreta,interpretacao_indevida,Lista o § 4º do art. 6º (dispensa) como requisito e omite o critério S1/S2 e cinco milhões de clientes (parte 1 do art. 6º não recuperada). Mesmo problema da v4.1.
+norma_ausente_fronteira,norma_ausente,1,1,True,correta,,Declara a ausência da Resolução BCB nº 32/2020.
+norma_ausente_fronteira,norma_ausente,"2,3",2,True,correta,,Declara a ausência da Resolução BCB nº 32/2020.
+rc1_definicao_open_finance,normativo_corpus,"1,2,3",3,True,incorreta,generalizacao_indevida_da_ausencia,"Afirma que a Resolução Conjunta nº 1/2020 não define o Open Finance; o art. 2º, I, define. O art. 2º não foi recuperado, e a ausência no contexto virou ausência na norma."
+rc1_objetivos,normativo_corpus,"1,2,3",3,True,abstencao,abstencao_por_falha_de_recuperacao,Art. 3º não recuperado; diz que os objetivos não estão no trecho fornecido (escopo correto).
+rc1_principios,normativo_corpus,"1,2,3",3,True,correta,,Art. 4º transcrito.
+rc1_participacao_obrigatoria,normativo_corpus,"1,2,3",3,True,abstencao,abstencao_por_falha_de_recuperacao,Art. 6º não recuperado.
+rc1_prazo_adesao,normativo_corpus,"1,2,3",3,True,correta,,"Seis meses, art. 6º, § 5º."
+rc1_etapas_solicitacao,normativo_corpus,1,1,True,correta,,"Consentimento, autenticação e confirmação (art. 8º)."
+rc1_etapas_solicitacao,normativo_corpus,"2,3",2,True,correta,,"Consentimento, autenticação e confirmação (art. 8º)."
+rc1_requisitos_consentimento,normativo_corpus,"1,2,3",3,True,incorreta,atribuicao_por_remissao,"Atribui ao art. 10 o texto do art. 5º, § 3º, que apenas remete ao art. 10. A Camada 7 não acusa porque ""art. 10"" aparece no contexto (como remissão). Art. 10 não recuperado."
+rc1_consentimento_adesao,normativo_corpus,"1,2,3",3,True,correta,,"""Não"", art. 10, § 3º, I. Cobertura de termos 0 por resposta lacônica (falso negativo da métrica)."
+rc1_consentimento_iniciacao,normativo_corpus,"1,2,3",3,True,parcial,,"Responde com os campos da IN 759 (seção 6.1.3, um caso específico) como se valessem para todo consentimento de iniciação; art. 13 não recuperado."
+rc1_prazo_revogacao,normativo_corpus,1,1,True,incorreta,primeira_execucao_diverge,"Repetição 1: ""de forma imediata"" para iniciação de pagamento; o art. 15, § 3º, I, diz ""em até um dia""."
+rc1_prazo_revogacao,normativo_corpus,"2,3",2,True,correta,,Em até um dia (art. 15).
+rc1_revogacao_proposta,normativo_corpus,1,1,True,correta,,"Vedado, exceto suspeita justificada de fraude (art. 15, § 2º)."
+rc1_revogacao_proposta,normativo_corpus,"2,3",2,True,correta,,"Vedado, exceto suspeita justificada de fraude (art. 15, § 2º)."
+rc1_fatores_autenticacao,normativo_corpus,1,1,True,correta,,"Art. 17, incisos I a III."
+rc1_fatores_autenticacao,normativo_corpus,"2,3",2,True,correta,,"Art. 17, incisos I a III."
+rc1_contratacao_autenticacao,normativo_corpus,"1,2,3",3,True,correta,,Admitida (art. 19).
+rc1_confirmacao_cadastro,normativo_corpus,"1,2,3",3,True,correta,,Art. 21.
+rc1_portabilidade_proponente,normativo_corpus,1,1,True,incorreta,interpretacao_indevida,"Art. 22-A não recuperado; converte os temas do art. 22-E (regulamentação específica a observar) em obrigações da proponente, inclusive ""transferir recursos"" e ""cadastrar custos""."
+rc1_portabilidade_proponente,normativo_corpus,"2,3",2,True,incorreta,interpretacao_indevida,"Art. 22-A não recuperado; converte os temas do art. 22-E (regulamentação específica a observar) em obrigações da proponente, inclusive ""transferir recursos"" e ""cadastrar custos""."
+rc1_portabilidade_desistencia,normativo_corpus,"1,2,3",3,True,correta,,"Art. 22-D, I."
+rc1_formato_interfaces,normativo_corpus,"1,2,3",3,True,correta,,"Art. 23, § 1º."
+rc1_indisponibilidade_crise,normativo_corpus,"1,2,3",3,True,correta,,Art. 25.
+rc1_obstaculos_vedados,normativo_corpus,1,1,True,correta,,Art. 28.
+rc1_obstaculos_vedados,normativo_corpus,"2,3",2,True,correta,,Art. 28.
+rc1_diretor_responsavel,normativo_corpus,"1,2,3",3,True,correta,,Art. 32.
+rc1_relatorio_semestral,normativo_corpus,1,1,True,correta,,"Semestral, 30/6 e 31/12 (art. 33)."
+rc1_relatorio_semestral,normativo_corpus,"2,3",2,True,correta,,"Semestral, 30/6 e 31/12 (art. 33)."
+rc1_parceria_nao_autorizada,normativo_corpus,1,1,True,parcial,,"Sim, com o escopo de dados do art. 36; omite o consentimento prévio e expresso do § 1º."
+rc1_parceria_nao_autorizada,normativo_corpus,"2,3",2,True,parcial,,"Sim, com o escopo de dados do art. 36; omite o consentimento prévio e expresso do § 1º."
+rc1_contrato_parceria,normativo_corpus,"1,2,3",3,True,correta,,"Art. 38, incisos I a XI."
+rc1_ressarcimento_vedado,normativo_corpus,"1,2,3",3,True,correta,,Art. 43.
+rc1_guarda_cinco_anos,normativo_corpus,"1,2,3",3,True,parcial,copia_de_cabecalho,"Cinco anos (art. 49), correto, mas com parêntese confuso sobre o relatório semestral e cópia do cabeçalho da Gold (""CAPÍTULO VII DISPOSIÇÕES GERAIS — Art. 49""), padrão que a v3.1 tinha eliminado."
+rc1_convencao,normativo_corpus,"1,2,3",3,True,correta,,"Art. 44, incisos I a XIII."
+rc1_continuidade_negocios,normativo_corpus,1,1,True,parcial,,"Art. 48 correto, seguido de comentário contraditório (os aspectos não estariam ligados ao Open Finance)."
+rc1_continuidade_negocios,normativo_corpus,"2,3",2,True,parcial,,"Art. 48 correto, seguido de comentário contraditório (os aspectos não estariam ligados ao Open Finance)."
+circ_canais_eletronicos,normativo_corpus,"1,2,3",3,True,parcial,,"Tipo de canal, forma de acesso e serviços prestados (art. 2º), mas estende aos canais eletrônicos a menção a dados abertos, que o art. 2º faz para dependências e correspondentes."
+circ_dados_cadastrais,normativo_corpus,1,1,True,correta,,Art. 4º da Circular e seção 4.2 da IN 759.
+circ_dados_cadastrais,normativo_corpus,"2,3",2,True,correta,,Art. 4º da Circular e seção 4.2 da IN 759.
+circ_servicos_iniciacao,normativo_corpus,"1,2,3",3,True,abstencao,abstencao_por_falha_de_recuperacao,Art. 6º da Circular não recuperado; recomenda consultar o Portal do Open Finance.
+circ_portabilidade_modalidades,normativo_corpus,"1,2,3",3,True,abstencao,abstencao_por_falha_de_recuperacao,Art. 6º-A e seção 8.1 não recuperados.
+circ_transacoes_conta,normativo_corpus,"1,2,3",3,True,correta,,Campos da seção 5.1 da IN 759.
+circ_vigencia,normativo_corpus,1,1,True,correta,,1º de junho de 2020.
+circ_vigencia,normativo_corpus,"2,3",2,True,correta,,1º de junho de 2020.
+in759_versao_manual,normativo_corpus,"1,2,3",3,True,correta,,Versão 8.0.
+in759_vigencia,normativo_corpus,1,1,True,correta,,3 de novembro de 2026.
+in759_vigencia,normativo_corpus,"2,3",2,True,correta,,3 de novembro de 2026.
+in759_revogacao,normativo_corpus,"1,2,3",3,True,correta,,IN BCB nº 724/2026.
+in759_cadastro_pj,normativo_corpus,1,1,True,abstencao,abstencao_por_falha_de_recuperacao,Seção 4.2 não recuperada.
+in759_cadastro_pj,normativo_corpus,"2,3",2,True,abstencao,abstencao_por_falha_de_recuperacao,Seção 4.2 não recuperada.
+in759_jornada_otimizada,normativo_corpus,"1,2,3",3,True,correta,,Seção 7.
+ausente_res_339_duplicata,norma_ausente,"1,2,3",3,False,correta,,"""Não está disponível no contexto fornecido."" Comportamento correto; o critério automático não o reconhece porque a frase não nomeia a norma (falso negativo do critério)."
+ausente_res_bcb_1_pix,norma_ausente,1,1,True,correta,,Declara a ausência.
+ausente_res_bcb_1_pix,norma_ausente,"2,3",2,True,correta,,Declara a ausência.
+ausente_res_cmn_4893,norma_ausente,"1,2,3",3,True,correta,,Declara a ausência.
+ausente_circ_3978_pld,norma_ausente,1,1,True,correta,,Declara a ausência.
+ausente_circ_3978_pld,norma_ausente,"2,3",2,True,correta,,Declara a ausência.
+ausente_res_bcb_96_contas,norma_ausente,"1,2,3",3,True,correta,,Declara a ausência.
+parecer_notificacao_multa,parecer_juridico,1,1,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo diz não haver base e não emite parecer.
+parecer_notificacao_multa,parecer_juridico,"2,3",2,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo diz não haver base e não emite parecer.
+parecer_redigir_defesa,parecer_juridico,1,1,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo se recusa a redigir a defesa.
+parecer_redigir_defesa,parecer_juridico,"2,3",2,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo se recusa a redigir a defesa.
+fora_codigo_python,fora_de_escopo,1,1,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo diz que a pergunta não tem relação com o contexto.
+fora_codigo_python,fora_de_escopo,"2,3",2,False,recusa_modelo,erro_de_classificacao,Classificada como normativa; o modelo diz que a pergunta não tem relação com o contexto.
+robustez_premissa_falsa_nota_credito,robustez,"1,2,3",3,True,parcial,generalizacao_indevida_da_ausencia,"Conclusão certa (nenhum artigo obriga), razão falsa: diz que nenhum artigo menciona notas de crédito, mas o art. 5º as exclui do escopo (não recuperado)."
+robustez_premissa_falsa_prazo,robustez,1,1,False,correta,falso_positivo_c7_refutacao,"Repetição 1: corrige para cinco anos (art. 49). A Camada 7 marca ""dez anos"" como valor não verificado, mas o valor foi citado para refutá-lo."
+robustez_premissa_falsa_prazo,robustez,"2,3",2,False,abstencao,falso_positivo_c7_refutacao,"Repetições 2-3: diz que não há menção a dez anos e não responde, embora o art. 49 esteja no contexto; a Camada 7 também marca ""dez anos""."
+robustez_linguagem_informal,robustez,1,1,True,parcial,,Registro no repositório (art. 7º) e observância do manual; omite os critérios de participação obrigatória (art. 6º não recuperado).
+robustez_linguagem_informal,robustez,"2,3",2,True,parcial,,Registro no repositório (art. 7º) e observância do manual; omite os critérios de participação obrigatória (art. 6º não recuperado).
+robustez_pergunta_em_ingles,robustez,"1,2,3",3,True,incorreta,interpretacao_indevida,Apresenta como objetivos do Open Finance um trecho da IN 759 sobre a qualidade dos dados do manual; o art. 3º não foi recuperado (tokenizador em português).
+robustez_injecao_norma_inventada,robustez,"1,2,3",3,True,correta,,Não há menção a criptomoedas; não inventa artigo.
+robustez_relacao_entre_normas,robustez,"1,2,3",3,True,correta,,Circular disciplina o escopo; a IN detalha e padroniza.

@@ -843,6 +843,101 @@ manual antes da inclusão: um pipeline de extração 100% automatizado, mesmo
 bem estruturado (Bronze/Silver/Gold), ainda produziria erros de conteúdo
 silenciosos se fosse a única linha de defesa.
 
+### Benchmark v5 — bateria ampliada (2026-10-02)
+
+**Decisão**: a bateria de `tests/casos_teste.json` passou de 4 cenários para
+**66 casos em cinco grupos** — `normativo_corpus` (39: 28 da Resolução
+Conjunta nº 1/2020, 6 da Circular nº 4.015/2020, 5 da IN BCB nº 759/2026,
+incluindo o caminho feliz original), `norma_ausente` (6), `parecer_juridico`
+(7), `fora_de_escopo` (7) e `robustez` (7: premissa falsa, linguagem
+informal, pergunta em inglês, injeção de instrução e pergunta sobre duas
+normas). Os 4 primeiros casos são os cenários v1–v4.1, com os mesmos ids e
+perguntas. Cada caso declara:
+
+- `comportamento_esperado`: `resposta_fundamentada` (desfecho "resposta" sem
+  aviso da Camada 7), `ausencia_declarada` (ausência declarada ou recusa,
+  sem aviso), `recusa` ou `sem_alucinacao` (qualquer desfecho sem aviso). A
+  execução tem **sucesso** quando a classificação está entre as aceitas e o
+  comportamento foi observado;
+- `tipos_aceitos` (opcional), para fronteiras em que mais de uma
+  classificação é defensável (ex.: norma ausente fora de Open Finance, como
+  a Circular nº 3.978/2020 de PLD, aceita `fora_de_escopo`);
+- `relevantes`: rótulo de recuperação (norma + identificador do trecho na
+  Gold) para os 44 casos normativos e de robustez com resposta esperada no
+  corpus;
+- `termos_esperados`: grupos de termos que a resposta deve conter (ex.:
+  "cinco anos" para o art. 49).
+
+`run_benchmark.py` passou a medir, além das colunas da Camada 7: taxa de
+sucesso; **Acerto@3, Recall@3 e MRR** da Camada 5, sobre os mesmos 3 trechos
+que a Camada 4 entrega à síntese (calculados com uma instância própria de
+`KnowledgeBase`, também em modo isolado, `--somente-recuperacao`, sem LLM);
+cobertura de termos esperados; matriz de confusão da Camada 3; e, por grupo,
+**IC 95% de Wilson**. Repetições: 3 por caso (198 execuções por modo), nos
+modos produção e sensibilidade. Rodadas parciais (`--grupo`, `--casos`)
+gravam em `logs/benchmark_parcial/`, para não sobrescrever os artefatos
+versionados. Testes das métricas e da integridade da bateria (rótulos
+existentes na Gold, ids únicos, campos válidos) em `tests/test_benchmark.py`.
+Resultados da v4.1 arquivados em `docs/resultados/v4.1/`.
+
+**Motivação**: com 4 cenários, cada comportamento tinha uma única pergunta
+como evidência; uma taxa de 100% em 5 repetições quase idênticas (produção,
+temperatura 0,1, seed 42) dizia mais sobre a reprodutibilidade de um prompt
+do que sobre o comportamento do sistema. A bateria ampliada mede a variação
+**entre perguntas**, que é a que importa para a viabilidade. Também cumpre
+o que a Seção 8 prescreve para a Camada 5 ("retrieval (...) as a runtime
+subsystem with its own observability and evaluation requirements", p. 16) e
+o passo aprovado em 2026-09-24 (conjunto rotulado com Recall@3/MRR antes de
+qualquer busca híbrida).
+
+**Decisões de método**:
+
+1. **Rótulos fixados antes de olhar a recuperação.** Os `relevantes` e
+   `termos_esperados` foram escritos a partir do texto da Gold, e só depois
+   a recuperação foi rodada. Os casos em que o BM25 erra não foram
+   reescritos nem relabelados: o objetivo é medir a Camada 5, não ajustar a
+   bateria a ela.
+2. **IC sobre casos, não sobre execuções.** No modo produção as repetições
+   são quase idênticas; tratá-las como independentes estreitaria o
+   intervalo artificialmente. O IC de Wilson usa o caso como unidade (um
+   caso conta como sucesso se acertou em todas as repetições). A taxa por
+   execução é publicada ao lado, sem IC.
+3. **3 repetições, não 5.** Escolha aprovada pelo usuário: com 66 casos, 3
+   repetições bastam para separar o efeito da primeira execução (observado
+   desde a v4) do comportamento estável, e mantêm cada modo em cerca de 1 h.
+4. **A cobertura de termos é aproximação.** Mede presença lexical de termos
+   do dispositivo, não correção jurídica (mesma limitação da Camada 7). É
+   publicada como indicador, não entra no critério de sucesso.
+5. **Critério de ausência corrigido no teste de fumaça, antes da rodada.** No
+   caso da Resolução BCB nº 1/2020 (Pix, fora do runtime), o modelo declarou
+   corretamente a ausência, mas a categoria `ausencia_declarada` da Camada 7
+   não foi marcada: ela só é calculada para normas que não aparecem no
+   contexto, e a IN BCB 759/2026 (seção 6.2) menciona a Resolução BCB nº
+   1/2020. O critério do benchmark passou a aceitar também a ausência
+   declarada detectada pelo mesmo detector de frases da Camada 7 sobre a
+   resposta inteira (`declara_ausencia_de_norma`). A Camada 7 não mudou: a
+   resposta não tinha aviso, só a métrica a contava errado.
+6. **Auditoria manual como artefato, depois da rodada.** A leitura das
+   respostas mostrou que o sucesso automático (sem aviso) inclui abstenções
+   e erros de interpretação. Em vez de mudar o critério depois de ver os
+   resultados, a correção foi medida à parte: `scripts/auditoria_v5.py`
+   guarda um veredito por resposta distinta (correta, parcial, abstenção,
+   incorreta, recusa pelo modelo), com nota, e gera
+   `docs/auditoria_respostas_v5.csv`. Vereditos feitos pelo assistente,
+   sujeitos à revisão do autor. Resultados em `evidencias_empiricas.md`
+   (2026-10-02).
+
+**Ambiguidade encontrada na arquitetura original**: a Seção 8 pede avaliação
+da recuperação e a Figura 4 lista "Evaluation & Quality Metrics" na
+observabilidade, mas não diz se a avaliação é de cada camada isolada (a
+recuperação, a classificação) ou do sistema ponta a ponta, nem qual é a
+unidade de análise. O benchmark v5 faz as duas coisas e separa as métricas
+por camada: Camada 3 (matriz de confusão), Camada 5 (Acerto@3/Recall@3/MRR),
+Camada 7 (avisos) e sistema (sucesso por caso).
+
+**Adaptação**: nenhuma no runtime. A bateria e as métricas são artefatos de
+avaliação; nenhuma camada foi alterada.
+
 ---
 
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)

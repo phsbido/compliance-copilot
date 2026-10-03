@@ -1,0 +1,1109 @@
+[
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 59,
+  "prompt_eval_ms": 604.8,
+  "latencia_ms": 8669.6,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do compartilhamento de serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1944,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 85,
+  "prompt_eval_ms": 24.6,
+  "latencia_ms": 2146.5,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, em até um dia, contado a partir da solicitação do cliente, no caso do compartilhamento de serviço de iniciação de transação de pagamento de que trata o art. 5º, inciso II, alínea \"a\" (não disponível no contexto).",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 85,
+  "prompt_eval_ms": 22.8,
+  "latencia_ms": 2333.1,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, em até um dia, contado a partir da solicitação do cliente, no caso do compartilhamento de serviço de iniciação de transação de pagamento de que trata o art. 5º, inciso II, alínea \"a\" (não disponível no contexto).",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 321.0,
+  "latencia_ms": 2381.2,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 32.7,
+  "latencia_ms": 1580.3,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 25.2,
+  "latencia_ms": 1434.9,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 585.0,
+  "latencia_ms": 1266.5,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 263,
+  "fronteiras_lote": [
+   263,
+   775,
+   1287,
+   1799
+  ],
+  "tokens_avaliados": 1572,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 26.0,
+  "latencia_ms": 799.4,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 27.0,
+  "latencia_ms": 827.2,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 767.1,
+  "latencia_ms": 2346.7,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 29.9,
+  "latencia_ms": 1914.0,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E0",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 24.7,
+  "latencia_ms": 1836.9,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 750.0,
+  "latencia_ms": 8640.0,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 56,
+  "prompt_eval_ms": 583.4,
+  "latencia_ms": 2030.9,
+  "resposta": "Infelizmente, não há menção à Circular nº 3.978/2020 no contexto fornecido. Portanto, não posso fornecer informações sobre as obrigações que ela impõe sobre prevenção à lavagem de dinheiro.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1829,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 254.0,
+  "latencia_ms": 1847.0,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "nova",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 54,
+  "prompt_eval_ms": 526.2,
+  "latencia_ms": 1908.2,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 263,
+  "fronteiras_lote": [
+   263,
+   775,
+   1287,
+   1799
+  ],
+  "tokens_avaliados": 1687,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 23.6,
+  "latencia_ms": 1685.1,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 23.1,
+  "latencia_ms": 822.3,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 256.3,
+  "latencia_ms": 1848.6,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "nova",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 54,
+  "prompt_eval_ms": 24.5,
+  "latencia_ms": 1440.1,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 23.7,
+  "latencia_ms": 1799.8,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 23.0,
+  "latencia_ms": 894.0,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 25.4,
+  "latencia_ms": 1525.1,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E1",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "nova",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 54,
+  "prompt_eval_ms": 32.6,
+  "latencia_ms": 1522.4,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "aquecimento",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 59,
+  "prompt_eval_ms": 715.3,
+  "latencia_ms": 8382.1,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do compartilhamento de serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1944,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 85,
+  "prompt_eval_ms": 22.1,
+  "latencia_ms": 2139.2,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, em até um dia, contado a partir da solicitação do cliente, no caso do compartilhamento de serviço de iniciação de transação de pagamento de que trata o art. 5º, inciso II, alínea \"a\" (não disponível no contexto).",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 85,
+  "prompt_eval_ms": 23.3,
+  "latencia_ms": 2058.3,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, em até um dia, contado a partir da solicitação do cliente, no caso do compartilhamento de serviço de iniciação de transação de pagamento de que trata o art. 5º, inciso II, alínea \"a\" (não disponível no contexto).",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 85,
+  "prompt_eval_ms": 27.4,
+  "latencia_ms": 2270.7,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, em até um dia, contado a partir da solicitação do cliente, no caso do compartilhamento de serviço de iniciação de transação de pagamento de que trata o art. 5º, inciso II, alínea \"a\" (não disponível no contexto).",
+  "prefixo_do_cache": 1949,
+  "fronteiras_lote": [
+   1949
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "in759_vigencia",
+  "execucao": "aquecimento",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 247.7,
+  "latencia_ms": 1763.0,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 22.4,
+  "latencia_ms": 1440.9,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 22.4,
+  "latencia_ms": 1364.6,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 52,
+  "prompt_eval_ms": 21.5,
+  "latencia_ms": 1333.8,
+  "resposta": "A Instrução Normativa BCB nº 759/2026 entra em vigor em 3 de novembro de 2026. (Art. 3º da Instrução Normativa BCB nº 759/2026)",
+  "prefixo_do_cache": 809,
+  "fronteiras_lote": [
+   809
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "aquecimento",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 580.2,
+  "latencia_ms": 1277.8,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 263,
+  "fronteiras_lote": [
+   263,
+   775,
+   1287,
+   1799
+  ],
+  "tokens_avaliados": 1572,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 22.3,
+  "latencia_ms": 804.4,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 23.3,
+  "latencia_ms": 836.8,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep2/3",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 22,
+  "prompt_eval_ms": 24.6,
+  "latencia_ms": 786.0,
+  "resposta": "Não está disponível no contexto fornecido a Circular nº 3.978/2020.",
+  "prefixo_do_cache": 1834,
+  "fronteiras_lote": [
+   1834
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "aquecimento",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 724.2,
+  "latencia_ms": 2301.9,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 29.2,
+  "latencia_ms": 2376.4,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 27.4,
+  "latencia_ms": 2106.2,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E2",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 26.3,
+  "latencia_ms": 2201.9,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 2423,
+  "fronteiras_lote": [
+   2423
+  ],
+  "tokens_avaliados": 1,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 59,
+  "prompt_eval_ms": 739.5,
+  "latencia_ms": 8884.0,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do compartilhamento de serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1944,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 59,
+  "prompt_eval_ms": 695.9,
+  "latencia_ms": 8564.6,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do compartilhamento de serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1944,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_revogacao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 59,
+  "prompt_eval_ms": 779.6,
+  "latencia_ms": 8397.3,
+  "resposta": "De acordo com o Art. 15 da Resolução Conjunta nº 1/2020, a revogação do consentimento deve ser efetuada de forma imediata no caso do compartilhamento de serviço de iniciação de transação de pagamento.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1944,
+  "n_tokens_prompt": 1950
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 266.8,
+  "latencia_ms": 7629.6,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 404.7,
+  "latencia_ms": 8162.7,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "in759_vigencia",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 67,
+  "prompt_eval_ms": 303.4,
+  "latencia_ms": 8635.6,
+  "resposta": "De acordo com o Art. 3º da Instrução Normativa BCB nº 759/2026, a Instrução Normativa entra em vigor em 3 de novembro de 2026. (Instrução Normativa BCB nº 759/2026 — Art. 3º)",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518
+  ],
+  "tokens_avaliados": 804,
+  "n_tokens_prompt": 810
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 56,
+  "prompt_eval_ms": 552.1,
+  "latencia_ms": 7714.4,
+  "resposta": "Infelizmente, não há menção à Circular nº 3.978/2020 no contexto fornecido. Portanto, não posso fornecer informações sobre as obrigações que ela impõe sobre prevenção à lavagem de dinheiro.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1829,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 56,
+  "prompt_eval_ms": 587.4,
+  "latencia_ms": 7705.2,
+  "resposta": "Infelizmente, não há menção à Circular nº 3.978/2020 no contexto fornecido. Portanto, não posso fornecer informações sobre as obrigações que ela impõe sobre prevenção à lavagem de dinheiro.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1829,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "ausente_circ_3978_pld",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 56,
+  "prompt_eval_ms": 549.7,
+  "latencia_ms": 7423.6,
+  "resposta": "Infelizmente, não há menção à Circular nº 3.978/2020 no contexto fornecido. Portanto, não posso fornecer informações sobre as obrigações que ela impõe sobre prevenção à lavagem de dinheiro.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542
+  ],
+  "tokens_avaliados": 1829,
+  "n_tokens_prompt": 1835
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep1",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 898.1,
+  "latencia_ms": 8781.7,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep2",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 924.9,
+  "latencia_ms": 8888.2,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ },
+ {
+  "condicao": "E3",
+  "caso_id": "rc1_prazo_adesao",
+  "execucao": "rep3",
+  "igual_a_benchmark": "rep1",
+  "options": {
+   "temperature": 0.1,
+   "seed": 42
+  },
+  "eval_count": 62,
+  "prompt_eval_ms": 750.3,
+  "latencia_ms": 8605.6,
+  "resposta": "De acordo com o Art. 6º, § 5º da Resolução Conjunta nº 1/2020, uma instituição que ultrapassar o limite de número de clientes terá prazo de seis meses para se tornar instituição participante do Open Finance.",
+  "prefixo_do_cache": 6,
+  "fronteiras_lote": [
+   6,
+   518,
+   1030,
+   1542,
+   2054
+  ],
+  "tokens_avaliados": 2418,
+  "n_tokens_prompt": 2424
+ }
+]

@@ -1,5 +1,7 @@
 # Testes, Configuração e Operação
 
+> **Nota (2026-10-02, estado atual dos testes):** este arquivo é parte do retrato de 2026-09-23 (ver `00_visao_geral.md`). Desde então: há testes automatizados com `unittest`, sem LLM (`tests/test_governanca.py`, `tests/test_ingestao.py` e `tests/test_benchmark.py`; `python -m unittest discover -s tests`), e o benchmark passou à **bateria v5**: 66 casos em cinco grupos (normativo no corpus, norma ausente, parecer jurídico, fora de escopo, robustez), 3 repetições por caso, nos modos `producao` e `sensibilidade`, com critério de sucesso por caso, Acerto@3/Recall@3/MRR da Camada 5 sobre rótulos de recuperação, cobertura de termos esperados, IC 95% de Wilson por grupo e matriz de confusão da Camada 3. Descrição atual: docstring de `run_benchmark.py`, `README.md` (Seção 6), `docs/apendice_casos_teste.md` e `docs/decisoes_arquitetura.md` ("Benchmark v5").
+
 ## O que os testes cobrem (e o que revelam sobre o comportamento esperado)
 
 **[FATO]** Não há suíte de testes automatizados no sentido convencional
