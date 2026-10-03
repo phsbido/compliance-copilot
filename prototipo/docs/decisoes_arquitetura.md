@@ -1052,6 +1052,24 @@ estratificadas por grupo, seed 20261002. Em C1 o prompt de síntese é igual
 ao do v5, então as diferenças vêm do estado do cache do servidor
 (`diagnostico_falhas_v5.md`, Seção 3), não da ablação.
 
+**Desvio durante a execução: teto de tokens só na C2** (2026-10-02). A
+primeira rodada da C2 (início às 23:36:09) não terminou. Na execução 155
+de 198 (`parecer_redigir_defesa`, classificado como normativo, pedido para
+redigir uma defesa), o modelo sem a política passou de 15.600 tokens
+gerados. O Ollama não limita a saída por padrão (`num_predict` = −1), e o
+`llama-server` roda com `--context-shift`: descarta o início do contexto e
+continua gerando. A rodada foi interrompida às 23:50. Decisão do autor:
+refazer a C2 inteira com teto de **2.048 tokens de saída** (`num_predict`)
+**apenas na C2** (`run_benchmark.py --max-tokens-saida`;
+`ParametrosAmostragem.max_tokens_saida`, que vale `None` por padrão, e
+nesse caso opções e registros ficam idênticos aos do v5). O teto não
+alcançaria nenhuma resposta das rodadas sem ele: a maior geração foi de
+856 tokens no v5 (log do servidor da rodada) e 773 na C1. Execuções que
+batem no teto ficam marcadas (`sintese_truncada`, a partir do
+`done_reason = "length"` do Ollama) e são contadas como "geração
+degenerada", um resultado da ablação, não uma falha de execução. A
+primeira tentativa (154 execuções) não foi aproveitada.
+
 ---
 
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)

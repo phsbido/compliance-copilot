@@ -77,5 +77,19 @@ class TestAblacaoCamada7(unittest.TestCase):
             Orchestrator(llm=LLMFalso(), ablacao="c3")
 
 
+class TestTetoDeTokens(unittest.TestCase):
+    def test_sem_teto_as_opcoes_e_o_registro_sao_os_da_v5(self):
+        from src.config import ParametrosAmostragem
+        a = ParametrosAmostragem(0.0, 0.1, 42)
+        self.assertEqual(a.opcoes(0.1), {"temperature": 0.1, "seed": 42})
+        self.assertNotIn("max_tokens_saida", a.como_dict())
+
+    def test_com_teto_vira_num_predict(self):
+        from src.config import ParametrosAmostragem
+        a = ParametrosAmostragem(0.0, 0.1, 42, max_tokens_saida=2048)
+        self.assertEqual(a.opcoes(0.1)["num_predict"], 2048)
+        self.assertEqual(a.como_dict()["max_tokens_saida"], 2048)
+
+
 if __name__ == "__main__":
     unittest.main()

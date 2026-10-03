@@ -77,6 +77,7 @@ Uso:
         # no JSON bruto e regera as tabelas
 """
 import argparse
+import dataclasses
 import json
 import math
 import time
@@ -290,8 +291,11 @@ def filtrar_casos(casos: list[dict], grupo: str | None, ids: str | None) -> list
 
 
 def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None = None,
-               ablacao: str | None = None) -> dict:
-    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo), limiar_bm25=limiar_bm25, ablacao=ablacao)
+               ablacao: str | None = None, max_tokens_saida: int | None = None) -> dict:
+    amostragem = amostragem_do_modo(modo)
+    if max_tokens_saida is not None:
+        amostragem = dataclasses.replace(amostragem, max_tokens_saida=max_tokens_saida)
+    orchestrator = Orchestrator(amostragem=amostragem, limiar_bm25=limiar_bm25, ablacao=ablacao)
 
     inicio = time.perf_counter()
     resposta = orchestrator.responder(caso["pergunta"])
@@ -327,6 +331,9 @@ def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None 
         # falsas e o sucesso automático não mede governança — a comparação
         # usa a medida offline (scripts/medir_ablacao.py).
         "ablacao": ablacao,
+        # Síntese cortada pelo teto de tokens (só com --max-tokens-saida).
+        "sintese_truncada": bool(orchestrator.ultima_sintese)
+                            and orchestrator.llm.ultimo_motivo_parada == "length",
     }
     if ablacao:
         r["aviso_citacao_nao_verificada"] = False
@@ -478,6 +485,8 @@ if __name__ == "__main__":
                         help="limiar de pontuação do melhor trecho (Camada 5, v6); padrão: LIMIAR_BM25 do .env")
     parser.add_argument("--ablacao", choices=["c1", "c2"],
                         help="desliga a Camada 7 (c1: sem validar_resposta; c2: também sem POLITICA_SINTESE)")
+    parser.add_argument("--max-tokens-saida", type=int,
+                        help="teto de tokens gerados por chamada (num_predict); padrão: sem teto, como na v5")
     parser.add_argument("--saida", type=Path,
                         help="pasta de saída de todos os artefatos (v6 em diante); sem ela, os caminhos do v5")
     args = parser.parse_args()
@@ -508,7 +517,8 @@ if __name__ == "__main__":
         total = len(selecionados) * args.repeticoes
         print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()}; "
               f"limiar BM25: {limiar if limiar is not None else 'desligado'}; "
-              f"ablação da Camada 7: {args.ablacao or 'não'})")
+              f"ablação da Camada 7: {args.ablacao or 'não'}; "
+              f"teto de tokens: {args.max_tokens_saida or 'nenhum'})")
         print(f"{len(selecionados)} casos de {CASOS_FILE}, {args.repeticoes} repetições cada "
               f"({total} execuções no total).\n")
 
@@ -516,7 +526,7 @@ if __name__ == "__main__":
         for caso in selecionados:
             for repeticao in range(1, args.repeticoes + 1):
                 print(f"[{len(resultados) + 1}/{total}] [{caso['id']}] rep {repeticao}...", end=" ", flush=True)
-                r = rodar_caso(caso, repeticao, args.modo, limiar, args.ablacao)
+                r = rodar_caso(caso, repeticao, args.modo, limiar, args.ablacao, args.max_tokens_saida)
                 resultados.append(r)
                 print(
                     f"tipo={r['tipo_obtido']} desfecho={r['desfecho']} "

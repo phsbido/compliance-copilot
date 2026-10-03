@@ -27,6 +27,9 @@ class LLMCore:
         self.model = model or settings.ollama_model
         self.options = options
         self._identificacao: dict | None = None
+        # Motivo de parada da última chamada ("stop", "length"...): "length"
+        # indica que a geração foi cortada pelo teto de tokens (v6).
+        self.ultimo_motivo_parada: str | None = None
 
     def generate(self, prompt: str, system: str | None = None, options: dict | None = None) -> str:
         """Envia uma única mensagem ao modelo e retorna a resposta em texto."""
@@ -37,6 +40,7 @@ class LLMCore:
 
         opcoes = {**(self.options or {}), **(options or {})} or None
         response = ollama.chat(model=self.model, messages=messages, options=opcoes)
+        self.ultimo_motivo_parada = response.get("done_reason")
         return response["message"]["content"]
 
     def identificacao(self) -> dict:

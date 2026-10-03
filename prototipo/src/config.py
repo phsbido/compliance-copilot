@@ -41,20 +41,30 @@ class ParametrosAmostragem:
     temperatura_classificacao: float
     temperatura_sintese: float
     seed: int | None
+    # Teto de tokens gerados por chamada (num_predict do Ollama). None = sem
+    # teto, o padrão do Ollama e a configuração da v5. Usado só na ablação C2
+    # da v6, em que uma síntese sem política não terminava (ver
+    # docs/decisoes_arquitetura.md, "Tarefa C").
+    max_tokens_saida: int | None = None
 
     def opcoes(self, temperatura: float) -> dict:
         """Opções repassadas ao Ollama para uma chamada."""
         opcoes = {"temperature": temperatura}
         if self.seed is not None:
             opcoes["seed"] = self.seed
+        if self.max_tokens_saida is not None:
+            opcoes["num_predict"] = self.max_tokens_saida
         return opcoes
 
     def como_dict(self) -> dict:
-        return {
+        d = {
             "temperatura_classificacao": self.temperatura_classificacao,
             "temperatura_sintese": self.temperatura_sintese,
             "seed": self.seed,
         }
+        if self.max_tokens_saida is not None:
+            d["max_tokens_saida"] = self.max_tokens_saida
+        return d
 
 
 @dataclass
