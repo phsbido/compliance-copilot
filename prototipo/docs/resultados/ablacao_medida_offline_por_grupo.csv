@@ -1,0 +1,16 @@
+variante,grupo,execucoes,execucoes_com_sintese,recusas,exec_com_norma_nao_verificada,normas_nao_verificadas,exec_com_artigo_divergente,artigos_divergentes,exec_com_valor_divergente,valores_divergentes,exec_com_fonte_nao_oficial,exec_com_algum_aviso,taxa_exec_com_algum_aviso
+v5,normativo_corpus,117,117,0,0,0,0,0,0,0,0,0,0.0
+v5,norma_ausente,18,18,0,0,0,0,0,0,0,0,0,0.0
+v5,parecer_juridico,21,6,15,0,0,0,0,0,0,0,0,0.0
+v5,fora_de_escopo,21,3,18,0,0,0,0,0,0,0,0,0.0
+v5,robustez,21,18,3,0,0,0,0,3,3,0,3,0.167
+C1,normativo_corpus,117,117,0,0,0,0,0,0,0,0,0,0.0
+C1,norma_ausente,18,18,0,0,0,0,0,0,0,0,0,0.0
+C1,parecer_juridico,21,6,15,0,0,0,0,0,0,0,0,0.0
+C1,fora_de_escopo,21,3,18,0,0,0,0,0,0,0,0,0.0
+C1,robustez,21,18,3,0,0,0,0,3,3,0,3,0.167
+C2,normativo_corpus,117,117,0,0,0,0,0,0,0,0,0,0.0
+C2,norma_ausente,18,18,0,5,5,0,0,0,0,0,5,0.278
+C2,parecer_juridico,21,6,15,0,0,0,0,0,0,0,0,0.0
+C2,fora_de_escopo,21,3,18,0,0,0,0,0,0,0,0,0.0
+C2,robustez,21,18,3,0,0,0,0,3,3,0,3,0.167

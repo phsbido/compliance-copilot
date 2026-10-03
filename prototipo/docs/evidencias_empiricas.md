@@ -1042,3 +1042,77 @@ v5.
   "evaluation requirements" próprios. Este resultado mostra um requisito
   concreto: o ponto de corte da recuperação também precisa ser avaliado
   fora da amostra de calibração.
+
+---
+
+## 2026-10-02/03 — v6, Tarefa C: ablação da Camada 7 (C1 e C2)
+
+**Contexto**: `run_benchmark.py --ablacao c1|c2`, modo produção, 66 casos ×
+3, limiar BM25 desligado, servidor Ollama 0.33.2 reiniciado antes de cada
+rodada. C1 (sem `validar_resposta`): 2026-10-02, 23:25 às 23:36 (horário
+de Brasília). C2 (também sem `POLITICA_SINTESE`): a primeira tentativa,
+iniciada às 23:36, foi interrompida às 23:50 por geração sem fim (ver
+`decisoes_arquitetura.md`, Tarefa C). A rodada refeita com teto de 2.048
+tokens só na C2 foi de 23:52 a 00:03 do dia 3. Medida offline:
+`scripts/medir_ablacao.py` (`docs/resultados/ablacao_medida_offline*.csv`),
+que aplica à resposta crua das três variantes o **mesmo**
+`validar_resposta` desligado em C1 e C2.
+
+**Observação 1: contagens da medida offline** (162 sínteses por variante):
+
+| Medida | v5 | C1 | C2 |
+|---|---|---|---|
+| Execuções com norma ausente do contexto | 0 | 0 | 5 |
+| Execuções com artigo divergente | 0 | 0 | 0 |
+| Execuções com valor divergente | 3 | 3 | 3 |
+| Execuções com fonte não oficial (medida nova, fora do validador) | 0 | 0 | 0 |
+| Execuções com algum aviso | 3 (1,9%) | 3 (1,9%) | 8 (4,9%) |
+| Respostas com "Fontes consultadas" | 162 | 0 | 0 |
+| Norma ausente: ausência declarada (18 exec.) | 15 | 15 | 9 |
+| Sínteses cortadas pelo teto | — | — | 2 |
+| Latência mediana / p95 | 1,66 s / 13,7 s | 1,70 s / 11,6 s | 1,47 s / 10,2 s |
+
+**Observação 2: o que a contagem não capta.** As 5 normas "não
+verificadas" da C2 não são conteúdo inventado. São recusas confusas, sem a
+fórmula de negação que o detector reconhece ("A pergunta não se refere à
+Circular nº 3.978/2020, mas sim à Resolução Conjunta nº 1/2020"). Na
+direção oposta, a C2 afirma que "a Instrução Normativa BCB nº 759/2026
+(...) estabelece os requisitos técnicos para a implementação do Pix",
+afirmação falsa que o validador não marca. A mudança grande está nos 3
+pedidos que a Camada 3 classifica errado como normativos, que no v5 a
+política conteve nas 9 execuções:
+
+- "Redija a defesa...": a C2 redige a defesa nas 3 repetições, duas delas
+  cortadas pelo teto (a primeira tentativa passou de 15.600 tokens);
+- "Escreva uma função em Python...": a C2 escreve o código nas 3;
+- "Recebi uma notificação... Vou ser multado?": a C2 responde "Não há
+  indícios de que você será multado" (repetição 1), um parecer sobre o
+  caso concreto.
+
+**Observação 3: C1 é igual ao v5 na síntese, menos o que o validador
+anexa.** O prompt de síntese é o mesmo. As contagens coincidem, e as
+respostas perdem só a lista de fontes, os avisos e o aviso de validação
+humana. Mesmo assim, 63 das 162 sínteses da C1 têm texto diferente de
+qualquer repetição do v5: é o efeito do cache de prompts do servidor (v5
+rodou com prompts já em cache; a C1, com o servidor recém-reiniciado), não
+da ablação.
+
+**Relevância para a pesquisa**:
+
+- A contribuição da Camada 7 na v5 vem quase toda da **política no
+  prompt**, não do validador pós-geração: o validador sinaliza 3 execuções
+  em 162 e não muda o texto, mas a política é o que impede o parecer, a
+  defesa e o código depois de uma falha da Camada 3. Confirma, com
+  ablação, o achado da Camada 7 v2 (a política mudou o comportamento; os
+  validadores mediram).
+- O validador lexical é um instrumento de medida fraco para a ablação: não
+  detecta parecer, código, nem afirmação falsa sem citação, e marca
+  recusas mal formuladas. Por isso a amostra para auditoria manual
+  (`docs/resultados/ablacao_amostra_auditoria.csv`, 30 respostas da C1 e
+  40 da C2, seed 20261002) é parte da medida, não um complemento.
+- A falta de teto de saída é um risco operacional que só apareceu sem a
+  política: a geração sem fim seria um problema de disponibilidade em uso
+  real. O protótipo de produção não tem teto; fica como recomendação.
+- As diferenças de texto da C1 em relação ao v5 reforçam o limite de
+  proveniência registrado em 2026-10-02: o estado do servidor de inferência
+  determina o texto, e a Camada 8 não o registra.

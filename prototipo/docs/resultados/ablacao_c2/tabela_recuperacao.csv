@@ -1,0 +1,45 @@
+caso_id,grupo,relevantes,recuperados_top3,acerto_recuperacao,recall_recuperacao,rr_recuperacao
+caminho_feliz_rag_bacen,normativo_corpus,Resolução Conjunta nº 1 Art. 6º,Resolução Conjunta nº 1 Art. 7º; Resolução Conjunta nº 1 Art. 6º; Instrução Normativa BCB nº 759 Art. 1º,True,1.0,0.5
+rc1_definicao_open_finance,normativo_corpus,Resolução Conjunta nº 1 Art. 2º,Resolução Conjunta nº 1 Art. 46; Resolução Conjunta nº 1 Art. 51; Resolução Conjunta nº 1 Art. 6º,False,0.0,0.0
+rc1_objetivos,normativo_corpus,Resolução Conjunta nº 1 Art. 3º,Resolução Conjunta nº 1 Art. 4º; Instrução Normativa BCB nº 759 seção 1; Instrução Normativa BCB nº 759 seção 1,False,0.0,0.0
+rc1_principios,normativo_corpus,Resolução Conjunta nº 1 Art. 4º,Resolução Conjunta nº 1 Art. 4º; Resolução Conjunta nº 1 Art. 6º; Resolução Conjunta nº 1 Art. 3º,True,1.0,1.0
+rc1_participacao_obrigatoria,normativo_corpus,Resolução Conjunta nº 1 Art. 6º,Resolução Conjunta nº 1 Art. 44; Resolução Conjunta nº 1 Art. 38; Instrução Normativa BCB nº 759 seção 1,False,0.0,0.0
+rc1_prazo_adesao,normativo_corpus,Resolução Conjunta nº 1 Art. 6º,Resolução Conjunta nº 1 Art. 6º; Resolução Conjunta nº 1 Art. 44; Instrução Normativa BCB nº 759 seção 5.2,True,1.0,1.0
+rc1_etapas_solicitacao,normativo_corpus,Resolução Conjunta nº 1 Art. 8º,Resolução Conjunta nº 1 Art. 8º; Instrução Normativa BCB nº 759 seção 6.1.3; Resolução Conjunta nº 1 Art. 22-A,True,1.0,1.0
+rc1_requisitos_consentimento,normativo_corpus,Resolução Conjunta nº 1 Art. 10,Resolução Conjunta nº 1 Art. 5º; Resolução Conjunta nº 1 Art. 15; Instrução Normativa BCB nº 759 seção 1,False,0.0,0.0
+rc1_consentimento_adesao,normativo_corpus,Resolução Conjunta nº 1 Art. 10,Resolução Conjunta nº 1 Art. 10; Resolução Conjunta nº 1 Art. 22-A; Instrução Normativa BCB nº 759 seção 7,True,1.0,1.0
+rc1_consentimento_iniciacao,normativo_corpus,Resolução Conjunta nº 1 Art. 13; Resolução Conjunta nº 1 Art. 13-A,Instrução Normativa BCB nº 759 seção 6.1.3; Instrução Normativa BCB nº 759 seção 6.1; Instrução Normativa BCB nº 759 seção 6.1.2,False,0.0,0.0
+rc1_prazo_revogacao,normativo_corpus,Resolução Conjunta nº 1 Art. 15,Resolução Conjunta nº 1 Art. 15; Instrução Normativa BCB nº 759 seção 7; Instrução Normativa BCB nº 759 seção 6.1.3,True,1.0,1.0
+rc1_revogacao_proposta,normativo_corpus,Resolução Conjunta nº 1 Art. 15,Resolução Conjunta nº 1 Art. 15; Resolução Conjunta nº 1 Art. 17; Resolução Conjunta nº 1 Art. 10,True,1.0,1.0
+rc1_fatores_autenticacao,normativo_corpus,Resolução Conjunta nº 1 Art. 17,Resolução Conjunta nº 1 Art. 17; Resolução Conjunta nº 1 Art. 16; Resolução Conjunta nº 1 Art. 20,True,1.0,1.0
+rc1_contratacao_autenticacao,normativo_corpus,Resolução Conjunta nº 1 Art. 19,Resolução Conjunta nº 1 Art. 19; Resolução Conjunta nº 1 Art. 16; Resolução Conjunta nº 1 Art. 17,True,1.0,1.0
+rc1_confirmacao_cadastro,normativo_corpus,Resolução Conjunta nº 1 Art. 21,Resolução Conjunta nº 1 Art. 21; Resolução Conjunta nº 1 Art. 22; Resolução Conjunta nº 1 Art. 8º,True,1.0,1.0
+rc1_portabilidade_proponente,normativo_corpus,Resolução Conjunta nº 1 Art. 22-A,Instrução Normativa BCB nº 759 seção 8; Resolução Conjunta nº 1 Art. 22-E; Resolução Conjunta nº 1 Art. 2º,False,0.0,0.0
+rc1_portabilidade_desistencia,normativo_corpus,Resolução Conjunta nº 1 Art. 22-D,Resolução Conjunta nº 1 Art. 22-D; Instrução Normativa BCB nº 759 seção 8; Resolução Conjunta nº 1 Art. 22-E,True,1.0,1.0
+rc1_formato_interfaces,normativo_corpus,Resolução Conjunta nº 1 Art. 23,Resolução Conjunta nº 1 Art. 23; Resolução Conjunta nº 1 Art. 30; Resolução Conjunta nº 1 Art. 24,True,1.0,1.0
+rc1_indisponibilidade_crise,normativo_corpus,Resolução Conjunta nº 1 Art. 25,Resolução Conjunta nº 1 Art. 25; Resolução Conjunta nº 1 Art. 48; Resolução Conjunta nº 1 Art. 30,True,1.0,1.0
+rc1_obstaculos_vedados,normativo_corpus,Resolução Conjunta nº 1 Art. 28,Resolução Conjunta nº 1 Art. 28; Resolução Conjunta nº 1 Art. 43; Resolução Conjunta nº 1 Art. 15,True,1.0,1.0
+rc1_diretor_responsavel,normativo_corpus,Resolução Conjunta nº 1 Art. 32,Resolução Conjunta nº 1 Art. 32; Resolução Conjunta nº 1 Art. 33; Circular nº 4.015 Art. 7º,True,1.0,1.0
+rc1_relatorio_semestral,normativo_corpus,Resolução Conjunta nº 1 Art. 33,Resolução Conjunta nº 1 Art. 33; Resolução Conjunta nº 1 Art. 32; Resolução Conjunta nº 1 Art. 37,True,1.0,1.0
+rc1_parceria_nao_autorizada,normativo_corpus,Resolução Conjunta nº 1 Art. 36,Resolução Conjunta nº 1 Art. 36; Resolução Conjunta nº 1 Art. 53; Resolução Conjunta nº 1 Art. 38,True,1.0,1.0
+rc1_contrato_parceria,normativo_corpus,Resolução Conjunta nº 1 Art. 38,Resolução Conjunta nº 1 Art. 38; Resolução Conjunta nº 1 Art. 38; Resolução Conjunta nº 1 Art. 36,True,1.0,1.0
+rc1_ressarcimento_vedado,normativo_corpus,Resolução Conjunta nº 1 Art. 43,Resolução Conjunta nº 1 Art. 43; Resolução Conjunta nº 1 Art. 42; Resolução Conjunta nº 1 Art. 51,True,1.0,1.0
+rc1_guarda_cinco_anos,normativo_corpus,Resolução Conjunta nº 1 Art. 49,Resolução Conjunta nº 1 Art. 52; Resolução Conjunta nº 1 Art. 49; Resolução Conjunta nº 1 Art. 45,True,1.0,0.5
+rc1_convencao,normativo_corpus,Resolução Conjunta nº 1 Art. 44,Resolução Conjunta nº 1 Art. 44; Resolução Conjunta nº 1 Art. 46; Resolução Conjunta nº 1 Art. 44,True,1.0,1.0
+rc1_continuidade_negocios,normativo_corpus,Resolução Conjunta nº 1 Art. 48,Resolução Conjunta nº 1 Art. 48; Resolução Conjunta nº 1 Art. 36; Resolução Conjunta nº 1 Art. 44,True,1.0,1.0
+circ_canais_eletronicos,normativo_corpus,Circular nº 4.015 Art. 2º; Instrução Normativa BCB nº 759 seção 2.3,Resolução Conjunta nº 1 Art. 5º; Resolução Conjunta nº 1 Art. 5º; Circular nº 4.015 Art. 2º,True,0.5,0.333
+circ_dados_cadastrais,normativo_corpus,Circular nº 4.015 Art. 4º; Instrução Normativa BCB nº 759 seção 4; Instrução Normativa BCB nº 759 seção 4.2,Circular nº 4.015 Art. 4º; Instrução Normativa BCB nº 759 seção 4.2; Resolução Conjunta nº 1 Art. 5º,True,0.667,1.0
+circ_servicos_iniciacao,normativo_corpus,Circular nº 4.015 Art. 6º,Instrução Normativa BCB nº 759 seção 6; Instrução Normativa BCB nº 759 seção 6.2; Instrução Normativa BCB nº 759 seção 1,False,0.0,0.0
+circ_portabilidade_modalidades,normativo_corpus,Circular nº 4.015 Art. 6º-A; Instrução Normativa BCB nº 759 seção 8; Instrução Normativa BCB nº 759 seção 8.1,Resolução Conjunta nº 1 Art. 22-E; Instrução Normativa BCB nº 759 seção 8; Resolução Conjunta nº 1 Art. 2º,True,0.333,0.5
+circ_transacoes_conta,normativo_corpus,Circular nº 4.015 Art. 5º; Instrução Normativa BCB nº 759 seção 5.1,Resolução Conjunta nº 1 Art. 5º; Instrução Normativa BCB nº 759 seção 5.1; Resolução Conjunta nº 1 Art. 2º,True,0.5,0.5
+circ_vigencia,normativo_corpus,Circular nº 4.015 Art. 7º,Circular nº 4.015 Art. 7º; Circular nº 4.015 Art. 1º; Circular nº 4.015 Art. 4º,True,1.0,1.0
+in759_versao_manual,normativo_corpus,Instrução Normativa BCB nº 759 Art. 1º,Instrução Normativa BCB nº 759 Art. 1º; Instrução Normativa BCB nº 759 seção 1; Instrução Normativa BCB nº 759 introdução,True,1.0,1.0
+in759_vigencia,normativo_corpus,Instrução Normativa BCB nº 759 Art. 3º,Instrução Normativa BCB nº 759 Art. 3º; Instrução Normativa BCB nº 759 seção 2; Instrução Normativa BCB nº 759 seção 3.1,True,1.0,1.0
+in759_revogacao,normativo_corpus,Instrução Normativa BCB nº 759 Art. 2º,Instrução Normativa BCB nº 759 Art. 2º; Resolução Conjunta nº 1 Art. 15; Instrução Normativa BCB nº 759 Art. 3º,True,1.0,1.0
+in759_cadastro_pj,normativo_corpus,Instrução Normativa BCB nº 759 seção 4.2,Instrução Normativa BCB nº 759 seção 1; Instrução Normativa BCB nº 759 seção 5.1; Instrução Normativa BCB nº 759 seção 5.2,False,0.0,0.0
+in759_jornada_otimizada,normativo_corpus,Instrução Normativa BCB nº 759 seção 7,Instrução Normativa BCB nº 759 seção 7; Instrução Normativa BCB nº 759 seção 1; Instrução Normativa BCB nº 759 seção 6,True,1.0,1.0
+robustez_premissa_falsa_nota_credito,robustez,Resolução Conjunta nº 1 Art. 5º,Resolução Conjunta nº 1 Art. 44; Resolução Conjunta nº 1 Art. 38; Resolução Conjunta nº 1 Art. 38,False,0.0,0.0
+robustez_premissa_falsa_prazo,robustez,Resolução Conjunta nº 1 Art. 49,Resolução Conjunta nº 1 Art. 49; Instrução Normativa BCB nº 759 seção 6.1.3; Resolução Conjunta nº 1 Art. 11,True,1.0,1.0
+robustez_linguagem_informal,robustez,Resolução Conjunta nº 1 Art. 6º,Instrução Normativa BCB nº 759 seção 4.2; Instrução Normativa BCB nº 759 Art. 1º; Resolução Conjunta nº 1 Art. 7º,False,0.0,0.0
+robustez_pergunta_em_ingles,robustez,Resolução Conjunta nº 1 Art. 3º,Instrução Normativa BCB nº 759 Art. 1º; Resolução Conjunta nº 1 Art. 7º; Instrução Normativa BCB nº 759 seção 1,False,0.0,0.0
+robustez_relacao_entre_normas,robustez,Instrução Normativa BCB nº 759 seção 1; Instrução Normativa BCB nº 759 Art. 1º; Circular nº 4.015 Art. 1º,Instrução Normativa BCB nº 759 seção 6.1.2; Instrução Normativa BCB nº 759 introdução; Instrução Normativa BCB nº 759 seção 1,True,0.333,0.333

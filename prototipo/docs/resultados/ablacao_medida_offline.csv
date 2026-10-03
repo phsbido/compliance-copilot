@@ -1,0 +1,4 @@
+variante,execucoes,execucoes_com_sintese,recusas,exec_com_norma_nao_verificada,normas_nao_verificadas,exec_com_artigo_divergente,artigos_divergentes,exec_com_valor_divergente,valores_divergentes,exec_com_fonte_nao_oficial,exec_com_algum_aviso,taxa_exec_com_algum_aviso
+v5,198,162,36,0,0,0,0,3,3,0,3,0.019
+C1,198,162,36,0,0,0,0,3,3,0,3,0.019
+C2,198,162,36,5,5,0,0,3,3,0,8,0.049
