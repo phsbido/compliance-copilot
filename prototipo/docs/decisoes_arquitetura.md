@@ -1012,6 +1012,46 @@ mesmo ponto (J = 0,75). Resultado em `docs/resultados/v6/calibracao_limiar.csv`
 (`scripts/calibrar_limiar.py`) e `evidencias_empiricas.md`. O `.env` não
 foi alterado: o limiar entra só pela flag `--limiar-bm25` nas rodadas v6.
 
+#### Tarefa C — ablação da Camada 7 (2026-10-02)
+
+**Objetivo**: medir o que a Camada 7 contribui para a síntese, desligando-a
+em duas variantes e mantendo o resto igual ao v5 (limiar BM25 desligado).
+
+**Decisão de projeto**: o `Orchestrator` recebe `ablacao`, e o benchmark
+aceita `--ablacao c1|c2` e registra a variante em cada execução e no
+registro da Camada 8 (`parametros_llm.ablacao_camada7`). É só para
+avaliação: o valor padrão (`None`) é o sistema completo, e não há variável
+de ambiente para ligar a ablação em uso real.
+
+- **C1**: sem `validar_resposta`. A resposta sai como o LLM a gerou, sem
+  avisos, sem a lista de fontes consultadas e sem o aviso de validação
+  humana, porque os três são anexados pela mesma função. A
+  `POLITICA_SINTESE` continua no prompt.
+- **C2**: sem `validar_resposta` e sem `POLITICA_SINTESE`. A síntese vai
+  sem mensagem de sistema (escolha do autor: remoção pura, em vez de um
+  papel neutro de uma linha).
+- Em ambas, as recusas por classificação (`recusar_parecer_juridico`,
+  `recusar_fora_de_escopo`) e a `recusar_sem_base` continuam, para isolar o
+  efeito da Camada 7 sobre a síntese. Essas recusas são da Camada 7 em
+  código, mas acionadas pela Camada 3. Isso fica declarado: a ablação não é
+  da Camada 7 inteira.
+
+**Medida**: como não há validação nas variantes, o sucesso automático
+delas não mede governança. A comparação v5 × C1 × C2 usa
+`scripts/medir_ablacao.py`, que aplica offline o **mesmo**
+`validar_resposta` à resposta crua do LLM das três variantes, sem gravar
+nada nos JSONs. Ela herda os limites do validador, que é lexical e tem os
+falsos positivos conhecidos. A contagem de "fontes não oficiais" (URLs fora
+dos domínios do BCB na resposta) é uma medida nova, que não pertence ao
+validador: a checagem de domínio da Camada 7 atua só na ingestão. O
+`--revalidar` recusa rodadas de ablação, porque reescreveria as respostas.
+
+**Amostra para auditoria**: respostas distintas de C1 e C2 que não
+aparecem entre as do v5 para o mesmo caso. Até 40 por variante,
+estratificadas por grupo, seed 20261002. Em C1 o prompt de síntese é igual
+ao do v5, então as diferenças vêm do estado do cache do servidor
+(`diagnostico_falhas_v5.md`, Seção 3), não da ablação.
+
 ---
 
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)

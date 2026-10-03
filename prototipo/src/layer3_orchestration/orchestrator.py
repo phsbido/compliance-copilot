@@ -19,6 +19,14 @@ recebia uma busca normativa sem sentido (ver docs/evidencias_empiricas.md,
 vir da Camada 7 (`POLITICA_SINTESE`), e uma busca sem nenhum trecho também
 desvia para recusa (`recusar_sem_base`), em vez de deixar o LLM responder
 sem base. Decisões registradas em docs/decisoes_arquitetura.md.
+
+Ablação da Camada 7 (v6, Tarefa C; só para avaliação, nunca em uso real):
+`ablacao="c1"` não chama `validar_resposta` (a resposta sai como o LLM a
+gerou, sem avisos, fontes anexadas nem aviso de validação humana);
+`ablacao="c2"` também tira `POLITICA_SINTESE` do prompt de síntese (sem
+mensagem de sistema). As recusas por classificação (parecer, fora de
+escopo) e a recusa sem base continuam, para isolar o efeito da Camada 7
+sobre a síntese.
 """
 from dataclasses import dataclass
 
@@ -37,6 +45,7 @@ from src.layer7_governance.governance import (
 from src.layer8_observability.observability import RegistroInteracao, registrar_interacao
 
 TIPOS_INTERPRETACAO = {"normativo", "parecer_juridico", "fora_de_escopo"}
+ABLACOES = {None, "c1", "c2"}
 
 # Classificações que desviam o fluxo para uma recusa direta (Camada 7),
 # sem buscar normativo nem sintetizar resposta.
@@ -59,7 +68,11 @@ class Orchestrator:
         memoria: Memoria | None = None,
         amostragem: ParametrosAmostragem | None = None,
         limiar_bm25: float | None = None,
+        ablacao: str | None = None,
     ):
+        if ablacao not in ABLACOES:
+            raise ValueError(f"ablacao deve ser uma de {ABLACOES}, não {ablacao!r}")
+        self.ablacao = ablacao
         self.llm = llm or LLMCore()
         # Temperaturas de classificação e de síntese e seed (v4). Padrão:
         # os valores do .env (src/config.py); o benchmark passa outros para
@@ -111,6 +124,13 @@ class Orchestrator:
         # a ecoá-lo nas respostas seguintes (observado em teste, ver
         # docs/evidencias_empiricas.md).
         self.memoria.adicionar(pergunta, resposta_sintetizada)
+        if self.ablacao:
+            # Ablação: a validação pós-geração da Camada 7 não roda.
+            self.ultimo_registro = registrar_interacao(
+                pergunta, interpretacao.tipo, resposta_sintetizada, normativo,
+                parametros_llm=self._parametros_llm(),
+            )
+            return resposta_sintetizada
         validacao = self._validar_resposta(resposta_sintetizada, normativo)
         self.ultimo_registro = registrar_interacao(
             pergunta, interpretacao.tipo, validacao.texto_final, normativo,
@@ -142,7 +162,7 @@ class Orchestrator:
         # A política vem da Camada 7: a governança define as regras, a
         # orquestração só as injeta. O aviso de validação humana não é mais
         # pedido ao modelo — a Camada 7 o anexa de forma determinística.
-        system = POLITICA_SINTESE
+        system = None if self.ablacao == "c2" else POLITICA_SINTESE
         historico = self.memoria.contexto_formatado()
         partes = []
         if historico:
@@ -158,7 +178,10 @@ class Orchestrator:
     def _parametros_llm(self) -> dict:
         # Proveniência (Camada 8): com que modelo e parâmetros a resposta
         # foi gerada.
-        return {**self.llm.identificacao(), **self.amostragem.como_dict()}
+        parametros = {**self.llm.identificacao(), **self.amostragem.como_dict()}
+        if self.ablacao:
+            parametros["ablacao_camada7"] = self.ablacao
+        return parametros
 
     def _validar_resposta(self, resposta: str, normativo: str) -> ResultadoValidacao:
         return validar_resposta(resposta, normativo)

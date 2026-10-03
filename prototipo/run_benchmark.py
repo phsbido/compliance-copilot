@@ -289,8 +289,9 @@ def filtrar_casos(casos: list[dict], grupo: str | None, ids: str | None) -> list
     return casos
 
 
-def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None = None) -> dict:
-    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo), limiar_bm25=limiar_bm25)
+def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None = None,
+               ablacao: str | None = None) -> dict:
+    orchestrator = Orchestrator(amostragem=amostragem_do_modo(modo), limiar_bm25=limiar_bm25, ablacao=ablacao)
 
     inicio = time.perf_counter()
     resposta = orchestrator.responder(caso["pergunta"])
@@ -321,11 +322,22 @@ def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None 
         # v6: limiar efetivo da Camada 5 e pontuação do melhor trecho.
         "limiar_bm25": orchestrator.limiar_bm25,
         "pontuacao_melhor_trecho": pontuacao_melhor_trecho(caso["pergunta"]),
+        # v6, Tarefa C: variante da ablação da Camada 7 (None = Camada 7 ligada).
+        # Com a Camada 7 desligada não há validação: as colunas de aviso ficam
+        # falsas e o sucesso automático não mede governança — a comparação
+        # usa a medida offline (scripts/medir_ablacao.py).
+        "ablacao": ablacao,
     }
+    if ablacao:
+        r["aviso_citacao_nao_verificada"] = False
     return avaliar(r, caso)
 
 
 def revalidar(resultados: list[dict], casos: dict[str, dict]) -> int:
+    if any(r.get("ablacao") for r in resultados):
+        # Revalidar reescreveria as respostas com a Camada 7 ligada; a medida
+        # offline da ablação é scripts/medir_ablacao.py, que não altera o JSON.
+        raise SystemExit("--revalidar não se aplica a rodadas de ablação da Camada 7.")
     n = 0
     for r in resultados:
         if r.get("resposta_sintetizada"):
@@ -464,6 +476,8 @@ if __name__ == "__main__":
                         help="não chama o LLM; reaplica a Camada 7 atual ao JSON bruto salvo e regera as tabelas")
     parser.add_argument("--limiar-bm25", type=float,
                         help="limiar de pontuação do melhor trecho (Camada 5, v6); padrão: LIMIAR_BM25 do .env")
+    parser.add_argument("--ablacao", choices=["c1", "c2"],
+                        help="desliga a Camada 7 (c1: sem validar_resposta; c2: também sem POLITICA_SINTESE)")
     parser.add_argument("--saida", type=Path,
                         help="pasta de saída de todos os artefatos (v6 em diante); sem ela, os caminhos do v5")
     args = parser.parse_args()
@@ -493,7 +507,8 @@ if __name__ == "__main__":
         selecionados = filtrar_casos(casos, args.grupo, args.casos)
         total = len(selecionados) * args.repeticoes
         print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()}; "
-              f"limiar BM25: {limiar if limiar is not None else 'desligado'})")
+              f"limiar BM25: {limiar if limiar is not None else 'desligado'}; "
+              f"ablação da Camada 7: {args.ablacao or 'não'})")
         print(f"{len(selecionados)} casos de {CASOS_FILE}, {args.repeticoes} repetições cada "
               f"({total} execuções no total).\n")
 
@@ -501,7 +516,7 @@ if __name__ == "__main__":
         for caso in selecionados:
             for repeticao in range(1, args.repeticoes + 1):
                 print(f"[{len(resultados) + 1}/{total}] [{caso['id']}] rep {repeticao}...", end=" ", flush=True)
-                r = rodar_caso(caso, repeticao, args.modo, limiar)
+                r = rodar_caso(caso, repeticao, args.modo, limiar, args.ablacao)
                 resultados.append(r)
                 print(
                     f"tipo={r['tipo_obtido']} desfecho={r['desfecho']} "
