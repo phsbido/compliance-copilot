@@ -1004,6 +1004,14 @@ foram commitados antes de qualquer pontuação ser calculada):
   o critério. O commit prévio registra a ordem dos passos, mas não elimina
   a possibilidade de ter redigido perguntas "fáceis" de separar.
 
+**Limiar escolhido (2026-10-02, aplicação única do critério)**:
+`LIMIAR_BM25 = 13.8059`, a pontuação da 2ª menor pergunta respondível
+(`cal_r07`). Recusa 1 de 20 respondíveis (`cal_r20`, 12,28) e 16 de 20 sem
+resposta. Por coincidência, o máximo de Youden, que não foi usado, cai no
+mesmo ponto (J = 0,75). Resultado em `docs/resultados/v6/calibracao_limiar.csv`
+(`scripts/calibrar_limiar.py`) e `evidencias_empiricas.md`. O `.env` não
+foi alterado: o limiar entra só pela flag `--limiar-bm25` nas rodadas v6.
+
 ---
 
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)

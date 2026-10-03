@@ -948,3 +948,40 @@ para trocar um token quando duas continuações estão próximas.
   et al. não menciona e que só apareceu com repetição sistemática.
 - Um veredito da auditoria mostrou-se sensível a esse estado. A robustez
   dos vereditos dos outros 21 casos com divergência não foi medida.
+
+---
+
+## 2026-10-02 — v6, Tarefa A: calibração do limiar BM25 (Camada 5)
+
+**Contexto**: `scripts/calibrar_limiar.py` sobre `tests/calibracao_limiar.json`
+(40 perguntas novas, commitadas antes do cálculo no commit `ca50753`), sem
+LLM. Critério pré-registrado: no máximo 5% de recusas indevidas.
+
+**Observação**:
+
+| Grupo | n | Mín. | Mediana | Máx. | Recusadas com limiar 13,81 |
+|---|---|---|---|---|---|
+| Respondível pela Gold | 20 | 12,28 | 17,29 | 33,32 | 1 (5%) |
+| Sem resposta: norma ausente | 12 | 5,68 | — | 17,15 | 9 (75%) |
+| Sem resposta: tema fora do corpus | 8 | 6,88 | — | 14,74 | 7 (88%) |
+| Sem resposta, total | 20 | 5,68 | 10,45 | 17,15 | 16 (80%) |
+
+As distribuições se sobrepõem entre 12,3 e 17,2
+(`docs/figuras/grafico_calibracao_limiar.png`). As 4 perguntas sem resposta
+que passam têm vocabulário do corpus: LGPD ("dados pessoais", 17,15),
+fundos de investimento (16,43), autorização de instituições de pagamento
+(14,75) e portabilidade de salário (14,74). A respondível recusada
+(`cal_r20`, credenciamento em arranjo de pagamento) tem como melhor trecho o
+art. 5º da Resolução Conjunta, não a seção 3.5 rotulada, embora esta esteja
+entre os 3.
+
+**Relevância para a pesquisa**:
+
+- Um limiar lexical separa a maior parte, mas não tudo. Uma norma ausente
+  descrita com o vocabulário do domínio continua chegando à síntese, e a
+  defesa contra ela segue sendo a política da Camada 7.
+- As 20 respondíveis tiveram o trecho rotulado entre os 3 (Acerto@3 = 1,0,
+  contra 0,80 nos normativos do v5). Isso sugere que as perguntas de
+  calibração ficaram mais fáceis que as do benchmark, e portanto que a taxa
+  de recusas indevidas nos 66 casos pode passar de 5%. A rodada v6 mede
+  isso.

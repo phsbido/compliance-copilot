@@ -1,0 +1,41 @@
+id,grupo,subgrupo,pergunta,pontuacao_melhor_trecho,melhor_trecho,relevante_entre_os_3,recusada_no_limiar
+cal_r20,respondivel,,Que dados sobre serviços de credenciamento em arranjo de pagamento estão no escopo de compartilhamento?,12.2752,Resolução Conjunta nº 1 Art. 5º,True,True
+cal_r07,respondivel,,Em que momento a instituição transmissora deve solicitar ao cliente a confirmação do compartilhamento?,13.8059,Resolução Conjunta nº 1 Art. 20,True,False
+cal_r18,respondivel,,As instituições participantes podem fazer agregação dos dados de clientes compartilhados?,13.9306,Resolução Conjunta nº 1 Art. 50,True,False
+cal_r05,respondivel,,Quem a instituição transmissora de dados ou detentora de conta deve autenticar no compartilhamento?,14.35,Resolução Conjunta nº 1 Art. 16,True,False
+cal_r04,respondivel,,Quais informações sobre os consentimentos com prazo válido as instituições devem prestar ao cliente?,15.8023,Resolução Conjunta nº 1 Art. 14,True,False
+cal_r08,respondivel,,Que informações devem ser discriminadas na confirmação de uma iniciação de transação de pagamento?,15.9117,Resolução Conjunta nº 1 Art. 22,True,False
+cal_r02,respondivel,,Os dados compartilhados podem ser apresentados ao cliente de forma agrupada?,16.0041,Resolução Conjunta nº 1 Art. 11,True,False
+cal_r19,respondivel,,Que dados sobre tarifas de contas de depósitos à vista e de poupança devem ser compartilhados como dados de produtos e serviços?,16.4664,Resolução Conjunta nº 1 Art. 5º,True,False
+cal_r06,respondivel,,Com qual política da instituição os procedimentos de autenticação precisam ser compatíveis?,16.9744,Resolução Conjunta nº 1 Art. 18,True,False
+cal_r13,respondivel,,As instituições participantes precisam manter canal de suporte técnico para as demais participantes?,17.2227,Resolução Conjunta nº 1 Art. 30,True,False
+cal_r11,respondivel,,A instituição receptora de dados deve comunicar ao cliente a efetivação da solicitação de compartilhamento?,17.352,Resolução Conjunta nº 1 Art. 27,True,False
+cal_r01,respondivel,,"Sobre o que as instituições participantes devem informar o cliente de forma clara, objetiva e adequada a respeito das etapas do compartilhamento?",18.2567,Resolução Conjunta nº 1 Art. 24,True,False
+cal_r17,respondivel,,O conteúdo da convenção entre as instituições participantes precisa ser aprovado pelo Banco Central?,19.2905,Resolução Conjunta nº 1 Art. 47,True,False
+cal_r14,respondivel,,Por quais canais os clientes podem apresentar demandas sobre o compartilhamento de dados e serviços?,20.4685,Resolução Conjunta nº 1 Art. 35,True,False
+cal_r03,respondivel,,A instituição receptora pode receber dados que não sejam pertinentes às finalidades informadas ao cliente?,20.731,Resolução Conjunta nº 1 Art. 12,True,False
+cal_r15,respondivel,,"Que procedimentos devem ser adotados antes de contratar parceria com entidade não autorizada, como a verificação da capacidade do parceiro?",21.3352,Resolução Conjunta nº 1 Art. 37,True,False
+cal_r12,respondivel,,A instituição detentora de conta pode restringir ou discriminar a iniciação de transação de pagamento feita por outra instituição?,21.7324,Resolução Conjunta nº 1 Art. 29,True,False
+cal_r09,respondivel,,A instituição credora original pode oferecer contrapropostas ao cliente durante a portabilidade de crédito?,22.7312,Resolução Conjunta nº 1 Art. 22-C,True,False
+cal_r10,respondivel,,"Como as instituições devem informar as demais participantes sobre suas interfaces dedicadas, inclusive quanto ao controle de versões?",30.4191,Resolução Conjunta nº 1 Art. 24,True,False
+cal_r16,respondivel,,Os mecanismos de acompanhamento e controle devem incluir indicadores de desempenho das interfaces?,33.3222,Resolução Conjunta nº 1 Art. 41,True,False
+cal_s07,sem_resposta,norma_ausente,O que a Lei Complementar nº 105/2001 diz sobre o sigilo das operações das instituições financeiras?,5.6808,Resolução Conjunta nº 1 Art. 39,,True
+cal_s17,sem_resposta,tema_fora_do_corpus,Como as instituições devem comunicar operações suspeitas ao COAF?,6.8762,Instrução Normativa BCB nº 759 seção 4,,True
+cal_s15,sem_resposta,tema_fora_do_corpus,Quais documentos são exigidos para abrir uma conta corrente para um microempreendedor individual?,6.8799,Instrução Normativa BCB nº 759 seção 5.1,,True
+cal_s08,sem_resposta,norma_ausente,Quais são as regras da Resolução CMN nº 4.656/2018 para as sociedades de crédito direto?,7.0902,Resolução Conjunta nº 1 Art. 22-E,,True
+cal_s02,sem_resposta,norma_ausente,Quais regras a Resolução CMN nº 4.949/2021 estabelece para o relacionamento com clientes e usuários?,7.7258,Instrução Normativa BCB nº 759 seção 2.5.3,,True
+cal_s06,sem_resposta,norma_ausente,Quais requisitos a Resolução CMN nº 4.557/2017 impõe à estrutura de gerenciamento de riscos e de capital?,9.1243,Resolução Conjunta nº 1 Art. 48,,True
+cal_s20,sem_resposta,tema_fora_do_corpus,Qual é o prazo para o banco devolver valores de tarifas cobradas indevidamente?,9.1866,Instrução Normativa BCB nº 759 seção 3.6.2,,True
+cal_s10,sem_resposta,norma_ausente,Quais obrigações a Lei nº 14.063/2020 estabelece para o uso de assinaturas eletrônicas?,9.5136,Instrução Normativa BCB nº 759 introdução,,True
+cal_s04,sem_resposta,norma_ausente,Quais são os limites de valor do Pix no período noturno segundo a Resolução BCB nº 142/2021?,9.9529,Instrução Normativa BCB nº 759 seção 6.2,,True
+cal_s12,sem_resposta,norma_ausente,Quais são os requisitos da Resolução CMN nº 4.968/2021 para os sistemas de controles internos das instituições?,10.1915,Resolução Conjunta nº 1 Art. 16-A,,True
+cal_s05,sem_resposta,norma_ausente,O que a Circular nº 3.682/2013 estabelece sobre os arranjos de pagamento integrantes do Sistema de Pagamentos Brasileiro?,10.7073,Resolução Conjunta nº 1 Art. 3º,,True
+cal_s13,sem_resposta,tema_fora_do_corpus,Qual é o valor máximo garantido pelo Fundo Garantidor de Créditos por CPF e por instituição?,10.9575,Circular nº 4.015 Art. 3º,,True
+cal_s09,sem_resposta,norma_ausente,O que a Resolução CMN nº 4.753/2019 dispõe sobre a abertura e o encerramento de contas de depósitos?,10.9871,Circular nº 4.015 Art. 3º,,True
+cal_s19,sem_resposta,tema_fora_do_corpus,Quem deve reportar operações ao Sistema de Informações de Créditos (SCR) do Banco Central?,11.8261,Instrução Normativa BCB nº 759 seção 4.2,,True
+cal_s14,sem_resposta,tema_fora_do_corpus,Como funciona a cobrança de juros no crédito rotativo do cartão de crédito?,13.4518,Instrução Normativa BCB nº 759 seção 3.2,,True
+cal_s16,sem_resposta,tema_fora_do_corpus,Qual é a alíquota do IOF nas operações de câmbio para viagens ao exterior?,13.7769,Instrução Normativa BCB nº 759 seção 3.4.2,,True
+cal_s18,sem_resposta,tema_fora_do_corpus,Quais são as regras do Banco Central para a portabilidade de salário entre bancos?,14.7446,Instrução Normativa BCB nº 759 seção 4,,False
+cal_s03,sem_resposta,norma_ausente,O que a Resolução BCB nº 80/2021 dispõe sobre a autorização de funcionamento de instituições de pagamento?,14.7546,Resolução Conjunta nº 1 Art. 1º,,False
+cal_s11,sem_resposta,norma_ausente,O que a Resolução CVM nº 175/2022 estabelece sobre a constituição de fundos de investimento?,16.4284,Instrução Normativa BCB nº 759 seção 3.6.1.2,,False
+cal_s01,sem_resposta,norma_ausente,O que a Lei nº 13.709/2018 (LGPD) exige para o tratamento de dados pessoais sensíveis?,17.1457,Instrução Normativa BCB nº 759 introdução,,False
