@@ -68,6 +68,9 @@ Uso:
         # não chama o LLM: avalia só a recuperação da Camada 5
     python run_benchmark.py --somente-tabela [--modo ...]
         # não chama o LLM: regera as tabelas a partir do JSON bruto já salvo
+    python run_benchmark.py --saida docs/resultados/v6 [...]
+        # v6 em diante: todos os artefatos (JSON, CSVs e tabela de
+        # recuperação) numa pasta própria; a linha de base v5 não é tocada
     python run_benchmark.py --revalidar [--modo ...]
         # não chama o LLM: reaplica a Camada 7 atual (e os rótulos atuais de
         # tests/casos_teste.json) à resposta do LLM e ao contexto guardados
@@ -112,11 +115,18 @@ def amostragem_do_modo(modo: str) -> ParametrosAmostragem:
     return AMOSTRAGEM_SENSIBILIDADE if modo == "sensibilidade" else settings.amostragem
 
 
-def caminhos_saida(modo: str, parcial: bool = False) -> dict[str, Path]:
+def caminhos_saida(modo: str, parcial: bool = False, saida: Path | None = None) -> dict[str, Path]:
+    """Sem `saida`, os caminhos versionados do v5 (ou logs/, se parcial).
+    Com `saida` (v6 em diante), tudo vai para essa pasta, inclusive a tabela
+    de recuperação, para que uma rodada nova não sobrescreva a linha de base."""
     sufixo = "" if modo == "producao" else f"_{modo}"
-    base_json = SAIDA_PARCIAL_DIR if parcial else RESULTADOS_DIR
-    base_csv = SAIDA_PARCIAL_DIR if parcial else RAIZ / "docs"
+    if saida is not None:
+        base_json = base_csv = saida
+    else:
+        base_json = SAIDA_PARCIAL_DIR if parcial else RESULTADOS_DIR
+        base_csv = SAIDA_PARCIAL_DIR if parcial else RAIZ / "docs"
     return {
+        "recuperacao": saida / "tabela_recuperacao.csv" if saida is not None else TABELA_RECUPERACAO,
         "json": base_json / f"resultados_benchmark{sufixo}.json",
         "por_caso": base_csv / f"tabela_resultados_empiricos{sufixo}.csv",
         "por_grupo": base_csv / f"tabela_resultados_por_grupo{sufixo}.csv",
@@ -437,18 +447,21 @@ if __name__ == "__main__":
                         help="não chama o LLM; regera as tabelas a partir do JSON bruto já salvo")
     parser.add_argument("--revalidar", action="store_true",
                         help="não chama o LLM; reaplica a Camada 7 atual ao JSON bruto salvo e regera as tabelas")
+    parser.add_argument("--saida", type=Path,
+                        help="pasta de saída de todos os artefatos (v6 em diante); sem ela, os caminhos do v5")
     args = parser.parse_args()
+
+    parcial = bool(args.grupo or args.casos)
+    caminhos = caminhos_saida(args.modo, parcial=parcial, saida=args.saida)
 
     casos = carregar_casos()
     tabela_rec = avaliar_recuperacao(casos)
-    tabela_rec.to_csv(TABELA_RECUPERACAO, index=False, encoding="utf-8")
-    print(f"Recuperação (Camada 5): {resumo_recuperacao(tabela_rec)}; tabela em {TABELA_RECUPERACAO}")
+    caminhos["recuperacao"].parent.mkdir(parents=True, exist_ok=True)
+    tabela_rec.to_csv(caminhos["recuperacao"], index=False, encoding="utf-8")
+    print(f"Recuperação (Camada 5): {resumo_recuperacao(tabela_rec)}; tabela em {caminhos['recuperacao']}")
     if args.somente_recuperacao:
         print(tabela_rec.to_string(index=False))
         raise SystemExit(0)
-
-    parcial = bool(args.grupo or args.casos)
-    caminhos = caminhos_saida(args.modo, parcial=parcial)
 
     if args.somente_tabela or args.revalidar:
         with caminhos["json"].open(encoding="utf-8") as f:

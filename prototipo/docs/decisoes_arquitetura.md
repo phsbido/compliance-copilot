@@ -940,6 +940,27 @@ avaliação; nenhuma camada foi alterada.
 
 ---
 
+### v6 — experimentos sobre a linha de base v5 (2026-10-02)
+
+**Decisão**: o benchmark v5 (66 casos × 3 repetições, produção e
+sensibilidade) e a auditoria manual são a **linha de base** da monografia e
+não são alterados. Toda rodada nova grava numa pasta própria
+(`run_benchmark.py --saida <pasta>`): JSON bruto, CSVs no formato do v5 e a
+tabela de recuperação. Sem `--saida`, o script continua gravando nos
+caminhos do v5 (teste `TestCaminhosSaida`). Pastas: `docs/resultados/v6/`
+(Tarefa A, limiar BM25), `docs/resultados/ablacao_c1/` e
+`docs/resultados/ablacao_c2/` (Tarefa C, ablação da Camada 7).
+
+**Protocolo das rodadas**: o mesmo ambiente do v5 (Ollama 0.33.2,
+`llama3.1` ID `46e0c10c039e`, contexto de 4.096 tokens, seed 42, modo
+produção, 3 repetições seguidas por caso). O servidor Ollama é reiniciado
+antes de cada rodada completa, e a data e a hora ficam registradas. Motivo:
+o texto gerado depende do estado do cache de prompts do servidor
+(`diagnostico_falhas_v5.md`, Seção 3). Por isso a comparação com o v5 é
+feita sobre métricas, não sobre a identidade dos textos.
+
+---
+
 ## Reprodutibilidade (preparação para publicação no GitHub, 2026-09-24)
 
 Ajustes feitos para que um terceiro (orientadora, banca, leitor da

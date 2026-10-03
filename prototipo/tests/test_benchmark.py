@@ -11,6 +11,9 @@ from pathlib import Path
 
 from run_benchmark import (
     ORDEM_GRUPOS,
+    RESULTADOS_DIR,
+    TABELA_RECUPERACAO,
+    caminhos_saida,
     avaliar_sucesso,
     cobertura_termos,
     declara_ausencia_de_norma,
@@ -185,6 +188,19 @@ class TestBateria(unittest.TestCase):
             if c["grupo"] == "normativo_corpus":
                 with self.subTest(c["id"]):
                     self.assertTrue(c.get("relevantes"))
+
+
+class TestCaminhosSaida(unittest.TestCase):
+    def test_sem_saida_usa_os_caminhos_do_v5(self):
+        c = caminhos_saida("producao")
+        self.assertEqual(c["json"], RESULTADOS_DIR / "resultados_benchmark.json")
+        self.assertEqual(c["recuperacao"], TABELA_RECUPERACAO)
+
+    def test_com_saida_nada_fica_nos_caminhos_do_v5(self):
+        pasta = RAIZ / "docs" / "resultados" / "v6"
+        for modo in ("producao", "sensibilidade"):
+            for caminho in caminhos_saida(modo, saida=pasta).values():
+                self.assertEqual(caminho.parent, pasta)
 
 
 if __name__ == "__main__":
