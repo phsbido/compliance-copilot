@@ -892,3 +892,59 @@ pergunta), o que torna a auditoria possível.
 - Dois novos limites da Camada 7, ambos de "citar para negar": valor citado
   para refutar uma premissa (falso positivo) e norma ausente mencionada por
   outra norma do contexto (ausência não registrada).
+
+---
+
+## 2026-10-02 — Divergência da repetição 1: a hipótese da "primeira execução" é substituída
+
+**Camada relacionada**: 2 (Núcleo de Raciocínio), no nível do servidor de
+inferência; reflexo na 8 (proveniência).
+
+**Contexto**: desde a v4 (entrada de 2026-09-24, Observação 2), a diferença
+da repetição 1 era atribuída à "primeira vez em que o Ollama processa o
+prompt". A v5 confirmou o padrão com n maior (22 de 66 casos em produção,
+sempre na repetição 1). Na Fase 1 do diagnóstico das falhas, a hipótese foi
+testada contra o log do servidor da rodada e em um experimento com 4 casos,
+52 chamadas e 4 condições: reprodução, ordem alterada, aquecimento e
+reinício do servidor entre chamadas (`scripts/experimento_cache_ollama.py`;
+detalhes em `docs/diagnostico_falhas_v5.md`, Seção 3). Nenhum código do
+protótipo foi alterado.
+
+**Observação**: o texto não depende de ser a primeira execução. Depende de
+**como o estado do prompt foi calculado** pelo `llama-server` (Ollama
+0.33.2, um *slot*, cache de prompts em RAM). Pode ser do zero, em lotes de
+512 tokens a partir de algum ponto, ou vindo inteiro do cache, com só o
+último token recalculado. O mesmo cálculo dá o mesmo texto, nas 52 chamadas,
+sem exceção:
+
+- na rodada v5, as repetições 2 e 3 vieram integralmente do cache em 54 de
+  54 casos com síntese; a repetição 1 foi calculada em 53, e as 22
+  divergências estão todas nesse grupo;
+- reiniciar o servidor antes de cada chamada reproduziu o texto da
+  repetição 1 em 12 de 12 execuções;
+- uma chamada de aquecimento fez as três seguintes reproduzirem o texto
+  das repetições 2 e 3;
+- com a ordem alterada, um caso deu o texto da repetição 1 numa segunda
+  execução, e outro, calculado a partir de outro ponto do cache, deu um
+  terceiro texto.
+
+Em `rc1_prazo_revogacao`, dois dos três cálculos observados dão a resposta
+errada ("de forma imediata" em vez de "em até um dia"). O "correta" das
+repetições 2 e 3 dependia do cache. Mecanismo provável, não isolado no
+código: somas em ponto flutuante na GPU não são associativas. Lotes
+diferentes dão *logits* ligeiramente diferentes, e a temperatura 0,1 basta
+para trocar um token quando duas continuações estão próximas.
+
+**Relevância para a pesquisa**:
+
+- A frase da v4, "a seed fixa dá reprodutibilidade a partir da segunda
+  chamada", vale só para chamadas seguidas do mesmo prompt. A formulação
+  correta é que o texto é reprodutível **dado o estado do cache de prompts
+  do servidor**. As entradas de 2026-09-24 e 2026-10-01 ficam como registro
+  do que se sabia então.
+- A proveniência da Camada 8 registra modelo, ID e parâmetros de
+  amostragem, mas não o estado do servidor de inferência, que também
+  determina o texto. É um limite de proveniência que a arquitetura de Maia
+  et al. não menciona e que só apareceu com repetição sistemática.
+- Um veredito da auditoria mostrou-se sensível a esse estado. A robustez
+  dos vereditos dos outros 21 casos com divergência não foi medida.
