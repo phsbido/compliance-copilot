@@ -1116,3 +1116,227 @@ da ablação.
 - As diferenças de texto da C1 em relação ao v5 reforçam o limite de
   proveniência registrado em 2026-10-02: o estado do servidor de inferência
   determina o texto, e a Camada 8 não o registra.
+
+---
+
+## 2026-10-05 — Conferências pós-v6: contexto de 4.096 tokens, casos de desenvolvimento e contagem por resposta distinta
+
+**Camada relacionada**: 2 (servidor de inferência) e 6 (memória), na
+conferência 1; método de avaliação, nas 2 e 3.
+
+**Contexto**: três conferências pedidas antes de fechar a v6, **sem alterar
+nenhum resultado do v5 nem do v6** (nenhum JSON, CSV ou tabela foi
+regravado). Os números abaixo são recalculados em memória com as funções
+`tabela_por_caso` e `tabela_por_grupo` do `run_benchmark.py`, que
+reproduzem os valores publicados antes de qualquer exclusão. Os vereditos
+da auditoria continuam sendo os do assistente
+(`auditoria_respostas_v5.csv`). A revisão do autor
+(`conferencia_vereditos_v5.csv`) ainda não começou: as colunas `AUTOR_*`
+estão vazias.
+
+### Conferência 1 — truncamento de contexto
+
+**1a. Benchmark v5, modo produção.** O protótipo não grava o
+`prompt_eval_count`. O log do servidor da rodada, porém, registra por
+requisição `task.n_tokens` (tokens do prompt), o `n_tokens` no fim da
+geração e `truncated`. O log é o `%LOCALAPPDATA%\Ollama\server.log`, que
+foi rotacionado para `server-1.log` e copiado para
+`logs/ollama_server_v5.log` (SHA-256 `db848dfa…`). Entre 00:13:40 e
+00:24:07 de 2026-10-02 há exatamente 360 requisições (198 classificações e
+162 sínteses), casadas em ordem com as 198 execuções do JSON. O número de
+tokens do prompt bate entre as 3 repetições de cada caso em 54 de 54 casos
+com síntese.
+
+| Chamada (modo produção) | n | Prompt: máximo | Prompt: mediana | Prompt + geração: máximo |
+|---|---|---|---|---|
+| Classificação | 198 | 148 (3,6% de 4.096) | 133 | — |
+| Síntese | 162 | 2.633 (64,3%) | 1.619 (39,5%) | 2.813 (68,7%) |
+
+O maior prompt é o de `circ_transacoes_conta`; o p95 das sínteses é 2.277.
+Não há requisição com `truncated = 1`, *context shift* nem aviso de
+truncamento do Ollama. No modo sensibilidade, o maior prompt é o mesmo
+(2.633) e o maior prompt + geração é 3.111 (o "3.111" de
+`diagnostico_falhas_v5.md`, Seção 3.1). O benchmark roda cada execução em
+sessão nova, com histórico vazio. Mesmo o pior caso combinado (maior prompt
+mais a maior geração do v5, 856 tokens) dá 3.489, abaixo do limite. **Os
+resultados do v5 não foram afetados por truncamento.** Nas rodadas da v6,
+o mesmo vale para v6, C1 e C2 com teto. Só a primeira tentativa da C2, a
+descartada, teve 7 *context shifts*, na geração sem fim.
+
+**1b. Conversa de 5 turnos pela CLI.** `python main.py`, em 2026-10-05,
+das 20:52 às 20:54. Ollama 0.33.2 recém-iniciado, com
+`default_num_ctx=4096` pela VRAM (o mesmo do v5), modo produção e `.env`
+padrão (limiar BM25 desligado). Foram cinco perguntas normativas que pedem
+respostas longas: "explique detalhadamente todas as etapas...", "liste e
+explique, item por item...", "descreva em detalhes...", "explique de forma
+completa..." e "com base em tudo o que foi discutido acima, faça um resumo
+completo...". A saída está em `logs/conferencia_contexto_cli.txt` e o log
+do servidor em `logs/ollama_server_conferencia_contexto.log` (ambos
+locais, fora do git). Os prompts foram reconstruídos (memória com a
+resposta sintetizada, `buscar_normativo` determinístico e *template* do
+`llama3.1`) e tokenizados pelo próprio `llama-server`. A contagem bate com
+o log nos 5 turnos.
+
+| Turno | Prompt (tokens) | Sistema / histórico / contexto normativo / pergunta | Geração | O que aconteceu |
+|---|---|---|---|---|
+| 1 | 1.514 | 251 / 0 / 1.201 / 53 | 791 | nada |
+| 2 | 2.463 | 251 / 859 / 1.307 / 37 | 779 | nada |
+| 3 | 3.298 | 251 / 1.680 / 1.316 / 42 | 845 | *context shift* durante a geração |
+| 4 | **4.445** | 251 / 2.571 / 1.580 / 34 | 789 | prompt truncado pelo Ollama antes da inferência |
+| 5 | **5.175** | 251 / 3.399 / 1.474 / 42 | 665 | prompt truncado pelo Ollama antes da inferência |
+
+(Os tamanhos de cada parte são aproximados, com margem de ±2 tokens por
+causa dos separadores.)
+
+Há dois mecanismos diferentes, e nenhum deles descarta o histórico de
+forma seletiva. O protótipo envia uma mensagem de sistema (a
+`POLITICA_SINTESE`) e uma única mensagem de usuário com histórico,
+contexto e pergunta concatenados (`orchestrator._sintetizar_resposta`).
+Por isso, o descarte de mensagens antigas que o Ollama faz no *chat* não
+tem o que descartar. O corte é feito por posição de token, sempre **a
+partir do começo do prompt**:
+
+- **Prompt acima de 4.096 (turnos 4 e 5)**: o Ollama registra
+  `truncating input prompt limit=2050 prompt=4445 keep=4 new=2050` (e
+  `prompt=5175` no turno 5). Ele mantém os 4 primeiros tokens
+  (`<|begin_of_text|><|start_header_id|>system<|end_header_id|>`) e os
+  últimos 2.046, e descarta tudo entre eles: 2.395 tokens no turno 4 e
+  3.125 no turno 5. Saem **o prompt de sistema inteiro** (a política de
+  síntese, com a regra de responder só com base no contexto), o marcador
+  de fim do sistema, o cabeçalho da mensagem de usuário e **a maior parte
+  do histórico**. Sobram 427 de 2.571 tokens de histórico no turno 4 e 525
+  de 3.399 no turno 5, cortados no meio de uma frase. **Os 3 trechos
+  normativos e a pergunta ficam inteiros.** O texto restante fica dentro
+  do papel "system", sem mensagem de usuário. O corte reduz o prompt a
+  cerca de metade do contexto (2.050), não a 4.096: o prompt passa a
+  ocupar menos espaço do que no turno 3.
+- **Prompt abaixo de 4.096, mas prompt + geração acima (turno 3)**: o
+  `llama-server` faz *context shift* na geração (`n_keep = 5,
+  n_discard = 2045`, `truncated = 1`). Depois de 798 tokens gerados, ele
+  descarta as posições 5 a 2.049, que contêm a política de sistema, todo o
+  histórico e os primeiros cerca de 115 tokens do contexto normativo. Essa
+  parte do contexto é o cabeçalho "Contexto normativo:", a linha
+  "Fonte: ... (URL oficial)" do primeiro trecho e o título do Art. 15; o
+  texto do artigo fica. Os últimos 47 tokens da resposta foram gerados sem
+  a política.
+
+Efeito observado (uma única conversa, sem controle; não é medida de
+efeito): no turno 5, a resposta atribui os arts. 38 e 48 à IN BCB nº
+759/2026. Esses números vêm do fragmento de histórico que sobrou, a
+resposta do turno 4 sobre os relatórios da Resolução Conjunta nº 1/2020. A
+Camada 7 marcou "art. 38, 48" como ausentes dos trechos consultados. A
+pergunta do turno 5 ("com base em tudo o que foi discutido acima") depende
+justamente do histórico que foi descartado. A resposta do turno 4 não tem
+aviso.
+
+### Conferência 2 — os 4 casos de desenvolvimento
+
+Os 4 primeiros casos da bateria v5 são os cenários CT01–CT04 usados no
+desenvolvimento (v1–v4.1), com as mesmas perguntas
+(`apendice_casos_teste.md`, A.5): `caminho_feliz_rag_bacen` (normativo no
+corpus), `norma_ausente_fronteira` (norma ausente),
+`solicitacao_parecer_governanca` (parecer) e `fora_de_escopo_governanca`
+(fora de escopo). Foi com eles que a política e os validadores da Camada 7
+foram ajustados. Os 4 têm sucesso automático 3/3 no v5, em produção e em
+sensibilidade. Na auditoria, o CT01 é **incorreto** nas 3 execuções e o
+CT02 é correto. O CT03 e o CT04 foram recusados pela Camada 3 e não têm
+síntese auditada.
+
+**Sucesso automático por grupo, v5 produção** (casos com sucesso em todas
+as repetições; IC 95% de Wilson):
+
+| Grupo | Com os 4 | Sem os 4 |
+|---|---|---|
+| Normativo no corpus | 39/39 (0,91–1,00) | 38/38 (0,91–1,00) |
+| Norma ausente | 5/6 (0,44–0,97) | 4/5 (0,38–0,96) |
+| Parecer jurídico | 5/7 (0,36–0,92) | 4/6 (0,30–0,90) |
+| Fora de escopo | 6/7 (0,49–0,97) | 5/6 (0,44–0,97) |
+| Robustez | 6/7 (0,49–0,97) | 6/7 (inalterado) |
+| **Total** | **61/66 = 92,4% (0,84–0,97)** | **57/62 = 91,9% (0,83–0,97)** |
+
+No modo sensibilidade: 57/66 (86,4%) → 53/62 (85,5%). Na v6: 37/66 → 34/62
+(normativos 18/39 → 18/38; norma ausente 6/6 → 5/5).
+
+**Acerto@3** (Camada 5, `tabela_recuperacao.csv`): 0,750 (44 rotulados) →
+**0,744** (43); nos normativos, 0,795 (39) → 0,789 (38). O CT01 conta como
+acerto: o Art. 6º aparece, embora só a parte 2. Na v6, com limiar: 0,386 →
+0,395 (normativos 0,436 → 0,447).
+
+**Auditoria, por execução** (correta / parcial / abstenção / incorreta):
+
+| Grupo | Com os 4 | Sem os 4 |
+|---|---|---|
+| Normativo no corpus | 117: 74 corretas (63,2%), 15 parciais, 15 abstenções, 13 incorretas (11,1%) | 114: 74 corretas (64,9%), 15 parciais, 15 abstenções, 10 incorretas (8,8%) |
+| Norma ausente | 18 corretas | 15 corretas |
+| Robustez, com síntese | 18: 7 / 6 / 2 / 3 | inalterado |
+| Parecer/fora mal classificados | 9 recusas pelo modelo | inalterado |
+| Normativos por caso (resposta majoritária) | 39: 25 corretos, 5 parciais, 5 abstenções, 4 incorretos | 38: 25 / 5 / 5 / **3** |
+| Com trecho relevante entre os 3 (rotulados) | 99: 78 / 12 / 5 / 4 (78,8% corretas) | 96: 78 / 12 / 5 / **1** (81,3%) |
+| Sem trecho relevante | 33: 0 / 9 / 12 / 12 | inalterado |
+
+**Diferença**: os casos de desenvolvimento não inflam os números; o efeito
+vai no sentido contrário. Tirá-los muda o sucesso automático em menos de 1
+ponto percentual (92,4% → 91,9%) e o Acerto@3 em 0,006: os 4 tinham
+sucesso, e cada grupo pequeno perde um caso no numerador e no
+denominador. Na auditoria, a correção dos normativos sobe de 63,2% para
+64,9% e as incorretas caem de 11,1% para 8,8%. O motivo é que o caminho
+feliz, o caso mais trabalhado no desenvolvimento, é incorreto nas 3
+execuções: das 4 incorretas "com o trecho certo", 3 são dele. Nenhuma
+conclusão da entrada de 2026-10-02 muda. Sem os 4, a frase "as 4
+incorretas com trecho certo são o caminho feliz (3) e uma primeira
+execução" passa a ser "1 incorreta com trecho certo".
+
+### Conferência 3 — vereditos por resposta distinta
+
+A auditoria leu 76 respostas distintas (repetições com texto idêntico
+foram lidas uma vez só) e reportou a contagem por execução (162). Contando
+cada resposta distinta uma única vez (correta / parcial / abstenção /
+incorreta):
+
+| Grupo | Por execução | Por resposta distinta |
+|---|---|---|
+| Normativo no corpus | 117: 74 (63,2%) / 15 / 15 / 13 (11,1%) | **53: 33 (62,3%) / 7 / 6 / 7 (13,2%)** |
+| Robustez, com síntese | 18: 7 / 6 / 2 / 3 | 8: 3 / 3 / 1 / 1 |
+| Norma ausente | 18 corretas | 9 corretas |
+| Parecer/fora mal classificados | 9 recusas pelo modelo | 6 recusas pelo modelo |
+| **Total** | **162** | **76** |
+
+Sem os 4 casos de desenvolvimento, os normativos ficam com 51 respostas
+distintas: 33 (64,7%) / 7 / 6 / 5 (9,8%). A norma ausente fica com 7.
+
+"A recuperação decide", por resposta distinta (casos rotulados): com o
+trecho relevante, 46 respostas, das quais 35 corretas (76,1%), 6
+parciais, 2 abstenções e 3 incorretas. Sem o trecho relevante, 14
+respostas: 0 / 4 / 5 / 5.
+
+As duas contagens medem coisas diferentes. A contagem por execução pesa o
+que o usuário recebe: em produção, as repetições 2 e 3 são quase sempre
+iguais. A contagem por resposta distinta pesa o que foi lido. A diferença
+na taxa de corretas dos normativos é pequena (62,3% contra 63,2%), mas as
+incorretas sobem para 13,2%. Nos normativos, os 14 casos com divergência
+entram com duas respostas cada, e eles têm mais incorretas: 5 de 28
+respostas (3 só na repetição 1, 2 nas repetições 2 e 3), contra 2 de 25
+nos casos com texto idêntico nas 3 repetições. A diferença entre a
+repetição 1 e as repetições 2 e 3 (3 contra 2) é pequena demais para ser
+atribuída ao estado do cache.
+
+**Relevância para a pesquisa**:
+
+- O teto de 4.096 tokens não afetou o benchmark, que roda sem histórico,
+  mas **é atingido no uso conversacional em 3 a 4 turnos** com respostas
+  longas. A memória da Camada 6 limita o número de interações (5), não o
+  de tokens. Quando o limite é passado, o servidor corta o começo do
+  prompt, que é onde o protótipo põe a política de governança. A ablação
+  da v6 mostrou que a parte da Camada 7 que mais conta é a que age antes
+  da geração, e ela é **a primeira coisa descartada**, sem erro nem aviso
+  ao protótipo: a chamada volta com status 200, e a Camada 8 não registra
+  o corte. É uma interação entre as Camadas 2, 6 e 7 que a arquitetura de
+  Maia et al. não prevê: a memória cresce dentro de uma janela fixa, e a
+  posição da governança no prompt decide se ela sobrevive.
+- A conferência 2 delimita uma ameaça à validade. Os 4 casos com que o
+  sistema foi ajustado não melhoram os números agregados; o caminho feliz
+  é, ao contrário, um dos casos que os pioram. A comparação com e sem eles
+  deve acompanhar os números da v5 na monografia.
+- A conferência 3 dá uma forma de reportar a auditoria que não depende da
+  reprodutibilidade das repetições: a contagem por execução, com a
+  contagem por resposta distinta ao lado.
