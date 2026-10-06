@@ -1182,11 +1182,11 @@ o log nos 5 turnos.
 
 | Turno | Prompt (tokens) | Sistema / histórico / contexto normativo / pergunta | Geração | O que aconteceu |
 |---|---|---|---|---|
-| 1 | 1.514 | 251 / 0 / 1.201 / 53 | 791 | nada |
-| 2 | 2.463 | 251 / 859 / 1.307 / 37 | 779 | nada |
+| 1 | 1.514 | 251 / 0 / 1.201 / 53 | 792 | nada |
+| 2 | 2.463 | 251 / 859 / 1.307 / 37 | 780 | nada |
 | 3 | 3.298 | 251 / 1.680 / 1.316 / 42 | 845 | *context shift* durante a geração |
-| 4 | **4.445** | 251 / 2.571 / 1.580 / 34 | 789 | prompt truncado pelo Ollama antes da inferência |
-| 5 | **5.175** | 251 / 3.399 / 1.474 / 42 | 665 | prompt truncado pelo Ollama antes da inferência |
+| 4 | **4.445** | 251 / 2.571 / 1.580 / 34 | 790 | prompt truncado pelo Ollama antes da inferência |
+| 5 | **5.175** | 251 / 3.399 / 1.474 / 42 | 666 | prompt truncado pelo Ollama antes da inferência |
 
 (Os tamanhos de cada parte são aproximados, com margem de ±2 tokens por
 causa dos separadores.)
