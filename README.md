@@ -235,6 +235,7 @@ python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
 python run_benchmark.py --revalidar
 python run_benchmark.py --revalidar --modo sensibilidade
 python scripts/auditoria_v5.py
+python scripts/conferencias_pos_v6.py
 python scripts/plot_benchmark.py
 ```
 
@@ -383,6 +384,11 @@ prototipo_esqueleto/
     ├── scripts/
     │   ├── plot_benchmark.py          # Gráficos de publicação
     │   ├── auditoria_v5.py            # Auditoria manual das respostas (gera docs/auditoria_respostas_v5.csv)
+    │   ├── conferencia_vereditos_v5.py # Planilha de conferência dos vereditos pelo autor (sobrescreve as colunas AUTOR_*)
+    │   ├── conferencias_pos_v6.py     # Conferências 2 e 3: casos de desenvolvimento e contagem por resposta distinta
+    │   ├── conferencia_tokens_v5.py   # Conferência 1a: tokens do v5 contra a janela (lê logs/ollama_server_v5.log)
+    │   ├── conferencia_truncamento_cli.py # Conferência 1b: truncamento na conversa de 5 turnos (precisa do Ollama)
+    │   ├── log_ollama.py              # Leitura do server.log do Ollama (usado pelas conferências 1a e 1b)
     │   └── acompanhar_log.ps1         # Acompanha o log da Camada 8 em tempo real
     ├── src/
     │   ├── config.py                  # Configuração transversal (.env)
