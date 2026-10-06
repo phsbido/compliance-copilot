@@ -1064,7 +1064,9 @@ refazer a C2 inteira com teto de **2.048 tokens de saída** (`num_predict`)
 `ParametrosAmostragem.max_tokens_saida`, que vale `None` por padrão, e
 nesse caso opções e registros ficam idênticos aos do v5). O teto não
 alcançaria nenhuma resposta das rodadas sem ele: a maior geração foi de
-856 tokens no v5 (log do servidor da rodada) e 773 na C1. Execuções que
+856 tokens no v5 (log do servidor da rodada; uma classificação, do caso
+`parecer_redigir_defesa` no modo sensibilidade, não uma síntese) e 773 na
+C1. Execuções que
 batem no teto ficam marcadas (`sintese_truncada`, a partir do
 `done_reason = "length"` do Ollama) e são contadas como "geração
 degenerada", um resultado da ablação, não uma falha de execução. A

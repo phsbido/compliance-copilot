@@ -106,8 +106,7 @@ def main(porta: int) -> None:
         ini_hist = len(tok(prompt[:prompt.find("Histórico da conversa")])) if hist else None
         ini_ctx = len(tok(prompt[:prompt.find("Contexto normativo:")]))
         n_log = originais.pop(0) if s["n_prompt"] == LIMITE_ENTRADA and originais else s["n_prompt"]
-        # com context shift, o n_total do fim já desconta as posições descartadas
-        geracao = s["n_total"] - s["n_prompt"] + (SHIFT_DISCARD if s.get("trunc") else 0)
+        geracao = s["n_gerados"]
         print(f"\nturno {i}: reconstruído {n}, log {n_log} | sistema ~{n_sis}, histórico ~{n_hist}, "
               f"contexto ~{n_ctx}, pergunta ~{n_perg} | geração ~{geracao}, truncated = {s.get('trunc')}")
         if n > LIMITE_ENTRADA + 1 and n > 4096:

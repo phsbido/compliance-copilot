@@ -7,7 +7,9 @@ Campos de cada requisição:
   task      — id da tarefa no llama-server;
   ctx       — n_ctx_slot (janela de contexto);
   n_prompt  — task.n_tokens (tokens do prompt);
-  n_total   — n_tokens no fim da geração (prompt + gerados);
+  n_total   — n_tokens no fim da geração (no cache: prompt + gerados − 1,
+              porque o último token amostrado não entra no cache);
+  n_gerados — tokens gerados ("eval time = ... / N tokens");
   trunc     — "truncated" no fim da geração (1 = houve context shift);
   obs       — linhas da tarefa que mencionam context shift ou truncamento;
   t         — horário local do POST /api/chat|generate correspondente;
@@ -36,6 +38,10 @@ def ler_requisicoes(caminho) -> list[dict]:
             reqs.append(r)
             vivas[r["task"]] = r
             pendentes.append(r)
+            continue
+        m = re.search(r"task (\d+) \|\s+eval time =.*/\s*(\d+) tokens", l)
+        if m and int(m[1]) in vivas:
+            vivas[int(m[1])]["n_gerados"] = int(m[2])
             continue
         m = re.search(r"task (\d+) \| stop processing: n_tokens = (\d+), truncated = (\d+)", l)
         if m and int(m[1]) in vivas:

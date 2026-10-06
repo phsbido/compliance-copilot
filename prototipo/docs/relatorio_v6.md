@@ -109,8 +109,8 @@ conteúdo por estado do servidor, não a ablação.
 ## Desvios do plano
 
 1. **C2 com teto de 2.048 tokens de saída**, só nela (decisão do autor
-   durante a execução). O teto fica acima da maior geração do v5 (856) e
-   da C1 (773). A 1ª tentativa, sem teto, foi interrompida e descartada.
+   durante a execução). O teto fica acima da maior geração do v5 (856,
+   numa classificação) e da C1 (773). A 1ª tentativa, sem teto, foi interrompida e descartada.
 2. **Tarefa B adiada** até a revisão dos vereditos v5 (decisão do autor).
 3. **"Fontes não oficiais"** medida fora do validador, como medida nova
    (decisão do autor).

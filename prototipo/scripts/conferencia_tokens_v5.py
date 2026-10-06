@@ -68,10 +68,12 @@ def main(modo: str) -> None:
     print(f"síntese, prompt + geração: máx {max(tot)} ({100 * max(tot) / JANELA:.1f}%)")
     maior = max((s["n_prompt"], e["caso_id"]) for e, _, s in linhas if s)
     print(f"maior prompt: {maior[1]} ({maior[0]})")
-    geracao = max(s["n_total"] - s["n_prompt"] for _, _, s in linhas if s)
-    print(f"pior caso combinado (maior prompt + maior geração de síntese): {max(sp)} + {geracao} = {max(sp) + geracao}")
-    g_cl = max(c["n_total"] - c["n_prompt"] for _, c, _ in linhas)
-    print(f"maior geração de classificação: {g_cl} tokens")
+    g_si = max(s["n_gerados"] for _, _, s in linhas if s)
+    g_cl, caso_cl = max((c["n_gerados"], e["caso_id"]) for e, c, _ in linhas)
+    print(f"maior geração de síntese: {g_si} tokens; maior geração de classificação: {g_cl} tokens ({caso_cl})")
+    g = max(g_si, g_cl)
+    print(f"pior caso combinado (maior prompt de síntese + maior geração de qualquer chamada): "
+          f"{max(sp)} + {g} = {max(sp) + g}")
     print(f"requisições com truncated = 1: {sum(r.get('trunc', 0) for r in reqs)}; "
           f"com linhas de context shift/truncamento: {sum(1 for r in reqs if 'obs' in r)}")
 

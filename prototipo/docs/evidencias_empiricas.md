@@ -1158,7 +1158,10 @@ truncamento do Ollama. No modo sensibilidade, o maior prompt é o mesmo
 (2.633) e o maior prompt + geração é 3.111 (o "3.111" de
 `diagnostico_falhas_v5.md`, Seção 3.1). O benchmark roda cada execução em
 sessão nova, com histórico vazio. Mesmo o pior caso combinado (maior prompt
-mais a maior geração do v5, 856 tokens) dá 3.489, abaixo do limite. **Os
+de síntese mais a maior geração do v5 em qualquer chamada, 856 tokens) dá
+3.489, abaixo do limite. Essa geração de 856 tokens é de uma
+**classificação** (`parecer_redigir_defesa`, modo sensibilidade), não de
+uma síntese; a maior síntese gerou 680 tokens. **Os
 resultados do v5 não foram afetados por truncamento.** Nas rodadas da v6,
 o mesmo vale para v6, C1 e C2 com teto. Só a primeira tentativa da C2, a
 descartada, teve 7 *context shifts*, na geração sem fim.
