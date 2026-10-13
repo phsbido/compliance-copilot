@@ -1,0 +1,189 @@
+{
+  "arquivo": "resolucao_bcb_65_2021",
+  "titulo": "Resolução BCB nº 65, de 26 de janeiro de 2021",
+  "titulo_curto": "Resolução BCB nº 65/2021",
+  "orgao": "Banco Central do Brasil (BCB)",
+  "ementa": "Dispõe sobre a política de conformidade (compliance) das administradoras de consórcio, das instituições de pagamento, das sociedades corretoras de títulos e valores mobiliários, das sociedades distribuidoras de títulos e valores mobiliários e das sociedades corretoras de câmbio autorizadas a funcionar pelo Banco Central do Brasil.",
+  "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=65",
+  "data_publicacao": "2021-01-26",
+  "versao": "versão 4 da página, obtida em 2026-10-13",
+  "fonte_texto": "HTML da página (texto tachado removido)",
+  "corpus_runtime": true,
+  "unidades": [
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 1º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 1º Esta Resolução regulamenta a política de conformidade (compliance) aplicável às seguintes instituições autorizadas a funcionar pelo Banco Central do Brasil: I - administradoras de consórcio;",
+        "II - instituições de pagamento; III - sociedades corretoras de títulos e valores mobiliários; IV - sociedades distribuidoras de títulos e valores mobiliários; V - sociedades corretoras de câmbio; e VI - sociedades prestadoras de serviços de ativos virtuais."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Incluído, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Incluído, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Incluído, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Redação dada pela Resolução BCB nº 552, de 3/3/2026.",
+        "Redação dada pela Resolução BCB nº 552, de 3/3/2026.",
+        "Incluído pela Resolução BCB nº 552, de 3/3/2026."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 2º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 2º As instituições mencionadas no art.",
+        "1º devem implementar e manter política de conformidade compatível com a natureza, o porte, a complexidade, a estrutura, o perfil de risco e o modelo de negócio, de forma a assegurar o efetivo gerenciamento do seu risco de conformidade. Parágrafo único.",
+        "§ 1º Para fins desta Resolução, considera-se risco de conformidade a possibilidade de a instituição sofrer sanções legais ou administrativas, perdas financeiras, danos de reputação e outros danos, decorrentes de descumprimento ou falhas na observância do arcabouço legal, da regulamentação infralegal, das recomendações dos órgãos reguladores e dos códigos de autorregulação aplicáveis.",
+        "§ 2º O risco de conformidade deve ser gerenciado pelas instituições mencionadas no art. 1º de forma integrada com os demais riscos incorridos pela instituição, conforme requerido pela regulamentação específica."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Revogado, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Incluído, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Redação dada pela Resolução BCB nº 552, de 3/3/2026."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 3º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 3º Admite-se a adoção de política de conformidade única por conglomerado."
+      ],
+      "anotacoes": [],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 4º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 4º A política de conformidade deve ser aprovada pelo conselho de administração."
+      ],
+      "anotacoes": [],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 5º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 5º A política de conformidade deve definir, no mínimo:",
+        "I - o objetivo e o escopo da função de conformidade;",
+        "II - a divisão clara das responsabilidades das pessoas envolvidas na função de conformidade, de modo a evitar eventuais conflitos de interesses, principalmente com as áreas de negócios;",
+        "III - a alocação de pessoal em quantidade suficiente, adequadamente treinado e com experiência necessária para o exercício das atividades relacionadas com a função de conformidade;",
+        "IV - a posição, na estrutura organizacional, da unidade específica responsável pela função de conformidade, quando constituída;",
+        "V - as medidas necessárias para garantir independência e adequada autoridade aos responsáveis por atividades relacionadas com a função de conformidade;",
+        "VI - a alocação de recursos suficientes para o desempenho das atividades relacionadas com a função de conformidade;",
+        "VII - o livre acesso dos responsáveis por atividades relacionadas com a função de conformidade às informações necessárias para o exercício de suas atribuições;",
+        "VIII - os canais de comunicação com a diretoria ou com os administradores, com o conselho de administração e com o comitê de auditoria, quando constituído, necessários para o relato dos resultados decorrentes das atividades relacionadas com a função de conformidade, de possíveis irregularidades ou falhas identificadas; e IX - os procedimentos para a coordenação das atividades relativas à função de conformidade com funções de gerenciamento de risco e com a auditoria interna."
+      ],
+      "anotacoes": [],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 6º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 6º A unidade responsável pela função de conformidade, quando constituída, deve ser integralmente segregada da atividade de auditoria interna."
+      ],
+      "anotacoes": [],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 7º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 7º Os responsáveis pela execução das atividades relacionadas com a função de conformidade, independentemente da existência de unidade específica, devem:",
+        "I - testar e avaliar a aderência da instituição mencionada no art. 1º ao arcabouço legal, à regulamentação infralegal, às recomendações dos órgãos de supervisão e, quando aplicáveis, aos códigos de ética, de conduta e outros regulamentos que estejam obrigadas a observar; II - prestar suporte ao conselho de administração e à diretoria ou aos administradores a respeito da observância e da correta aplicação dos itens mencionados no inciso I do caput, inclusive mantendo-os informados sobre as atualizações relevantes em relação a tais itens;",
+        "III - auxiliar na informação e na capacitação de todos os empregados e dos prestadores de serviços terceirizados relevantes, em assuntos relativos à conformidade;",
+        "IV - revisar e acompanhar a solução dos pontos levantados no relatório de descumprimento de dispositivos legais e regulamentares elaborado pelo auditor independente, conforme regulamentação específica;",
+        "V - elaborar relatório, com periodicidade mínima anual, contendo o sumário dos resultados das atividades relacionadas com a função de conformidade, suas principais conclusões, recomendações e providências tomadas pela administração da instituição mencionada no art. 1º; e VI - relatar sistemática e tempestivamente os resultados das atividades relacionadas com a função de conformidade ao conselho de administração.",
+        "Parágrafo único. As instituições mencionadas no art. 1º poderão contratar especialistas para a execução de atividades relacionadas com a política de conformidade, mantidas integralmente as atribuições e responsabilidades do conselho de administração."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024.",
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 8º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 8º"
+      ],
+      "anotacoes": [
+        "Revogado, a partir de 1º/1/2025, pela Resolução BCB nº 432, de 13/11/2024."
+      ],
+      "revogado": true
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 9º",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 9º O conselho de administração deve, além do previsto no art. 4º desta Resolução:",
+        "I - assegurar: a) a adequada gestão da política de conformidade; b) a efetividade e a continuidade da aplicação da política de conformidade; c) a comunicação da política de conformidade a todos os empregados e prestadores de serviços terceirizados relevantes; e d) a disseminação de padrões de integridade e conduta ética como parte da cultura da instituição; II - garantir que medidas corretivas sejam tomadas quando falhas de conformidade forem identificadas; e III - prover os meios necessários para que as atividades relacionadas com a função de conformidade sejam exercidas adequadamente, nos termos desta Resolução."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 10",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 10. Para as instituições mencionadas no art. 1º que não possuam conselho de administração, as atribuições e responsabilidades previstas nesta Resolução devem ser imputadas à sua diretoria ou aos seus administradores."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 11",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 11. As instituições mencionadas no art.",
+        "1º devem manter à disposição do Banco Central do Brasil: I - a documentação relativa à política de conformidade aprovada pelo conselho de administração ou, na hipótese do art. 10, pela diretoria ou pelos administradores; e II - o relatório de que trata o inciso V do art. 7º, pelo prazo mínimo de cinco anos."
+      ],
+      "anotacoes": [
+        "Redação dada, a partir de 1º/3/2024, pela Resolução BCB nº 368, de 25/1/2024."
+      ],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 12",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 12. Fica revogada a Circular nº 3.865, de 7 de dezembro de 2017."
+      ],
+      "anotacoes": [],
+      "revogado": false
+    },
+    {
+      "tipo": "artigo",
+      "identificador": "Art. 13",
+      "contexto": [],
+      "paragrafos": [
+        "Art. 13. Esta Resolução entra em vigor em 1º de março de 2021.",
+        "Otávio Ribeiro Damaso Diretor de Regulação"
+      ],
+      "anotacoes": [],
+      "revogado": false
+    }
+  ]
+}

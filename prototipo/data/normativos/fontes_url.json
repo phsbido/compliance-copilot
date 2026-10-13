@@ -20,6 +20,76 @@
       "arquivo": "resolucao_bcb_1_2020",
       "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=1",
       "corpus_runtime": false
+    },
+    {
+      "arquivo": "resolucao_cmn_4753_2019",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o&numero=4753",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_96_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=96",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_cmn_4595_2017",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o&numero=4595",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_65_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=65",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "circular_3978_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Circular&numero=3978",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "carta_circular_4001_2020",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Carta%20Circular&numero=4001",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_cmn_4968_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20CMN&numero=4968",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_260_2022",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=260",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_142_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=142",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_conjunta_6_2023",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20Conjunta&numero=6",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_343_2023",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=343",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_cmn_4893_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20CMN&numero=4893",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_bcb_85_2021",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20BCB&numero=85",
+      "corpus_runtime": true
+    },
+    {
+      "arquivo": "resolucao_cmn_5320_2026",
+      "url_oficial": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20CMN&numero=5320",
+      "corpus_runtime": true
     }
   ]
 }

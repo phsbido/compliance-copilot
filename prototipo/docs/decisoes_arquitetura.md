@@ -469,6 +469,87 @@ resíduo conhecido, a ausência dos artefatos na Gold e a citação "art. 22-A"
 sem aviso, com o trecho real da Gold. Resultados em
 `docs/evidencias_empiricas.md`, v4.1.
 
+### Corpus ampliado: contas e compliance (2026-10-12)
+
+**Decisão**: catorze normativos sobre contas (inclusive de PJ), compliance,
+PLD/FT, controles internos, fraudes e segurança cibernética foram baixados
+da API oficial do BCB e entraram no índice de runtime
+(`corpus_runtime: true` em `fontes_url.json`). O índice BM25 passou de 141
+trechos de 3 normativos para 440 trechos de 17. Pedido do usuário: o
+copiloto deve responder também sobre esses temas. Num primeiro passo (mesmo
+dia) os oito primeiros entraram só no pipeline; o usuário aprovou em seguida
+levá-los ao runtime e incluir os seis encontrados na mesma busca.
+
+| Normativo | Tema | Texto oficial |
+|---|---|---|
+| Resolução CMN nº 4.753/2019 | abertura, manutenção e encerramento de conta de depósitos | PDF consolidado v6 |
+| Resolução BCB nº 96/2021 | abertura, manutenção e encerramento de contas de pagamento | só HTML |
+| Resolução CMN nº 4.595/2017 | política de conformidade (compliance) das instituições financeiras | PDF consolidado v3 |
+| Resolução BCB nº 65/2021 | política de conformidade das instituições de pagamento e outras | só HTML |
+| Circular nº 3.978/2020 | política, procedimentos e controles internos de PLD/FT | PDF consolidado v6 |
+| Carta Circular nº 4.001/2020 | operações e situações com indício de lavagem de dinheiro | PDF consolidado v4 |
+| Resolução CMN nº 4.968/2021 | sistemas de controles internos das instituições financeiras | só HTML |
+| Resolução BCB nº 260/2022 | sistemas de controles internos das instituições de pagamento e outras | só HTML |
+| Resolução BCB nº 142/2021 | prevenção de fraudes na prestação de serviços de pagamento | só HTML |
+| Resolução Conjunta nº 6/2023 | compartilhamento de dados sobre indícios de fraudes | só HTML |
+| Resolução BCB nº 343/2023 | execução do compartilhamento de dados sobre fraudes (Res. Conj. 6) | só HTML |
+| Resolução CMN nº 4.893/2021 | política de segurança cibernética e contratação de nuvem | só HTML |
+| Resolução BCB nº 85/2021 | segurança cibernética das instituições de pagamento e outras | só HTML |
+| Resolução CMN nº 5.320/2026 | bloqueio de contas de quem explora apostas de quota fixa sem autorização | só HTML |
+
+**Como foram escolhidos**: busca de normativos do próprio BCB
+(`/api/search/app/normativos/buscanormativos`) por "conta de depósitos",
+"contas de pagamento", "conformidade", "controles internos", "lavagem",
+"fraudes" e afins, filtrando pela ementa e descartando normas revogadas,
+canceladas ou que só alteram outras. Cada norma foi conferida no endpoint
+`exibenormativo` (ementa, `Revogado`/`Cancelado`, `Documentos`), e cada PDF
+pela primeira página. Os arquivos foram gravados na Bronze no formato de
+`etapa_bronze`, sem rodá-la (ela apaga a Bronze inteira e baixaria de novo
+as versões consolidadas dos normativos existentes); Silver e Gold foram
+regeneradas com `--a-partir-da-bronze`, que reproduziu byte a byte os
+arquivos dos normativos anteriores — só o `indice_bm25.json` mudou.
+
+**Achado sobre o formato**: só os normativos anteriores a 2021 têm PDF
+consolidado no BCB. Para as Resoluções BCB e CMN posteriores, o texto
+oficial publicado é o HTML da página (campo `Texto` da API, guardado na
+Bronze) — não se gerou PDF a partir dele, para não apresentar como oficial
+um documento derivado.
+
+**Camada 7**: nenhuma mudança necessária. "Carta Circular nº 4.001" gera a
+chave `circular 4001` tanto na resposta quanto no título do contexto, e
+"Resolução nº 4.753" (título dos atos do CMN anteriores a 2021) já casa com
+"Resolução CMN nº 4.753" pela regra de resolução sem qualificador.
+
+**Efeito na recuperação dos 44 casos rotulados** (`--somente-recuperacao`,
+sem LLM): Acerto@3 0,750 → 0,727; Recall@3 0,689 → 0,701; MRR 0,674 →
+0,633. Em 33 casos o top-3 mudou, quase sempre por reordenação (o IDF de
+cada termo muda com o corpus); em poucos, um trecho novo tomou o lugar de
+um relevante (ex.: `rc1_contratacao_autenticacao` passou a trazer a
+Resolução BCB nº 85 em primeiro).
+
+**Teste de fumaça (fluxo completo, uma execução por pergunta)**: das cinco
+perguntas sobre os temas novos, uma teve resposta de conteúdo correta
+(beneficiário final na Circular nº 3.978, art. 24) e quatro viraram
+declarações honestas de falta de base — nenhuma inventou conteúdo. Nas
+quatro, a norma certa foi recuperada, mas não o artigo que responde: o
+art. 5º da Resolução nº 4.595 ("A política de conformidade deve definir, no
+mínimo…") ficou em 8º; o art. 2º da Resolução nº 4.753 (verificação na
+abertura de conta) em 10º; o art. 13 da Resolução BCB nº 96 (hipóteses de
+encerramento) em 4º; e a pergunta que cita a Resolução Conjunta nº 6/2023
+pelo nome trouxe três trechos da Resolução BCB nº 343, cujo cabeçalho repete
+os termos da pergunta. É o mesmo gargalo já medido na v5 (recuperação
+lexical com top-3), agora num corpus maior. Na pergunta de controle sobre
+Open Finance apareceu um valor inventado ("3 milhões"), sinalizado pela
+Camada 7.
+
+**Conflito com a bateria do benchmark**: três casos do grupo `norma_ausente`
+(`ausente_res_cmn_4893`, `ausente_circ_3978_pld`, `ausente_res_bcb_96_contas`)
+perguntam sobre normas que agora estão no corpus — a premissa desses casos
+deixou de valer. A bateria não foi alterada (rótulos fixados antes da
+execução); revisá-la é decisão pendente do usuário, antes de qualquer nova
+rodada do benchmark. Os resultados v5/v6 continuam válidos para o corpus de
+três normativos em que foram medidos.
+
 ---
 
 ## Camada 6 — Contexto e Memória
