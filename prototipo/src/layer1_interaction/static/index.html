@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copiloto de Compliance</title>
+<!--
+  Camada 1 (interface web) — página única, sem dependências externas.
+  Servida por src/layer1_interaction/web.py. Ver docs/decisoes_arquitetura.md.
+-->
+<style>
+  :root {
+    --fundo: #f6f7f9;
+    --superficie: #ffffff;
+    --superficie-2: #eef1f5;
+    --borda: #dde2e8;
+    --texto: #1c2430;
+    --texto-2: #5b6675;
+    --primaria: #1f5fbf;
+    --primaria-texto: #ffffff;
+    --usuario: #1f5fbf;
+    --usuario-texto: #ffffff;
+    --aviso-fundo: #fff6e0;
+    --aviso-borda: #e6b440;
+    --aviso-texto: #6b4a00;
+    --erro-fundo: #fdecec;
+    --erro-borda: #d9534f;
+    --erro-texto: #8a1f1b;
+    --ok: #2e7d4f;
+    --sombra: 0 1px 2px rgba(20, 30, 45, .06), 0 2px 8px rgba(20, 30, 45, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fundo: #12161c;
+      --superficie: #1a2028;
+      --superficie-2: #232b35;
+      --borda: #2f3946;
+      --texto: #e4e9ef;
+      --texto-2: #9aa6b4;
+      --primaria: #5b9cf5;
+      --primaria-texto: #0d1420;
+      --usuario: #2c5fa8;
+      --usuario-texto: #f2f6fb;
+      --aviso-fundo: #3a2f12;
+      --aviso-borda: #b38a26;
+      --aviso-texto: #f3d999;
+      --erro-fundo: #3b1a1a;
+      --erro-borda: #c0504d;
+      --erro-texto: #f4bdbb;
+      --ok: #6cc596;
+      --sombra: none;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--fundo);
+    color: var(--texto);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--superficie);
+    border-bottom: 1px solid var(--borda);
+    padding: 12px 16px;
+  }
+  .topo {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topo .titulos { flex: 1; min-width: 0; }
+  .topo button { flex-shrink: 0; white-space: nowrap; }
+  h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  .subtitulo { color: var(--texto-2); font-size: 13px; }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid var(--borda);
+    background: var(--superficie);
+    color: var(--texto);
+    padding: 7px 12px;
+  }
+  button:hover:not(:disabled) { background: var(--superficie-2); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  button.primario {
+    background: var(--primaria);
+    border-color: var(--primaria);
+    color: var(--primaria-texto);
+    font-weight: 600;
+  }
+  button.primario:hover:not(:disabled) { filter: brightness(1.08); background: var(--primaria); }
+
+  main { flex: 1; overflow-y: auto; padding: 20px 16px; }
+  #conversa { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+  .boas-vindas {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: var(--sombra);
+  }
+  .boas-vindas h2 { font-size: 16px; margin: 0 0 6px; }
+  .boas-vindas p { margin: 0 0 12px; color: var(--texto-2); }
+  .sugestoes { display: flex; flex-direction: column; gap: 8px; }
+  .sugestoes button { text-align: left; background: var(--superficie-2); border-color: transparent; }
+  .sugestoes button:hover { border-color: var(--borda); }
+
+  .msg { display: flex; flex-direction: column; max-width: 100%; }
+  .msg.usuario { align-items: flex-end; }
+  .balao {
+    border-radius: 12px;
+    padding: 10px 14px;
+    max-width: min(680px, 92%);
+    overflow-wrap: anywhere;
+  }
+  .msg.usuario .balao {
+    background: var(--usuario);
+    color: var(--usuario-texto);
+    white-space: pre-wrap;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistente .balao {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    max-width: 100%;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.erro .balao {
+    background: var(--erro-fundo);
+    border: 1px solid var(--erro-borda);
+    color: var(--erro-texto);
+  }
+
+  /* Texto formatado da resposta */
+  .resposta > :first-child { margin-top: 0; }
+  .resposta > :last-child { margin-bottom: 0; }
+  .resposta p { margin: 0 0 10px; }
+  .resposta ul, .resposta ol { margin: 0 0 10px; padding-left: 22px; }
+  .resposta li { margin: 2px 0; }
+  .resposta h3, .resposta h4 { margin: 14px 0 6px; font-size: 15px; }
+  .resposta hr { border: 0; border-top: 1px solid var(--borda); margin: 14px 0 10px; }
+  .resposta hr + p { color: var(--texto-2); font-size: 13px; }
+  .resposta code {
+    background: var(--superficie-2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 13px;
+  }
+  .msg.assistente a { color: var(--primaria); }
+  .resposta .aviso {
+    background: var(--aviso-fundo);
+    border-left: 3px solid var(--aviso-borda);
+    color: var(--aviso-texto);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .selo-aviso {
+    display: inline-block;
+    margin-bottom: 8px;
+    background: var(--aviso-fundo);
+    border: 1px solid var(--aviso-borda);
+    color: var(--aviso-texto);
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+
+  details.proveniencia {
+    margin-top: 10px;
+    border-top: 1px solid var(--borda);
+    padding-top: 8px;
+    font-size: 13px;
+    color: var(--texto-2);
+  }
+  details.proveniencia summary { cursor: pointer; user-select: none; }
+  details.proveniencia dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 4px 12px;
+    margin: 8px 0 0;
+  }
+  details.proveniencia dt { font-weight: 600; color: var(--texto); }
+  details.proveniencia dd { margin: 0; overflow-wrap: anywhere; }
+  details.proveniencia ul { margin: 0; padding-left: 18px; }
+  .ok { color: var(--ok); }
+  @media (max-width: 520px) {
+    details.proveniencia dl { grid-template-columns: 1fr; }
+    details.proveniencia dd { margin-bottom: 6px; }
+  }
+
+  .pensando { display: flex; align-items: center; gap: 10px; color: var(--texto-2); }
+  .pontos { display: inline-flex; gap: 4px; }
+  .pontos span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--texto-2);
+    animation: pulso 1.2s infinite ease-in-out;
+  }
+  .pontos span:nth-child(2) { animation-delay: .15s; }
+  .pontos span:nth-child(3) { animation-delay: .3s; }
+  @keyframes pulso { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  footer {
+    background: var(--superficie);
+    border-top: 1px solid var(--borda);
+    padding: 12px 16px 14px;
+  }
+  form { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+  textarea {
+    flex: 1;
+    resize: none;
+    font: inherit;
+    color: var(--texto);
+    background: var(--fundo);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 44px;
+    max-height: 180px;
+  }
+  textarea:focus { outline: 2px solid var(--primaria); outline-offset: -1px; }
+  .dica { max-width: 860px; margin: 6px auto 0; font-size: 12px; color: var(--texto-2); }
+</style>
+</head>
+<body>
+<header>
+  <div class="topo">
+    <div class="titulos">
+      <h1>Copiloto de Compliance Regulatório</h1>
+      <div class="subtitulo">Open Finance e contas PJ · respostas baseadas em atos normativos públicos do BACEN</div>
+    </div>
+    <button type="button" id="nova-conversa" title="Apaga o histórico desta conversa (memória da sessão)">Nova conversa</button>
+  </div>
+</header>
+
+<main id="rolagem">
+  <div id="conversa" aria-live="polite"></div>
+</main>
+
+<footer>
+  <form id="formulario">
+    <textarea id="pergunta" rows="1" placeholder="Digite sua pergunta…" aria-label="Pergunta" maxlength="4000"></textarea>
+    <button type="submit" class="primario" id="enviar">Enviar</button>
+  </form>
+  <div class="dica">Enter envia · Shift+Enter quebra a linha. As respostas não são parecer jurídico.</div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUGESTOES = [
+    "Quais são os requisitos para uma instituição PJ participar do Open Finance?",
+    "Como o Open Finance é definido na Resolução Conjunta nº 1/2020?",
+    "Quais requisitos o consentimento do cliente deve atender no Open Finance?",
+  ];
+
+  const ROTULOS_CLASSIFICACAO = {
+    normativo: "Normativo",
+    parecer_juridico: "Parecer jurídico",
+    fora_de_escopo: "Fora de escopo",
+  };
+  const ROTULOS_DESFECHO = {
+    resposta: "Resposta sintetizada e validada",
+    recusa_parecer_juridico: "Recusa: pedido de parecer jurídico",
+    recusa_fora_de_escopo: "Recusa: fora de escopo",
+    recusa_sem_base: "Recusa: nenhum trecho normativo encontrado",
+  };
+  const ROTULOS_VALIDACAO = {
+    normas_nao_verificadas: "Normas não verificadas",
+    artigos_nao_verificados: "Artigos não verificados",
+    artigos_fora_da_norma: "Artigos atribuídos à norma errada",
+    valores_nao_verificados: "Valores não verificados",
+    normas_declaradas_ausentes: "Normas declaradas ausentes do corpus",
+  };
+
+  const conversa = document.getElementById("conversa");
+  const rolagem = document.getElementById("rolagem");
+  const formulario = document.getElementById("formulario");
+  const campo = document.getElementById("pergunta");
+  const botaoEnviar = document.getElementById("enviar");
+  const botaoNova = document.getElementById("nova-conversa");
+
+  // ---------------------------------------------------------------- sessão
+  function novoId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "s-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12);
+  }
+  function lerSessao() {
+    try {
+      const id = sessionStorage.getItem("sessao");
+      if (id) return id;
+    } catch (e) { /* armazenamento indisponível */ }
+    return null;
+  }
+  function gravarSessao(id) {
+    try { sessionStorage.setItem("sessao", id); } catch (e) { /* ignora */ }
+  }
+  let sessao = lerSessao() || novoId();
+  gravarSessao(sessao);
+
+  // -------------------------------------------- Markdown mínimo (seguro)
+  // Escapa o HTML antes de qualquer formatação: o texto do modelo nunca
+  // vira marcação por conta própria.
+  function escapar(texto) {
+    return texto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function formatarLinha(texto) {
+    let html = escapar(texto);
+    const codigos = [];
+    html = html.replace(/`([^`]+)`/g, (_, c) => { codigos.push(c); return "\u0000" + (codigos.length - 1) + "\u0000"; });
+    html = html.replace(/https?:\/\/[^\s<)\]]+/g, (url) => {
+      const fim = url.match(/[.,;:!?]+$/);
+      const sufixo = fim ? fim[0] : "";
+      const limpa = sufixo ? url.slice(0, -sufixo.length) : url;
+      return `<a href="${limpa}" target="_blank" rel="noopener noreferrer">${limpa}</a>${sufixo}`;
+    });
+    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/(^|[^\w*])\*(?!\s)([^*]+?)\*(?!\w)/g, "$1<em>$2</em>");
+    html = html.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${codigos[+i]}</code>`);
+    return html;
+  }
+
+  function formatarMarkdown(texto) {
+    const linhas = texto.replace(/\r\n?/g, "\n").split("\n");
+    const saida = [];
+    let paragrafo = [];
+    let lista = null; // { tipo: "ul" | "ol", itens: [] }
+
+    function fecharParagrafo() {
+      if (!paragrafo.length) return;
+      const aviso = /^Aviso:/.test(paragrafo[0]);
+      saida.push(`<p${aviso ? ' class="aviso"' : ""}>${paragrafo.map(formatarLinha).join("<br>")}</p>`);
+      paragrafo = [];
+    }
+    function fecharLista() {
+      if (!lista) return;
+      saida.push(`<${lista.tipo}>${lista.itens.map((i) => `<li>${formatarLinha(i)}</li>`).join("")}</${lista.tipo}>`);
+      lista = null;
+    }
+
+    for (const bruta of linhas) {
+      const linha = bruta.trim();
+      let m;
+      if (!linha) { fecharParagrafo(); fecharLista(); continue; }
+      if (/^(-{3,}|\*{3,}|_{3,})$/.test(linha)) { fecharParagrafo(); fecharLista(); saida.push("<hr>"); continue; }
+      if ((m = linha.match(/^(#{1,6})\s+(.*)$/))) {
+        fecharParagrafo(); fecharLista();
+        const nivel = m[1].length <= 2 ? "h3" : "h4";
+        saida.push(`<${nivel}>${formatarLinha(m[2])}</${nivel}>`);
+        continue;
+      }
+      if ((m = linha.match(/^[-*•]\s+(.*)$/)) || (m = linha.match(/^\d+[.)]\s+(.*)$/))) {
+        const tipo = /^\d/.test(linha) ? "ol" : "ul";
+        fecharParagrafo();
+        if (lista && lista.tipo !== tipo) fecharLista();
+        if (!lista) lista = { tipo, itens: [] };
+        lista.itens.push(m[1]);
+        continue;
+      }
+      // Avisos da Camada 7 vêm um por linha: cada um vira um bloco próprio.
+      if (/^Aviso:/.test(linha)) { fecharParagrafo(); fecharLista(); paragrafo.push(linha); fecharParagrafo(); continue; }
+      if (lista) {
+        // Linha de continuação de um item de lista.
+        lista.itens[lista.itens.length - 1] += " " + linha;
+        continue;
+      }
+      paragrafo.push(linha);
+    }
+    fecharParagrafo();
+    fecharLista();
+    return saida.join("");
+  }
+
+  // ------------------------------------------------------------- interface
+  function elemento(tag, classe, html) {
+    const el = document.createElement(tag);
+    if (classe) el.className = classe;
+    if (html !== undefined) el.innerHTML = html;
+    return el;
+  }
+
+  function rolarParaFim() {
+    rolagem.scrollTop = rolagem.scrollHeight;
+  }
+
+  function mostrarBoasVindas() {
+    conversa.innerHTML = "";
+    const caixa = elemento("div", "boas-vindas");
+    caixa.appendChild(elemento("h2", "", "Como posso ajudar?"));
+    caixa.appendChild(elemento("p", "",
+      "Pergunte sobre requisitos regulatórios de Open Finance e contas PJ. " +
+      "Cada resposta indica as fontes consultadas e os avisos de verificação."));
+    const lista = elemento("div", "sugestoes");
+    for (const s of SUGESTOES) {
+      const b = elemento("button");
+      b.type = "button";
+      b.textContent = s;
+      b.addEventListener("click", () => enviar(s));
+      lista.appendChild(b);
+    }
+    caixa.appendChild(lista);
+    conversa.appendChild(caixa);
+  }
+
+  function adicionarUsuario(texto) {
+    conversa.querySelector(".boas-vindas")?.remove();
+    const msg = elemento("div", "msg usuario");
+    const balao = elemento("div", "balao");
+    balao.textContent = texto;
+    msg.appendChild(balao);
+    conversa.appendChild(msg);
+    rolarParaFim();
+  }
+
+  function adicionarPensando() {
+    const msg = elemento("div", "msg assistente");
+    const balao = elemento("div", "balao");
+    const linha = elemento("div", "pensando");
+    linha.appendChild(elemento("span", "pontos", "<span></span><span></span><span></span>"));
+    const rotulo = elemento("span");
+    linha.appendChild(rotulo);
+    balao.appendChild(linha);
+    msg.appendChild(balao);
+    conversa.appendChild(msg);
+    rolarParaFim();
+
+    const inicio = Date.now();
+    const atualizar = () => {
+      const s = Math.floor((Date.now() - inicio) / 1000);
+      rotulo.textContent = `Consultando os normativos e gerando a resposta… ${s} s`;
+    };
+    atualizar();
+    const timer = setInterval(atualizar, 1000);
+    return { msg, parar: () => clearInterval(timer) };
+  }
+
+  function listaHtml(itens) {
+    return `<ul>${itens.map((i) => `<li>${i}</li>`).join("")}</ul>`;
+  }
+
+  function montarProveniencia(p) {
+    const det = elemento("details", "proveniencia");
+    det.appendChild(elemento("summary", "", "Proveniência (Camadas 3, 7 e 8)"));
+    const dl = elemento("dl");
+    const linha = (rotulo, html) => {
+      dl.appendChild(elemento("dt", "", rotulo));
+      dl.appendChild(elemento("dd", "", html));
+    };
+
+    if (p.classificacao) linha("Classificação", escapar(ROTULOS_CLASSIFICACAO[p.classificacao] || p.classificacao));
+    if (p.desfecho) linha("Desfecho", escapar(ROTULOS_DESFECHO[p.desfecho] || p.desfecho));
+
+    const v = p.validacao || {};
+    if (p.desfecho === "resposta" && Object.keys(v).length) {
+      const achados = Object.entries(ROTULOS_VALIDACAO)
+        .filter(([chave]) => Array.isArray(v[chave]) && v[chave].length)
+        .map(([chave, rotulo]) => `${escapar(rotulo)}: ${v[chave].map(escapar).join("; ")}`);
+      linha("Validação", achados.length ? listaHtml(achados) : '<span class="ok">Sem avisos</span>');
+    } else if (p.desfecho && p.desfecho !== "resposta") {
+      linha("Validação", "Não se aplica (recusa da Camada 7)");
+    }
+
+    if (Array.isArray(p.fontes) && p.fontes.length) {
+      linha("Fontes", listaHtml(p.fontes.map((f) =>
+        `<a href="${escapar(f.url_oficial)}" target="_blank" rel="noopener noreferrer">${escapar(f.titulo)}</a>`)));
+    }
+    if (p.modelo) linha("Modelo", escapar(p.modelo + (p.id_modelo ? ` (${p.id_modelo})` : "")));
+    if (p.latencia_s !== undefined) linha("Tempo", `${String(p.latencia_s).replace(".", ",")} s`);
+
+    det.appendChild(dl);
+    return det;
+  }
+
+  function preencherResposta(msg, dados) {
+    const balao = msg.querySelector(".balao");
+    balao.innerHTML = "";
+    const p = dados.proveniencia || {};
+    if (p.validacao && p.validacao.possui_aviso) {
+      balao.appendChild(elemento("div", "selo-aviso",
+        "⚠ A Camada 7 encontrou citação ou valor não verificado — ver avisos"));
+    }
+    balao.appendChild(elemento("div", "resposta", formatarMarkdown(dados.resposta || "")));
+    balao.appendChild(montarProveniencia(p));
+  }
+
+  function preencherErro(msg, texto) {
+    msg.classList.add("erro");
+    const balao = msg.querySelector(".balao");
+    balao.textContent = texto;
+  }
+
+  let ocupado = false;
+  function definirOcupado(valor) {
+    ocupado = valor;
+    botaoEnviar.disabled = valor;
+    botaoNova.disabled = valor;
+    for (const b of conversa.querySelectorAll(".sugestoes button")) b.disabled = valor;
+  }
+
+  async function postar(rota, corpo) {
+    const r = await fetch(rota, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpo),
+    });
+    let dados = {};
+    try { dados = await r.json(); } catch (e) { /* corpo não-JSON */ }
+    if (!r.ok) throw new Error(dados.erro || `Erro ${r.status} no servidor.`);
+    return dados;
+  }
+
+  async function enviar(texto) {
+    texto = (texto || "").trim();
+    if (!texto || ocupado) return;
+    definirOcupado(true);
+    campo.value = "";
+    ajustarAltura();
+    adicionarUsuario(texto);
+    const pensando = adicionarPensando();
+    try {
+      const dados = await postar("/api/perguntar", { sessao, pergunta: texto });
+      preencherResposta(pensando.msg, dados);
+    } catch (erro) {
+      const msg = erro instanceof TypeError
+        ? "Não foi possível falar com o servidor. Ele ainda está rodando (python main_web.py)?"
+        : erro.message;
+      preencherErro(pensando.msg, msg);
+    } finally {
+      pensando.parar();
+      definirOcupado(false);
+      rolarParaFim();
+      campo.focus();
+    }
+  }
+
+  async function novaConversa() {
+    if (ocupado) return;
+    const anterior = sessao;
+    sessao = novoId();
+    gravarSessao(sessao);
+    mostrarBoasVindas();
+    campo.focus();
+    try { await postar("/api/nova-conversa", { sessao: anterior }); } catch (e) { /* sessão antiga só fica órfã */ }
+  }
+
+  function ajustarAltura() {
+    campo.style.height = "auto";
+    campo.style.height = Math.min(campo.scrollHeight, 180) + "px";
+  }
+
+  formulario.addEventListener("submit", (e) => { e.preventDefault(); enviar(campo.value); });
+  campo.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      enviar(campo.value);
+    }
+  });
+  campo.addEventListener("input", ajustarAltura);
+  botaoNova.addEventListener("click", novaConversa);
+
+  mostrarBoasVindas();
+  campo.focus();
+})();
+</script>
+</body>
+</html>

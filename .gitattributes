@@ -1,0 +1,2 @@
+# Arquivos em lote do Windows precisam de CRLF para o cmd executar goto/rótulos.
+*.bat text eol=crlf

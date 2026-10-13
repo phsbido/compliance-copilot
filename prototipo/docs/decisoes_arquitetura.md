@@ -143,6 +143,55 @@ sobre fontes como parte do valor central do sistema, não um extra.
 
 **Adaptação necessária**: nenhuma além da já registrada acima.
 
+### Camada 1 — interface web (2026-10-12)
+
+**Decisão**: segunda interface da Camada 1, ao lado da CLI, sobre o mesmo
+`Orchestrator`: uma janela de chat no navegador
+(`src/layer1_interaction/web.py` + `static/index.html`, ponto de entrada
+`main_web.py`, endereço `http://127.0.0.1:8000`). As respostas aparecem
+formatadas (listas, negrito, links das fontes, avisos da Camada 7 em
+destaque) e, abaixo de cada uma, há um painel recolhível de proveniência
+lido de `orchestrator.ultimo_registro` (Camada 8): classificação da
+Camada 3, desfecho (resposta ou qual recusa), achados da validação da
+Camada 7, fontes, modelo e latência. Um botão "Nova conversa" descarta a
+sessão (e a memória da Camada 6). A CLI continua igual, e os scripts de
+validação e o benchmark não passam por nenhuma das duas interfaces.
+
+Detalhes de implementação, cada um com sua motivação:
+- **Servidor só com a biblioteca padrão** (`http.server.ThreadingHTTPServer`),
+  sem Flask, FastAPI ou Streamlit — a mesma regra do resto do protótipo
+  (nenhuma abstração de terceiros escondendo uma decisão), e nenhuma
+  dependência nova em `requirements.txt`.
+- **Página única sem CDN**: CSS e JS embutidos e um conversor de Markdown
+  mínimo escrito na própria página, que escapa o HTML antes de formatar
+  (o texto do modelo nunca vira marcação). Funciona sem internet, como o
+  Ollama local.
+- **Um `Orchestrator` por sessão do navegador** (id gerado pela página e
+  guardado no `sessionStorage`), pelo mesmo motivo da CLI: a memória da
+  Camada 6 acumula a conversa da sessão. Uma trava por sessão recusa uma
+  segunda pergunta enquanto a primeira não termina, para que duas
+  respostas não escrevam na mesma memória ao mesmo tempo. As sessões vivem
+  só no processo (reiniciar o servidor zera as conversas), coerente com a
+  memória da Camada 6, que também não persiste.
+- **Sem streaming**: `responder()` só devolve o texto depois da validação
+  pós-geração da Camada 7. Mostrar a geração token a token exibiria ao
+  usuário um texto ainda não validado (sem avisos, sem fontes anexadas),
+  o que contraria a posição da Camada 7 no fluxo. O custo é esperar a
+  resposta inteira (cerca de 20 s no caminho normativo), compensado por um
+  indicador de progresso com o tempo decorrido.
+- **Só em 127.0.0.1, sem autenticação**: é uma interface local de
+  demonstração, não um serviço.
+
+**Ambiguidade/lacuna observada**: Maia et al. (2026) descrevem a Camada 1
+como "a" interface, sem dizer se várias interfaces podem conviver sobre a
+mesma orquestração. A separação entre camadas tornou isso trivial: a
+interface web não exigiu nenhuma mudança nas Camadas 2–8, só leu o que a
+Camada 3 já expunha (`responder()` e `ultimo_registro`) — evidência a favor
+do desacoplamento que a arquitetura propõe. A única decisão que cruzou
+camadas foi a do streaming, em que a Camada 7 restringe a Camada 1.
+
+**Adaptação necessária**: nenhuma nas outras camadas.
+
 ---
 
 ## Camada 3 — Orquestração e Fluxo de Trabalho
