@@ -12,7 +12,12 @@ resposta, um destaque é impresso a partir de `orchestrator.ultimo_registro`
 (Camada 8) se a Camada 7 sinalizou algo não verificado. As fontes
 consultadas vêm na própria resposta desde a Camada 7 v2 (antes eram
 impressas aqui).
+
+Falhas (2026-10-20): se o Ollama estiver fora do ar ou der timeout, a CLI
+mostra uma mensagem (como a interface web) e continua o loop com a sessão
+intacta; a falha já foi registrada pela Camada 3/8.
 """
+from src.config import settings
 from src.layer3_orchestration.orchestrator import Orchestrator
 
 COMANDOS_SAIDA = {"sair", "exit", "quit"}
@@ -48,7 +53,15 @@ def main() -> None:
             print("Encerrando.")
             break
 
-        resposta = orchestrator.responder(pergunta)
+        try:
+            resposta = orchestrator.responder(pergunta)
+        except Exception as erro:  # em geral, Ollama fora do ar ou modelo ausente
+            print(
+                f"\nNão foi possível gerar a resposta: o Ollama ({settings.ollama_host}) "
+                f"está rodando e com o modelo {settings.ollama_model} baixado? "
+                f"Detalhe técnico: {erro}\n"
+            )
+            continue
         print(f"\n{resposta}")
         proveniencia = _formatar_proveniencia(orchestrator.ultimo_registro)
         if proveniencia:

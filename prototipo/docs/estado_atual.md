@@ -364,22 +364,33 @@ Resumo para retomar; as fontes primárias são as seções datadas de
 
 A construção original (8 camadas, benchmark, figuras e apêndices) está
 concluída; o que resta é manutenção e endurecimento do protótipo para a rodada
-final. Plano em etapas, aprovado até a Etapa 1; cada etapa seguinte pede
-aprovação do plano antes do código.
+final. Plano em etapas; cada etapa pede aprovação do plano antes do código.
 
-- **Etapa 0 (decisões do autor, pendentes)**: vereditos de
-  `docs/resultados/v7/auditoria_respostas_v7.csv`; modo padrão da
-  recuperação; os 3 casos de `norma_ausente` com premissa vencida (proposta:
-  movê-los para `normativo_corpus` numa bateria v8 pré-registrada e criar 3
-  casos novos de norma ausente); tag `v7.0-monografia`.
+**Decisões do autor (2026-10-20)**: a versão descrita na monografia é a tag
+`v6.0-monografia` (corpus de 3 normas, resultados v5 e v6); o branch
+principal seguiu para a v7. A v7 tem a tag anotada local
+`v7.0-recuperacao` (commit `c357685`, sem push). **Etapas 2 em diante
+pausadas até depois da defesa.** A demonstração da banca roda a partir da
+tag `v6.0-monografia`, numa `git worktree` separada.
+
+- **Etapa 0 (decisões do autor)**: modo padrão da recuperação continua
+  `bm25` (decidido em 2026-10-20). Ficam para depois de 31/10: vereditos de
+  `docs/resultados/v7/auditoria_respostas_v7.csv`; os 3 casos de
+  `norma_ausente` com premissa vencida (proposta: movê-los para
+  `normativo_corpus` numa bateria v8 pré-registrada e criar 3 casos novos de
+  norma ausente); a v8.
 - **Etapa 1 (concluída em 2026-10-20)**: diagrama (`docs/diagrama_arquitetura.md`),
   figura (`scripts/plot_arquitetura.py`), este arquivo e aviso de retrato
   histórico em `analise/`.
 - **Etapa 2**: escopo único (constante `ESCOPO` na Camada 7, usada no
   classificador, na política, na recusa e no banner), com
   `--somente-classificacao` e um grupo `normativo_temas_novos` pré-registrado.
-- **Etapa 3**: cliente Ollama com host e timeout, registro de falha na
-  Camada 8, CLI sem traceback.
+- **Etapa 3 (concluída em 2026-10-20)**: cliente Ollama compartilhado com
+  host e timeout (`OLLAMA_TIMEOUT_S`, vazio = sem timeout), `desfecho="erro"`
+  e campo `erro` na Camada 8, CLI sem traceback; `tests/test_robustez.py`
+  (99 testes no total). Ver `docs/decisoes_arquitetura.md`, Camada 2,
+  "Robustez". O registro do erro grava a classificação como `indefinida`
+  mesmo quando a falha é posterior a ela (ajuste menor, pendente).
 - **Etapa 4**: conversa com vários turnos (orçamento de contexto e `num_ctx`
   explícito, tokens no log, reescrita de pergunta de acompanhamento, nota da
   Camada 7 na memória, bateria de vários turnos).

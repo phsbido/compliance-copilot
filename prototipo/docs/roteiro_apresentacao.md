@@ -153,7 +153,7 @@ exatamente as mesmas tabelas. Mostrar `docs/figuras/`.
 | Problema | O que fazer |
 |---|---|
 | Resposta demora muito | Modelo não estava aquecido; esperar ou rodar `ollama run llama3.1 "oi"` |
-| `connection refused` | `ollama serve` em outro terminal |
+| `connection refused` / "Não foi possível gerar a resposta" | `ollama serve` em outro terminal; na CLI a sessão continua, é só repetir a pergunta |
 | Terminal 2 não mostra nada | Conferir se está na pasta `prototipo` |
 | Ollama não funciona | Pular para as Partes 3 e 4, que não usam o LLM |
 

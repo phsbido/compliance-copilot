@@ -75,12 +75,15 @@ def reiniciar():
 
 
 # Captura a chamada de síntese (opções enviadas e contagens do servidor).
-_chat_original = ollama.chat
+# Instrumenta o método da classe `ollama.Client`, não a função de módulo
+# `ollama.chat`: desde 2026-10-20 a Camada 2 chama um `Client` próprio
+# (ver docs/decisoes_arquitetura.md, Camada 2, "Robustez").
+_chat_original = ollama.Client.chat
 ultima_sintese = {}
 
 
-def chat_instrumentado(*args, **kwargs):
-    resp = _chat_original(*args, **kwargs)
+def chat_instrumentado(self, *args, **kwargs):
+    resp = _chat_original(self, *args, **kwargs)
     msgs = kwargs.get("messages") or []
     if msgs and msgs[0].get("content") == POLITICA_SINTESE:
         ultima_sintese.clear()
@@ -91,7 +94,7 @@ def chat_instrumentado(*args, **kwargs):
     return resp
 
 
-ollama.chat = chat_instrumentado
+ollama.Client.chat = chat_instrumentado
 
 
 def executar(cond, caso_id, rotulo):

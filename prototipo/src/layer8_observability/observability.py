@@ -33,6 +33,11 @@ do(s) índice(s). A Camada 8 pede essa identificação diretamente à Camada 5
 orquestração não muda, ao custo de uma dependência da Camada 8 (transversal)
 para a Camada 5 — trade-off registrado em docs/decisoes_arquitetura.md,
 "Camada 5: embeddings e busca híbrida".
+
+Robustez (2026-10-20): `desfecho="erro"` e o campo `erro` registram a
+interação em que uma etapa falhou (Ollama fora do ar, timeout), para que a
+falha apareça na auditoria; registros antigos, sem `erro`, continuam
+válidos. Ver docs/decisoes_arquitetura.md, Camada 2, "Robustez".
 """
 import json
 import re
@@ -56,10 +61,13 @@ class RegistroInteracao:
     fontes_normativas: list[dict] = field(default_factory=list)
     aviso_citacao_nao_verificada: bool = False
     resposta_final: str = ""
-    desfecho: str = "resposta"  # "resposta" | "recusa_parecer_juridico" | "recusa_fora_de_escopo" | "recusa_sem_base"
+    # "resposta" | "recusa_parecer_juridico" | "recusa_fora_de_escopo" |
+    # "recusa_sem_base" | "erro" (falha de uma etapa; ver `erro`)
+    desfecho: str = "resposta"
     validacao: dict = field(default_factory=dict)
     parametros_llm: dict = field(default_factory=dict)
     recuperacao: dict = field(default_factory=dict)
+    erro: str = ""  # mensagem da exceção quando desfecho == "erro" (2026-10-20)
 
 
 def _extrair_fontes(normativo: str) -> list[dict]:
@@ -86,6 +94,7 @@ def registrar_interacao(
     validacao: dict | None = None,
     desfecho: str = "resposta",
     parametros_llm: dict | None = None,
+    erro: str = "",
 ) -> RegistroInteracao:
     registro = RegistroInteracao(
         timestamp=datetime.now(timezone.utc).isoformat(),
@@ -100,6 +109,7 @@ def registrar_interacao(
         validacao=validacao or {},
         parametros_llm=parametros_llm or {},
         recuperacao=identificacao_recuperacao(),
+        erro=erro,
     )
     destino = arquivo or LOG_FILE
     destino.parent.mkdir(parents=True, exist_ok=True)

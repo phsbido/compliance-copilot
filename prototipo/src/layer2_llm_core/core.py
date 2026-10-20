@@ -13,10 +13,28 @@ a pergunta e para sintetizar a resposta (ver `src/config.py`). Também expõe
 a identificação exata do modelo (nome e ID/digest), que a Camada 8 registra
 em cada interação.
 
+Robustez (2026-10-20): as chamadas passam por `ollama.Client(host=...,
+timeout=...)` criado com as `settings`, e não pela função de módulo
+`ollama.chat`, cujo cliente nasce no `import ollama` e lê OLLAMA_HOST do
+ambiente antes de o .env ser carregado. O cliente é compartilhado no
+processo (um por host e timeout), não por instância de LLMCore: o benchmark
+cria um orquestrador por execução, e uma conexão nova a "localhost" custa
+~2 s no Windows.
+
 Decisões registradas em docs/decisoes_arquitetura.md, Camada 2.
 """
 import ollama
 from src.config import settings
+
+# Clientes do Ollama já criados, por (host, timeout).
+_CLIENTES: dict[tuple, "ollama.Client"] = {}
+
+
+def _cliente() -> "ollama.Client":
+    chave = (settings.ollama_host, settings.ollama_timeout_s)
+    if chave not in _CLIENTES:
+        _CLIENTES[chave] = ollama.Client(host=chave[0], timeout=chave[1])
+    return _CLIENTES[chave]
 
 
 class LLMCore:
@@ -39,7 +57,7 @@ class LLMCore:
         messages.append({"role": "user", "content": prompt})
 
         opcoes = {**(self.options or {}), **(options or {})} or None
-        response = ollama.chat(model=self.model, messages=messages, options=opcoes)
+        response = _cliente().chat(model=self.model, messages=messages, options=opcoes)
         self.ultimo_motivo_parada = response.get("done_reason")
         return response["message"]["content"]
 
@@ -52,7 +70,7 @@ class LLMCore:
             id_modelo = "desconhecido"
             nomes = {self.model, f"{self.model}:latest"}
             try:
-                for m in ollama.list().models:
+                for m in _cliente().list().models:
                     if m.model in nomes:
                         id_modelo = m.digest[:12]
                         break

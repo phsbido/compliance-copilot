@@ -104,6 +104,44 @@ partir do que foi registrado depois e do confronto com o texto da Seção 8
   rationales"). O LLM só classifica a pergunta e sintetiza texto, e o fluxo
   é fixo na Camada 3.
 
+### Robustez: host, timeout e registro de falhas (2026-10-20)
+
+**Decisão**: `LLMCore` passa a chamar o Ollama por `ollama.Client(host=
+settings.ollama_host, timeout=settings.ollama_timeout_s)`, em vez das funções
+de módulo `ollama.chat` e `ollama.list`. O timeout vem de `OLLAMA_TIMEOUT_S`
+(vazio = sem timeout, o comportamento anterior; `.env.example` sugere 300).
+O cliente é criado sob demanda e compartilhado no processo (um por host e
+timeout), não por instância de `LLMCore`.
+
+**Motivação**: (1) o cliente das funções de módulo é criado no `import
+ollama` e lê `OLLAMA_HOST` do ambiente naquele momento; como `core.py`
+importava `ollama` antes de `src.config` (que chama `load_dotenv`), um
+`OLLAMA_HOST` definido só no `.env` era ignorado quando a Camada 2 era o
+primeiro import (caso de `run_check.py`); pela orquestração funcionava por
+acaso da ordem dos imports. A Camada 5 já usava `ollama.Client(host=...)`.
+(2) Sem timeout, um Ollama travado deixava a sessão esperando para sempre.
+(3) O cliente é compartilhado porque o benchmark cria um orquestrador por
+execução e, no Windows, cada conexão nova a "localhost" custa ~2 s (achado da
+v7): um cliente por instância mudaria as latências medidas.
+
+**Efeito nas outras camadas**:
+- Camada 3: `Orchestrator.responder` captura qualquer exceção de uma etapa
+  (LLM ou embeddings fora do ar, timeout), registra a interação na Camada 8 e
+  a relança; a memória não recebe a interação que falhou e `ultimo_registro`
+  aponta para o registro do erro. O registro não consulta o Ollama de novo
+  (usa só a identificação do modelo já em cache).
+- Camada 8: `RegistroInteracao` ganha `erro: str = ""` (registros antigos
+  continuam válidos) e `desfecho` ganha o valor `"erro"`.
+- Camada 1: a CLI captura a exceção, mostra uma mensagem no mesmo espírito da
+  interface web (Ollama no `OLLAMA_HOST` rodando? modelo baixado? mais o
+  detalhe técnico) e continua o loop com a sessão intacta, em vez de
+  terminar com *traceback*.
+
+**O que não muda**: interface pública de `LLMCore` (`generate`,
+`identificacao`, `ultimo_motivo_parada`, `options`), opções de amostragem,
+respostas, classificações e latências em condições normais. Continua sem
+*retries* nem *checkpointing*.
+
 ---
 
 ## Camada 1 — Interação com o Usuário
@@ -1489,6 +1527,12 @@ desvios com motivação registrada que continua válida estão marcados como
 | 6 | Resultados intermediários de ferramentas e rastros de execução no contexto; memória de longo prazo. |
 | 7 | Checagem de permissão, aprovação humana ativa (há só o aviso fixo), checagem de viés, regras de privacidade e controle de acesso. |
 | 8 | Prompt, trechos recuperados (guardados só pelo benchmark), acessos à memória e versão do índice no log de runtime; monitoramento, alertas, métricas de qualidade em operação e *feedback loops*. |
+
+Nota (2026-10-20): a linha da Camada 3 descreve o estado de 2026-10-01. Hoje
+existe registro de falha (`Orchestrator.responder` registra `desfecho="erro"`
+na Camada 8 e relança a exceção) e a CLI mostra uma mensagem e continua a
+sessão; continua sem *retries* nem *checkpointing*. Ver "Robustez: host,
+timeout e registro de falhas", na Camada 2.
 
 ### 4. Confirmações da arquitetura
 

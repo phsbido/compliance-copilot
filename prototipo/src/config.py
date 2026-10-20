@@ -38,6 +38,13 @@ def _limiar_cosseno_do_ambiente() -> float | None:
     return float(valor) if valor else None
 
 
+def _timeout_do_ambiente() -> float | None:
+    """OLLAMA_TIMEOUT_S (2026-10-20): tempo máximo, em segundos, de cada
+    chamada ao Ollama; vazio ou ausente = sem timeout (comportamento anterior)."""
+    valor = os.getenv("OLLAMA_TIMEOUT_S", "").strip()
+    return float(valor) if valor else None
+
+
 def _seed_do_ambiente() -> int | None:
     valor = os.getenv("OLLAMA_SEED", "42").strip()
     return int(valor) if valor else None  # vazio = seed aleatória
@@ -78,6 +85,7 @@ class ParametrosAmostragem:
 class Settings:
     ollama_model: str = os.getenv("OLLAMA_MODEL", "llama3.1")
     ollama_host: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    ollama_timeout_s: float | None = _timeout_do_ambiente()
     amostragem: ParametrosAmostragem = ParametrosAmostragem(
         temperatura_classificacao=float(os.getenv("OLLAMA_TEMPERATURA_CLASSIFICACAO", "0")),
         temperatura_sintese=float(os.getenv("OLLAMA_TEMPERATURA_SINTESE", "0.1")),

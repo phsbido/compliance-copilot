@@ -20,6 +20,9 @@ vir da Camada 7 (`POLITICA_SINTESE`), e uma busca sem nenhum trecho também
 desvia para recusa (`recusar_sem_base`), em vez de deixar o LLM responder
 sem base. Decisões registradas em docs/decisoes_arquitetura.md.
 
+Falhas (2026-10-20): se uma etapa levanta exceção, `responder` a registra na
+Camada 8 (`desfecho="erro"`) e a relança; não há retries nem checkpointing.
+
 Ablação da Camada 7 (v6, Tarefa C; só para avaliação, nunca em uso real):
 `ablacao="c1"` não chama `validar_resposta` (a resposta sai como o LLM a
 gerou, sem avisos, fontes anexadas nem aviso de validação humana);
@@ -94,6 +97,31 @@ class Orchestrator:
         self.ultimo_contexto: str = ""
 
     def responder(self, pergunta: str) -> str:
+        # Falha de qualquer etapa (LLM ou embeddings fora do ar, timeout):
+        # registra na Camada 8 com desfecho "erro" e relança — quem decide a
+        # mensagem ao usuário é a Camada 1. Sem retries nem checkpointing. A
+        # memória só recebe interações que terminaram (ver docs/
+        # decisoes_arquitetura.md, Camada 2, "Robustez").
+        try:
+            return self._responder(pergunta)
+        except Exception as e:
+            self._registrar_erro(pergunta, e)
+            raise
+
+    def _registrar_erro(self, pergunta: str, erro: Exception) -> None:
+        # Não usa _parametros_llm(): identificacao() poderia tentar o Ollama
+        # de novo (bloqueando até o timeout) quando ele já falhou; usa só a
+        # identificação já em cache, se houver.
+        parametros = {**(getattr(self.llm, "_identificacao", None) or {}), **self.amostragem.como_dict()}
+        try:
+            self.ultimo_registro = registrar_interacao(
+                pergunta, "indefinida", "", parametros_llm=parametros,
+                desfecho="erro", erro=f"{type(erro).__name__}: {erro}",
+            )
+        except Exception:  # o registro do erro não pode mascarar o erro original
+            pass
+
+    def _responder(self, pergunta: str) -> str:
         interpretacao = self._interpretar(pergunta)
 
         if interpretacao.tipo in _RECUSAS:
