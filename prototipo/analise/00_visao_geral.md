@@ -1,5 +1,7 @@
 # Visão Geral — Copiloto de Compliance Regulatório (Open Finance / Contas PJ)
 
+> **Retrato histórico (2026-09-23, v1).** Esta análise descreve o código da v1 e não reflete as mudanças da v2 em diante (Gold e BM25, Camada 7 v2, v4 a v7). Para o estado atual, ver `docs/estado_atual.md`.
+
 > **Nota (2026-09-24):** esta pasta `analise/` é um retrato do código em 2026-09-23. Depois dela: o pipeline `ingest_normativos.py` passou a ingerir por URL oficial do BCB (`data/normativos/fontes_url.json`) em vez de PDFs locais (os artefatos `normativoPix*`/`normativoOpenFinance*` viraram `resolucao_bcb_1_2020*`/`instrucao_normativa_bcb_759_2026*`); `_openfinance_limpo.md` foi removido do repositório (papel coberto pela camada silver); o benchmark ganhou o modo determinístico e o dado bruto passou para `docs/resultados/`. Ver `docs/decisoes_arquitetura.md`, seção "Reprodutibilidade". Também em 2026-09-24, a Camada 5 foi refeita (runtime lê a camada Gold com BM25; os `.md` curados saíram de `data/normativos/`): tudo o que esta pasta descreve sobre `knowledge_base.py` refere-se à v1 (tag `v1.0-monografia`). Em 2026-10-02, o benchmark passou à bateria v5 (66 casos, cinco grupos, 3 repetições, métricas de recuperação e de sucesso por caso): o que esta pasta diz sobre "4 cenários x 5 repetições" refere-se às versões v1–v4.1 (ver a nota em `06_testes_config_operacao.md`).
 
 ## O que é, em uma frase

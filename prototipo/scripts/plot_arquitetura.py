@@ -7,8 +7,8 @@ Saída em docs/figuras/: diagrama_arquitetura.png (300 DPI) e
 diagrama_arquitetura.pdf (vetorial, para o LaTeX).
 
 Os números exibidos (modelo, temperaturas, seed, top_k, tamanho da memória,
-parâmetros do BM25, trechos e normas do índice) são lidos do código e dos
-dados, não fixados aqui — a figura acompanha o protótipo se ele mudar.
+k1 e b do BM25, modelo de embeddings, k do RRF, modo de recuperação padrão,
+trechos e normas do índice) são lidos do código e dos dados, não fixados aqui — a figura acompanha o protótipo se ele mudar.
 
 Convenção de cores (a mesma de grafico_latencia_cenarios.png):
   laranja = fluxo normativo; azul tracejado = desvio para recusa;
@@ -30,6 +30,7 @@ sys.path.insert(0, str(RAIZ))
 
 from src.config import settings  # noqa: E402
 from src.layer4_tools.tools import buscar_normativo  # noqa: E402
+from src.layer5_knowledge.knowledge_base import RRF_K  # noqa: E402
 from src.layer6_memory.memory import Memoria  # noqa: E402
 
 GOLD_DIR = RAIZ / "data" / "normativos" / "3_gold_indexed"
@@ -52,8 +53,6 @@ def _num(v: float) -> str:
 
 def coletar_parametros() -> dict:
     indice = json.loads((GOLD_DIR / "indice_bm25.json").read_text(encoding="utf-8"))
-    normas = [json.loads((GOLD_DIR / a).read_text(encoding="utf-8"))["titulo_curto"]
-              for a in indice["arquivos"]]
     amostragem = settings.amostragem
     return {
         "modelo": settings.ollama_model,
@@ -65,7 +64,10 @@ def coletar_parametros() -> dict:
         "k1": _num(indice["k1"]),
         "b": _num(indice["b"]),
         "n_trechos": indice["n_trechos"],
-        "normas": normas,
+        "n_normas": len(indice["arquivos"]),
+        "modelo_embeddings": settings.modelo_embeddings,
+        "rrf_k": RRF_K,
+        "modo": settings.recuperacao_modo,
     }
 
 
@@ -140,16 +142,16 @@ def desenhar(p: dict) -> plt.Figure:
     ax.text(5.25, 60.75, "Usuário", ha="center", va="center", fontsize=10.5,
             fontweight="bold", color=TINTA)
     caixa(ax, 13.5, topo_y, 21.5, topo_h, "Camada 1 · Interação",
-          "layer1_interaction/cli.py\nmain(): laço de linha de\ncomando; exibe resposta,\n"
-          "fontes e avisos")
+          "cli.py: main(), laço de linha de comando\nweb.py: interface web (127.0.0.1)\n"
+          "ambas exibem resposta, fontes e avisos", tam_corpo=8.4)
     caixa(ax, 38, topo_y, 24.5, topo_h, "Camada 2 · Núcleo LLM",
           "layer2_llm_core/core.py\nLLMCore.generate()\n"
           f"Ollama local · {p['modelo']} · seed {p['seed']}\n"
           f"temperatura {p['t_classif']} (classificação),\n{p['t_sintese']} (síntese)")
     caixa(ax, 65.5, topo_y, 34, topo_h, "Camada 8 · Observabilidade e Proveniência",
           "layer8_observability/observability.py\nregistrar_interacao() → logs/interacoes.jsonl\n"
-          "um registro por interação: classificação,\n"
-          "desfecho, fontes, validação, modelo e parâmetros")
+          "um registro por interação: classificação, desfecho,\n"
+          "fontes, validação, modelo e parâmetros, recuperação")
     seta(ax, (10, 61.9), (13.5, 61.9), cor=TINTA_SECUNDARIA)
     seta(ax, (13.5, 59.6), (10, 59.6), cor=TINTA_SECUNDARIA)
 
@@ -197,7 +199,7 @@ def desenhar(p: dict) -> plt.Figure:
     caixa(ax, 58.5, cy, 19.5, ch, "Camada 6 · Memória",
           f"layer6_memory/memory.py\nMemoria: últimas {p['limite_memoria']}\n"
           "interações da sessão,\nem processo (sem disco);\n"
-          "guarda a síntese sem avisos")
+          "guarda a síntese ou a recusa,\nsem avisos")
     caixa(ax, 80, 5.0, 19.5, 28.0, "Camada 7 · Governança",
           "layer7_governance/governance.py\n\n"
           "Recusas com texto fixo:\n  recusar_parecer_juridico()\n  recusar_fora_de_escopo()\n"
@@ -241,19 +243,22 @@ def desenhar(p: dict) -> plt.Figure:
                 linespacing=1.2)
 
     # ---- Linha de baixo: ingestão offline e Camada 5 ---------------------
-    ly, lh = 3.5, 12.0
-    caixa(ax, 37, ly, 41, lh, "Camada 5 · Conhecimento (RAG lexical)",
+    ly, lh = 3.0, 13.0
+    caixa(ax, 37, ly, 41, lh, "Camada 5 · Conhecimento (RAG)",
           "layer5_knowledge/knowledge_base.py · KnowledgeBase.buscar()\n"
-          f"BM25 (k1 = {p['k1']}, b = {p['b']}) sobre a Gold, sem embeddings;\n"
-          f"{p['n_trechos']} trechos de {len(p['normas'])} normas: "
-          + ", ".join(p["normas"][:1]) + ",\n" + ", ".join(p["normas"][1:]), tam_corpo=8.4)
+          f"BM25 (k1 = {p['k1']}, b = {p['b']}) · embeddings ({p['modelo_embeddings']}, cosseno)\n"
+          f"híbrida (RRF, k = {p['rrf_k']}) · modo padrão: {p['modo']}\n"
+          f"{p['n_trechos']} trechos de {p['n_normas']} normas\n"
+          "Temas: Open Finance, contas de depósito e de pagamento,\n"
+          "conformidade, PLD/FT, controles internos, fraudes e\n"
+          "segurança cibernética", tam_corpo=8.4)
     seta(ax, (46.5, cy), (46.5, ly + lh), duas_pontas=True)
     rotulo_livre(ax, 47.3, (cy + ly + lh) / 2, "consulta / trechos")
 
     caixa(ax, 0.5, ly, 34, lh, "Ingestão offline (Camada 5)",
           "layer5_knowledge/ingest_normativos.py", fundo=SUPERFICIE, borda=CINZA, estilo="--")
     etapas = [("BCB", "URL oficial"), ("Bronze", "bruto"), ("Silver", "limpo e\nestruturado"),
-              ("Gold", "trechos +\níndice BM25")]
+              ("Gold", "trechos +\níndices BM25\ne embeddings")]
     ex, ew, eg = 1.5, 6.6, 1.6
     for i, (nome, desc) in enumerate(etapas):
         x = ex + i * (ew + eg)

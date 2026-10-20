@@ -1,5 +1,7 @@
 # `src/layer3_orchestration/orchestrator.py` — Camada 3 (Orquestração e Fluxo de Trabalho)
 
+> **Retrato histórico (2026-09-23, v1).** Esta análise descreve o código da v1 e não reflete as mudanças da v2 em diante (Gold e BM25, Camada 7 v2, v4 a v7). Para o estado atual, ver `docs/estado_atual.md`.
+
 ## Responsabilidade e por que existe separada
 
 **[EVIDÊNCIA]** Docstring (`orchestrator.py:1-19`): coordenar as etapas do

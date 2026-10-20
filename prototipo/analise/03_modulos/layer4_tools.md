@@ -1,5 +1,7 @@
 # `src/layer4_tools/tools.py` — Camada 4 (Integração de Ferramentas e Serviços)
 
+> **Retrato histórico (2026-09-23, v1).** Esta análise descreve o código da v1 e não reflete as mudanças da v2 em diante (Gold e BM25, Camada 7 v2, v4 a v7). Para o estado atual, ver `docs/estado_atual.md`.
+
 ## Responsabilidade e por que existe separada
 
 **[EVIDÊNCIA]** Docstring (`tools.py:1-14`): expor ações externas que o

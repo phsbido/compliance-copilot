@@ -1,5 +1,7 @@
 # `src/layer5_knowledge/` — Camada 5 (Integração de Conhecimento / RAG)
 
+> **Retrato histórico (2026-09-23, v1).** Esta análise descreve o código da v1 e não reflete as mudanças da v2 em diante (Gold e BM25, Camada 7 v2, v4 a v7). Para o estado atual, ver `docs/estado_atual.md`.
+
 Este diretório tem **dois módulos com propósitos muito diferentes** — é
 essencial não confundi-los:
 

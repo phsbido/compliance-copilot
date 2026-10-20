@@ -1,8 +1,9 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-10-20 (v7 — busca por embeddings e híbrida na
-Camada 5; ver seção "v6, corpus ampliado e v7" abaixo). Atualização
-anterior: 2026-10-02 (benchmark v5).
+**Última atualização**: 2026-10-20 (Etapa 1 de manutenção da documentação:
+diagrama, figura, corpus e próximos passos; estado de código da v7 — busca
+por embeddings e híbrida na Camada 5, ver seção "v6, corpus ampliado e v7"
+abaixo). Atualização anterior: 2026-10-02 (benchmark v5).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -50,16 +51,30 @@ atualizado.
 
 ## Corpus atual (Camada 5) — `data/normativos/`
 
-Indexados com texto integral:
-- `resolucao_conjunta_1_2020.md` — Resolução Conjunta nº 1/2020 (marco do Open Finance)
-- `circular_4015_2020.md` — Circular nº 4.015/2020 (escopo de dados e serviços)
+Em runtime (2026-10-20): **17 normas e 440 trechos** na camada Gold
+(`data/normativos/3_gold_indexed/`: um JSON por norma, `indice_bm25.json` e
+`indice_embeddings.json`). A `KnowledgeBase` lê só a Gold; o corpus é montado
+offline por `src/layer5_knowledge/ingest_normativos.py` a partir das URLs
+oficiais do BCB em `data/normativos/fontes_url.json` (Bronze, Silver, Gold).
+Temas: Open Finance (Resolução Conjunta nº 1/2020, Circular nº 4.015/2020,
+Instrução Normativa BCB nº 759/2026), contas de depósito e de pagamento,
+conformidade, PLD/FT, controles internos, fraudes e segurança cibernética
+(as 14 normas de 2026-10-12). A tabela completa, com o texto usado de cada
+uma, está em `data/normativos/README.md`.
+
+A Resolução BCB nº 1/2020 (Pix) passa pelo pipeline, mas fica fora do índice
+de runtime (existe `resolucao_bcb_1_2020.json` na Gold, sem entrada em
+`indice_bm25.json`).
 
 Pendentes (ver `data/normativos/PENDENTES.md`) — ementa/citação confirmadas,
 texto oficial ainda não localizado com segurança:
 - Resolução BCB nº 339/2023 (duplicata escritural) — há uma página oficial
   de referência confirmada (`bcb.gov.br/estabilidadefinanceira/duplicatas-escriturais`),
   mas não o PDF direto.
-- Resolução BCB nº 32/2020 (requisitos técnicos) — nem página nem PDF confirmados.
+- Resolução BCB nº 32/2020 (requisitos técnicos) — nem página nem PDF
+  confirmados. É também a norma ausente do cenário de fronteira do
+  benchmark (`norma_ausente_fronteira`): incluí-la mudaria a premissa desse
+  caso.
 
 ## Principais achados empíricos até agora (ver `docs/evidencias_empiricas.md` para detalhes)
 
@@ -347,18 +362,29 @@ Resumo para retomar; as fontes primárias são as seções datadas de
 
 ## Próximo passo sugerido
 
-Todos os itens da sequência de construção original (README.md) estão
-concluídos: 8 camadas implementadas e ligadas ponta a ponta, 4 casos de
-teste formais documentados em `tests/casos_teste.md`, e agora também um
-benchmark quantitativo de 20 execuções.
+A construção original (8 camadas, benchmark, figuras e apêndices) está
+concluída; o que resta é manutenção e endurecimento do protótipo para a rodada
+final. Plano em etapas, aprovado até a Etapa 1; cada etapa seguinte pede
+aprovação do plano antes do código.
 
-Com o protótipo completo, a evidência quantitativa levantada, os artefatos
-visuais do Capítulo 3 gerados (diagrama + 2 gráficos), e o polimento final
-do repositório (README, Apêndice A, esteira de ingestão documentada), o
-próximo passo de mais alto nível passa a ser de síntese para a monografia,
-não mais de construção: revisar `docs/decisoes_arquitetura.md` e
-`docs/evidencias_empiricas.md` como um todo, junto com
-`docs/tabela_resultados_empiricos.csv`, `docs/diagrama_arquitetura.md`,
-`docs/figuras/` e `docs/apendice_casos_teste.md`, para compilar a análise de
-viabilidade (Capítulo 1, Seção 5, itens d/e), redigir o Capítulo 3 e
-finalizar os apêndices para a banca examinadora.
+- **Etapa 0 (decisões do autor, pendentes)**: vereditos de
+  `docs/resultados/v7/auditoria_respostas_v7.csv`; modo padrão da
+  recuperação; os 3 casos de `norma_ausente` com premissa vencida (proposta:
+  movê-los para `normativo_corpus` numa bateria v8 pré-registrada e criar 3
+  casos novos de norma ausente); tag `v7.0-monografia`.
+- **Etapa 1 (concluída em 2026-10-20)**: diagrama (`docs/diagrama_arquitetura.md`),
+  figura (`scripts/plot_arquitetura.py`), este arquivo e aviso de retrato
+  histórico em `analise/`.
+- **Etapa 2**: escopo único (constante `ESCOPO` na Camada 7, usada no
+  classificador, na política, na recusa e no banner), com
+  `--somente-classificacao` e um grupo `normativo_temas_novos` pré-registrado.
+- **Etapa 3**: cliente Ollama com host e timeout, registro de falha na
+  Camada 8, CLI sem traceback.
+- **Etapa 4**: conversa com vários turnos (orçamento de contexto e `num_ctx`
+  explícito, tokens no log, reescrita de pergunta de acompanhamento, nota da
+  Camada 7 na memória, bateria de vários turnos).
+- **Etapa 5**: recuperação (mais rótulos dev/teste, filtro pela norma citada
+  na pergunta, peso do cabeçalho opcional).
+- **Etapa 6**: metadados estruturados da Camada 4 no log, avisos de URL e
+  citação literal na Camada 7, Host/Origin e limite de sessões na web, CI.
+- **Fechamento**: rodada v8 pré-registrada, tag `v8.0-monografia`.

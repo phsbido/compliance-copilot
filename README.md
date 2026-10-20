@@ -7,6 +7,10 @@ da Arquitetura Conceitual de Maia et al. (2026)"*.
 **Autor**: Pedro Henrique dos Santos Bido
 **Orientadora**: Prof.ª Ana Claudia Rossi
 
+> **Versão da monografia**: a versão descrita na monografia é a tag
+> `v6.0-monografia` (corpus de 3 normas, resultados v5 e v6). O branch
+> principal evoluiu depois: v7 com 17 normas e busca por embeddings.
+
 > Todo o código fica em [`prototipo/`](prototipo/). **Os comandos deste README
 > devem ser executados de dentro dessa pasta** (`cd prototipo`). Para
 > reproduzir os experimentos da monografia, vá direto à
@@ -38,7 +42,8 @@ arquitetura conceitual de "Aplicações LLM-Native" de Maia et al. (2026, Seçã
 Todas as 8 camadas estão implementadas e ligadas ponta a ponta. A base de
 conhecimento (Camada 5) é gerada por um pipeline Bronze/Silver/Gold que
 ingere as normas a partir das URLs oficiais do BCB; o protótipo consulta a
-camada Gold com busca BM25 (ver Seção 6, Passo 4). Além do protótipo, o
+camada Gold, com busca BM25 por padrão (ou por embeddings e híbrida, a partir
+da v7; ver Seção 6, Passos 4 e 5). Além do protótipo, o
 repositório inclui os artefatos de avaliação empírica:
 
 - 4 casos de teste qualitativos: [`tests/casos_teste.md`](prototipo/tests/casos_teste.md)
@@ -51,7 +56,8 @@ repositório inclui os artefatos de avaliação empírica:
 - uma auditoria manual das respostas do benchmark
   ([`docs/auditoria_respostas_v5.csv`](prototipo/docs/auditoria_respostas_v5.csv)),
   que separa segurança (sem citação não verificada) de correção;
-- o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md).
+- o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md)
+  (versão em figura: `docs/figuras/diagrama_arquitetura.png`).
 
 Aspectos multimodais da Camada 1 estão explicitamente fora de escopo (ver
 Capítulo 1, Seção 5 — Metodologia).
@@ -389,8 +395,9 @@ Como cada camada funciona:
   (v7) índice de embeddings `indice_embeddings.json`, com modelo, digest e
   hash do texto de cada trecho. É a única camada lida pelo protótipo.
 
-**Resultado esperado**: 4 normativos em cada camada e um índice BM25 com as
-3 normas de runtime. O BCB publica sempre a versão vigente, então o texto
+**Resultado esperado**: 18 normativos na Silver e na Gold (a tabela acima
+lista só os quatro primeiros; a completa está em `data/normativos/README.md`)
+e um índice BM25 com as 17 normas de runtime (440 trechos). O BCB publica sempre a versão vigente, então o texto
 baixado pode diferir do versionado se alguma norma for alterada depois de
 2026-09-24. A versão usada fica registrada no JSON bruto em `1_bronze_raw/`.
 
@@ -445,6 +452,7 @@ prototipo_esqueleto/
     ├── .env.example                   # Modelo e host do Ollama
     ├── scripts/
     │   ├── plot_benchmark.py          # Gráficos de publicação
+    │   ├── plot_arquitetura.py        # Figura da arquitetura (docs/figuras/diagrama_arquitetura.png)
     │   ├── auditoria_v5.py            # Auditoria manual das respostas (gera docs/auditoria_respostas_v5.csv)
     │   ├── conferencia_vereditos_v5.py # Planilha de conferência dos vereditos pelo autor (sobrescreve as colunas AUTOR_*)
     │   ├── conferencias_pos_v6.py     # Conferências 2 e 3: casos de desenvolvimento e contagem por resposta distinta
@@ -454,7 +462,7 @@ prototipo_esqueleto/
     │   └── acompanhar_log.ps1         # Acompanha o log da Camada 8 em tempo real
     ├── src/
     │   ├── config.py                  # Configuração transversal (.env)
-    │   ├── layer1_interaction/        # Camada 1 — Interação com o Usuário (CLI)
+    │   ├── layer1_interaction/        # Camada 1 — Interação com o Usuário (CLI e interface web)
     │   ├── layer2_llm_core/           # Camada 2 — Núcleo de Raciocínio do LLM
     │   ├── layer3_orchestration/      # Camada 3 — Orquestração e Fluxo de Trabalho
     │   ├── layer4_tools/              # Camada 4 — Integração de Ferramentas e Serviços
@@ -466,7 +474,7 @@ prototipo_esqueleto/
     │   ├── fontes_url.json            # URLs oficiais das normas (entrada da ingestão)
     │   ├── 1_bronze_raw/              # Dado bruto: JSON da página do BCB + PDF consolidado
     │   ├── 2_silver_cleaned/          # Texto vigente limpo, estruturado por artigo/seção
-    │   ├── 3_gold_indexed/            # Trechos prontos para a busca + indice_bm25.json (lido em runtime)
+    │   ├── 3_gold_indexed/            # Trechos prontos para a busca + indice_bm25.json e indice_embeddings.json (lidos em runtime)
     │   ├── README.md                  # Fontes e regra de governança do corpus
     │   └── PENDENTES.md               # Normas aprovadas ainda sem texto verificado
     ├── tests/
@@ -479,7 +487,7 @@ prototipo_esqueleto/
     │   ├── decisoes_arquitetura.md    # Evidência primária da avaliação de viabilidade
     │   ├── evidencias_empiricas.md    # Log de observações empíricas
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
-    │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid)
+    │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid), estado da v7
     │   ├── apendice_casos_teste.md    # Apêndice A da monografia
     │   ├── roteiro_apresentacao.md    # Roteiro de demonstração para a banca
     │   ├── tabela_resultados_empiricos[_sensibilidade].csv     # Benchmark v5, por caso
@@ -495,7 +503,7 @@ prototipo_esqueleto/
     │   │   ├── v3/                    # Dado bruto e tabelas da v3 (tag v3.0-monografia)
     │   │   ├── v2/                    # Dado bruto e tabelas da v2 (tag v2.0-monografia)
     │   │   └── v1/                    # Dado bruto e tabelas da v1 (tag v1.0-monografia)
-    │   └── figuras/                   # Gráficos gerados por scripts/plot_benchmark.py
+    │   └── figuras/                   # Gráficos (scripts/plot_benchmark.py) e figura da arquitetura (scripts/plot_arquitetura.py)
     ├── analise/                       # Leitura técnica do código (retrato de 2026-09-23)
     └── logs/                          # Gerado em runtime (git-ignorado)
         └── interacoes.jsonl           # Proveniência (Camada 8), uma linha por interação
