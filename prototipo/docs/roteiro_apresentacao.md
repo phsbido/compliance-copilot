@@ -7,7 +7,7 @@ Duração: ~12 min. Dois terminais lado a lado (VS Code: `Ctrl+Shift+5`).
 Terminal 1:
 
 ```
-cd C:\Users\pedro\Documents\Monografia\claude\prototipo_esqueleto\prototipo
+cd <pasta do projeto>\prototipo
 venv\Scripts\activate
 ollama run llama3.1 "oi"
 ```
@@ -15,7 +15,7 @@ ollama run llama3.1 "oi"
 Terminal 2:
 
 ```
-cd C:\Users\pedro\Documents\Monografia\claude\prototipo_esqueleto\prototipo
+cd <pasta do projeto>\prototipo
 powershell -ExecutionPolicy Bypass -File scripts\acompanhar_log.ps1
 ```
 

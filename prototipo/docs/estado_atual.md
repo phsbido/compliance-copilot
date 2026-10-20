@@ -44,7 +44,7 @@ python run_check_observability.py  # Camada 8
 
 Nota de ambiente: neste ambiente Windows, `python` só resolve corretamente
 dentro do venv do projeto (`venv\Scripts\activate`) ou usando o caminho
-completo `C:\Users\pedro\AppData\Local\Programs\Python\Python314\python.exe`
+completo `%LOCALAPPDATA%\Programs\Python\Python314\python.exe`
 — sessões de shell abertas antes da instalação do Python não pegam o PATH
 atualizado.
 
