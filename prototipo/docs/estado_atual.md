@@ -1,8 +1,8 @@
 # Estado Atual do Protótipo (para retomar em outra sessão)
 
-**Última atualização**: 2026-10-02 (benchmark v5 — bateria ampliada para 66
-casos, métricas de recuperação e auditoria manual das respostas; ver seção
-"Benchmark v5" abaixo).
+**Última atualização**: 2026-10-20 (v7 — busca por embeddings e híbrida na
+Camada 5; ver seção "v6, corpus ampliado e v7" abaixo). Atualização
+anterior: 2026-10-02 (benchmark v5).
 
 Este documento é um resumo de handoff — para o histórico completo de
 decisões e evidências, ver `docs/decisoes_arquitetura.md` e
@@ -315,6 +315,35 @@ ao fim da sessão.
   (o gargalo de correção é a recuperação); (3) eventuais ajustes da Camada
   7 para os falsos positivos de "citar para negar", medidos com
   `--revalidar`. Cada um com plano antes do código.
+
+## v6, corpus ampliado e v7 (2026-10-02 a 2026-10-20)
+
+Resumo para retomar; as fontes primárias são as seções datadas de
+`docs/decisoes_arquitetura.md` e `docs/evidencias_empiricas.md`.
+
+- **v6** (2026-10-02, tag `v6.0-monografia`): limiar BM25 (Tarefa A,
+  desligado por padrão) e ablação da Camada 7 (Tarefa C). Resultados em
+  `docs/resultados/v6/`, `ablacao_c1/`, `ablacao_c2/` e
+  `docs/relatorio_v6.md`. Conferências pós-v6 em 2026-10-05.
+- **Interface web** da Camada 1 (2026-10-12, `main_web.py`).
+- **Corpus ampliado** (2026-10-12): 17 normativos e 440 trechos no
+  runtime (antes 3 e 141). O último commit com o corpus de 3 normas é
+  `7ad089e`. Três casos de `norma_ausente` perderam a premissa; os rótulos
+  foram mantidos por decisão do usuário.
+- **v7** (2026-10-20): modos de recuperação `bm25` (padrão), `embeddings`
+  (`bge-m3` no Ollama, na CPU) e `hybrid` (RRF, k = 60), por
+  `RECUPERACAO_MODO`. Índice `indice_embeddings.json` na Gold, validado
+  por hash e digest. A Camada 8 registra o campo `recuperacao`.
+  Pré-registro no commit `1412787`. Resultados em `docs/resultados/v7/`
+  (produção, sensibilidade e `host_127/`). Acerto@3 normativo: 0,795 /
+  0,821 / 0,872, sem diferença distinguível de ruído (McNemar). O limiar
+  de cosseno não se transfere para a bateria (recusaria 20,5% das
+  normativas) e fica desligado.
+- Achado operacional da v7: no Windows, `localhost` custa ~2 s por conexão
+  nova ao Ollama. Ver `evidencias_empiricas.md`, v7, "Custos".
+- **Pendências do usuário**: vereditos de `docs/resultados/v7/auditoria_respostas_v7.csv`;
+  escolha do modo padrão; revisão dos casos de premissa vencida; commit e
+  tag da v7.
 
 ## Próximo passo sugerido
 

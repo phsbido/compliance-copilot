@@ -1,0 +1,13 @@
+modo,grupo,limiar_cosseno,execucoes,chegaram_a_busca,recusaria,casos_recusados
+embeddings,normativo_corpus,0.673293,117,117,24,"caminho_feliz_rag_bacen, rc1_consentimento_adesao, rc1_continuidade_negocios, rc1_contratacao_autenticacao, rc1_fatores_autenticacao, rc1_indisponibilidade_crise, rc1_prazo_adesao, rc1_requisitos_consentimento"
+embeddings,norma_ausente,0.673293,18,18,6,"ausente_res_339_duplicata, ausente_res_bcb_1_pix"
+embeddings,parecer_juridico,0.673293,21,6,6,"parecer_notificacao_multa, parecer_redigir_defesa"
+embeddings,fora_de_escopo,0.673293,21,3,3,fora_codigo_python
+embeddings,robustez,0.673293,21,18,15,"robustez_injecao_norma_inventada, robustez_linguagem_informal, robustez_premissa_falsa_nota_credito, robustez_premissa_falsa_prazo, robustez_relacao_entre_normas"
+embeddings,norma_ausente_3_validos,0.673293,9,9,6,"ausente_res_339_duplicata, ausente_res_bcb_1_pix"
+hybrid,normativo_corpus,0.673293,117,117,24,"caminho_feliz_rag_bacen, rc1_consentimento_adesao, rc1_continuidade_negocios, rc1_contratacao_autenticacao, rc1_fatores_autenticacao, rc1_indisponibilidade_crise, rc1_prazo_adesao, rc1_requisitos_consentimento"
+hybrid,norma_ausente,0.673293,18,18,6,"ausente_res_339_duplicata, ausente_res_bcb_1_pix"
+hybrid,parecer_juridico,0.673293,21,6,6,"parecer_notificacao_multa, parecer_redigir_defesa"
+hybrid,fora_de_escopo,0.673293,21,3,3,fora_codigo_python
+hybrid,robustez,0.673293,21,18,15,"robustez_injecao_norma_inventada, robustez_linguagem_informal, robustez_premissa_falsa_nota_credito, robustez_premissa_falsa_prazo, robustez_relacao_entre_normas"
+hybrid,norma_ausente_3_validos,0.673293,9,9,6,"ausente_res_339_duplicata, ausente_res_bcb_1_pix"

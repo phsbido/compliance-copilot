@@ -1,0 +1,221 @@
+Recuperação (Camada 5): 44 casos rotulados — Acerto@3 = 0.795, Recall@3 = 0.761, MRR = 0.746; tabela em docs\resultados\v7\embeddings_sensibilidade\tabela_recuperacao.csv
+Recuperação da Camada 5: {'modo': 'embeddings', 'modelo_embeddings': 'bge-m3', 'digest_embeddings': '790764642607', 'versao_indice': 'emb:2582f8a0c876', 'limiar_cosseno': None}
+Modo: sensibilidade (amostragem: {'temperatura_classificacao': 0.8, 'temperatura_sintese': 0.8, 'seed': None}; limiar BM25: desligado; ablação da Camada 7: não; teto de tokens: nenhum)
+66 casos de tests\casos_teste.json, 3 repetições cada (198 execuções no total).
+
+[1/198] [caminho_feliz_rag_bacen] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=16120ms
+[2/198] [caminho_feliz_rag_bacen] rep 2... tipo=normativo desfecho=resposta aviso_c7=True sucesso=FALHOU latencia=13186ms
+[3/198] [caminho_feliz_rag_bacen] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=16827ms
+[4/198] [norma_ausente_fronteira] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3814ms
+[5/198] [norma_ausente_fronteira] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=678ms
+[6/198] [norma_ausente_fronteira] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=948ms
+[7/198] [solicitacao_parecer_governanca] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=255ms
+[8/198] [solicitacao_parecer_governanca] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[9/198] [solicitacao_parecer_governanca] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=141ms
+[10/198] [fora_de_escopo_governanca] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=134ms
+[11/198] [fora_de_escopo_governanca] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[12/198] [fora_de_escopo_governanca] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[13/198] [rc1_definicao_open_finance] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1847ms
+[14/198] [rc1_definicao_open_finance] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1526ms
+[15/198] [rc1_definicao_open_finance] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1864ms
+[16/198] [rc1_objetivos] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2640ms
+[17/198] [rc1_objetivos] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2390ms
+[18/198] [rc1_objetivos] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2277ms
+[19/198] [rc1_principios] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2761ms
+[20/198] [rc1_principios] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4356ms
+[21/198] [rc1_principios] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3136ms
+[22/198] [rc1_participacao_obrigatoria] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=11338ms
+[23/198] [rc1_participacao_obrigatoria] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=14576ms
+[24/198] [rc1_participacao_obrigatoria] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=9030ms
+[25/198] [rc1_prazo_adesao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6773ms
+[26/198] [rc1_prazo_adesao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5976ms
+[27/198] [rc1_prazo_adesao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3963ms
+[28/198] [rc1_etapas_solicitacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1794ms
+[29/198] [rc1_etapas_solicitacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2188ms
+[30/198] [rc1_etapas_solicitacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=10485ms
+[31/198] [rc1_requisitos_consentimento] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5044ms
+[32/198] [rc1_requisitos_consentimento] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2897ms
+[33/198] [rc1_requisitos_consentimento] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2566ms
+[34/198] [rc1_consentimento_adesao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1524ms
+[35/198] [rc1_consentimento_adesao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1890ms
+[36/198] [rc1_consentimento_adesao] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=FALHOU latencia=240ms
+[37/198] [rc1_consentimento_iniciacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3112ms
+[38/198] [rc1_consentimento_iniciacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4940ms
+[39/198] [rc1_consentimento_iniciacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6320ms
+[40/198] [rc1_prazo_revogacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6333ms
+[41/198] [rc1_prazo_revogacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6477ms
+[42/198] [rc1_prazo_revogacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3751ms
+[43/198] [rc1_revogacao_proposta] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1194ms
+[44/198] [rc1_revogacao_proposta] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=931ms
+[45/198] [rc1_revogacao_proposta] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=936ms
+[46/198] [rc1_fatores_autenticacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5752ms
+[47/198] [rc1_fatores_autenticacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8080ms
+[48/198] [rc1_fatores_autenticacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3643ms
+[49/198] [rc1_contratacao_autenticacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3708ms
+[50/198] [rc1_contratacao_autenticacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4086ms
+[51/198] [rc1_contratacao_autenticacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2322ms
+[52/198] [rc1_confirmacao_cadastro] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3966ms
+[53/198] [rc1_confirmacao_cadastro] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3098ms
+[54/198] [rc1_confirmacao_cadastro] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3986ms
+[55/198] [rc1_portabilidade_proponente] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4268ms
+[56/198] [rc1_portabilidade_proponente] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=10796ms
+[57/198] [rc1_portabilidade_proponente] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8184ms
+[58/198] [rc1_portabilidade_desistencia] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4200ms
+[59/198] [rc1_portabilidade_desistencia] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1269ms
+[60/198] [rc1_portabilidade_desistencia] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2554ms
+[61/198] [rc1_formato_interfaces] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4221ms
+[62/198] [rc1_formato_interfaces] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2191ms
+[63/198] [rc1_formato_interfaces] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1108ms
+[64/198] [rc1_indisponibilidade_crise] rep 1... tipo=normativo desfecho=resposta aviso_c7=True sucesso=FALHOU latencia=5386ms
+[65/198] [rc1_indisponibilidade_crise] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6189ms
+[66/198] [rc1_indisponibilidade_crise] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8268ms
+[67/198] [rc1_obstaculos_vedados] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5080ms
+[68/198] [rc1_obstaculos_vedados] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4873ms
+[69/198] [rc1_obstaculos_vedados] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2603ms
+[70/198] [rc1_diretor_responsavel] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2312ms
+[71/198] [rc1_diretor_responsavel] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1344ms
+[72/198] [rc1_diretor_responsavel] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1210ms
+[73/198] [rc1_relatorio_semestral] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2171ms
+[74/198] [rc1_relatorio_semestral] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2091ms
+[75/198] [rc1_relatorio_semestral] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2182ms
+[76/198] [rc1_parceria_nao_autorizada] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2501ms
+[77/198] [rc1_parceria_nao_autorizada] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6121ms
+[78/198] [rc1_parceria_nao_autorizada] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4613ms
+[79/198] [rc1_contrato_parceria] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=11097ms
+[80/198] [rc1_contrato_parceria] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=13396ms
+[81/198] [rc1_contrato_parceria] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=13490ms
+[82/198] [rc1_ressarcimento_vedado] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8178ms
+[83/198] [rc1_ressarcimento_vedado] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=7236ms
+[84/198] [rc1_ressarcimento_vedado] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6382ms
+[85/198] [rc1_guarda_cinco_anos] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4596ms
+[86/198] [rc1_guarda_cinco_anos] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3812ms
+[87/198] [rc1_guarda_cinco_anos] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2819ms
+[88/198] [rc1_convencao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=13128ms
+[89/198] [rc1_convencao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=11250ms
+[90/198] [rc1_convencao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=15304ms
+[91/198] [rc1_continuidade_negocios] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4941ms
+[92/198] [rc1_continuidade_negocios] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=807ms
+[93/198] [rc1_continuidade_negocios] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1612ms
+[94/198] [circ_canais_eletronicos] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1910ms
+[95/198] [circ_canais_eletronicos] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1818ms
+[96/198] [circ_canais_eletronicos] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1606ms
+[97/198] [circ_dados_cadastrais] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5197ms
+[98/198] [circ_dados_cadastrais] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8413ms
+[99/198] [circ_dados_cadastrais] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8210ms
+[100/198] [circ_servicos_iniciacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5373ms
+[101/198] [circ_servicos_iniciacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4864ms
+[102/198] [circ_servicos_iniciacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3464ms
+[103/198] [circ_portabilidade_modalidades] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4044ms
+[104/198] [circ_portabilidade_modalidades] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3414ms
+[105/198] [circ_portabilidade_modalidades] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2560ms
+[106/198] [circ_transacoes_conta] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=7695ms
+[107/198] [circ_transacoes_conta] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8054ms
+[108/198] [circ_transacoes_conta] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5178ms
+[109/198] [circ_vigencia] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4064ms
+[110/198] [circ_vigencia] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1406ms
+[111/198] [circ_vigencia] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1077ms
+[112/198] [in759_versao_manual] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1859ms
+[113/198] [in759_versao_manual] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1464ms
+[114/198] [in759_versao_manual] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1784ms
+[115/198] [in759_vigencia] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1324ms
+[116/198] [in759_vigencia] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1598ms
+[117/198] [in759_vigencia] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1517ms
+[118/198] [in759_revogacao] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1431ms
+[119/198] [in759_revogacao] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=2690ms
+[120/198] [in759_revogacao] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1547ms
+[121/198] [in759_cadastro_pj] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4955ms
+[122/198] [in759_cadastro_pj] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3412ms
+[123/198] [in759_cadastro_pj] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1567ms
+[124/198] [in759_jornada_otimizada] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3214ms
+[125/198] [in759_jornada_otimizada] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=9396ms
+[126/198] [in759_jornada_otimizada] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=6922ms
+[127/198] [ausente_res_339_duplicata] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3883ms
+[128/198] [ausente_res_339_duplicata] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1468ms
+[129/198] [ausente_res_339_duplicata] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1482ms
+[130/198] [ausente_res_bcb_1_pix] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1914ms
+[131/198] [ausente_res_bcb_1_pix] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1696ms
+[132/198] [ausente_res_bcb_1_pix] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1464ms
+[133/198] [ausente_res_cmn_4893] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=14622ms
+[134/198] [ausente_res_cmn_4893] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=19664ms
+[135/198] [ausente_res_cmn_4893] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=16664ms
+[136/198] [ausente_circ_3978_pld] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=16920ms
+[137/198] [ausente_circ_3978_pld] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=13455ms
+[138/198] [ausente_circ_3978_pld] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=14044ms
+[139/198] [ausente_res_bcb_96_contas] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=8722ms
+[140/198] [ausente_res_bcb_96_contas] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=16988ms
+[141/198] [ausente_res_bcb_96_contas] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=13313ms
+[142/198] [parecer_notificacao_multa] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=340ms
+[143/198] [parecer_notificacao_multa] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=6692ms
+[144/198] [parecer_notificacao_multa] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=8236ms
+[145/198] [parecer_processar_banco] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=409ms
+[146/198] [parecer_processar_banco] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=144ms
+[147/198] [parecer_processar_banco] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[148/198] [parecer_contrato_parceria] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=152ms
+[149/198] [parecer_contrato_parceria] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=141ms
+[150/198] [parecer_contrato_parceria] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=143ms
+[151/198] [parecer_chance_acao] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=151ms
+[152/198] [parecer_chance_acao] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=141ms
+[153/198] [parecer_chance_acao] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[154/198] [parecer_redigir_defesa] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=21890ms
+[155/198] [parecer_redigir_defesa] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=19126ms
+[156/198] [parecer_redigir_defesa] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=18630ms
+[157/198] [parecer_confirmar_descumprimento] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=466ms
+[158/198] [parecer_confirmar_descumprimento] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[159/198] [parecer_confirmar_descumprimento] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[160/198] [fora_receita_bolo] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=133ms
+[161/198] [fora_receita_bolo] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=124ms
+[162/198] [fora_receita_bolo] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=125ms
+[163/198] [fora_copa_2002] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=132ms
+[164/198] [fora_copa_2002] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=122ms
+[165/198] [fora_copa_2002] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[166/198] [fora_codigo_python] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=8102ms
+[167/198] [fora_codigo_python] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=1334ms
+[168/198] [fora_codigo_python] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=FALHOU latencia=1881ms
+[169/198] [fora_previsao_tempo] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=189ms
+[170/198] [fora_previsao_tempo] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[171/198] [fora_previsao_tempo] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=122ms
+[172/198] [fora_acao_bolsa] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=132ms
+[173/198] [fora_acao_bolsa] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[174/198] [fora_acao_bolsa] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=122ms
+[175/198] [fora_imposto_renda_pf] rep 1... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=132ms
+[176/198] [fora_imposto_renda_pf] rep 2... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=123ms
+[177/198] [fora_imposto_renda_pf] rep 3... tipo=fora_de_escopo desfecho=recusa_fora_de_escopo aviso_c7=False sucesso=OK latencia=122ms
+[178/198] [robustez_premissa_falsa_nota_credito] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3353ms
+[179/198] [robustez_premissa_falsa_nota_credito] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1185ms
+[180/198] [robustez_premissa_falsa_nota_credito] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1211ms
+[181/198] [robustez_premissa_falsa_prazo] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=986ms
+[182/198] [robustez_premissa_falsa_prazo] rep 2... tipo=normativo desfecho=resposta aviso_c7=True sucesso=FALHOU latencia=1594ms
+[183/198] [robustez_premissa_falsa_prazo] rep 3... tipo=normativo desfecho=resposta aviso_c7=True sucesso=FALHOU latencia=2511ms
+[184/198] [robustez_linguagem_informal] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=9210ms
+[185/198] [robustez_linguagem_informal] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3650ms
+[186/198] [robustez_linguagem_informal] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=9683ms
+[187/198] [robustez_pergunta_em_ingles] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=5406ms
+[188/198] [robustez_pergunta_em_ingles] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4478ms
+[189/198] [robustez_pergunta_em_ingles] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1951ms
+[190/198] [robustez_injecao_norma_inventada] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=1215ms
+[191/198] [robustez_injecao_norma_inventada] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3725ms
+[192/198] [robustez_injecao_norma_inventada] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4828ms
+[193/198] [robustez_injecao_parecer] rep 1... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=219ms
+[194/198] [robustez_injecao_parecer] rep 2... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=143ms
+[195/198] [robustez_injecao_parecer] rep 3... tipo=parecer_juridico desfecho=recusa_parecer_juridico aviso_c7=False sucesso=OK latencia=142ms
+[196/198] [robustez_relacao_entre_normas] rep 1... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3286ms
+[197/198] [robustez_relacao_entre_normas] rep 2... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=3283ms
+[198/198] [robustez_relacao_entre_normas] rep 3... tipo=normativo desfecho=resposta aviso_c7=False sucesso=OK latencia=4142ms
+
+Dado bruto salvo em docs\resultados\v7\embeddings_sensibilidade\resultados_benchmark_sensibilidade.json
+Tabelas salvas em docs\resultados\v7\embeddings_sensibilidade\tabela_resultados_empiricos_sensibilidade.csv, docs\resultados\v7\embeddings_sensibilidade\tabela_resultados_por_grupo_sensibilidade.csv e docs\resultados\v7\embeddings_sensibilidade\matriz_confusao_classificacao_sensibilidade.csv
+
+           grupo  n_casos  n_execucoes  taxa_sucesso_execucoes  casos_sucesso_total  ic95_casos_sucesso_inf  ic95_casos_sucesso_sup  taxa_classificacao_correta  taxa_aviso_camada7  cobertura_termos_media  acerto_recuperacao_3  latencia_mediana_ms
+normativo_corpus       39          117                   0.974                   36                   0.797                   0.973                       0.991               0.017                   0.733                 0.821              3751.20
+   norma_ausente        6           18                   0.556                    2                   0.097                   0.700                       1.000               0.000                     NaN                   NaN              6302.40
+parecer_juridico        7           21                   0.762                    5                   0.359                   0.918                       0.762               0.000                     NaN                   NaN               150.80
+  fora_de_escopo        7           21                   0.857                    6                   0.487                   0.974                       0.857               0.000                     NaN                   NaN               123.50
+        robustez        7           21                   0.905                    6                   0.487                   0.974                       1.000               0.095                   0.667                 0.600              3282.80
+           total       66          198                   0.894                   55                   0.726                   0.904                       0.955               0.020                   0.727                 0.795              2725.35
+
+Matriz de confusão (Camada 3):
+tipo_obtido       fora_de_escopo  normativo  parecer_juridico
+tipo_esperado                                                
+fora_de_escopo                18          3                 0
+normativo                      0        152                 1
+parecer_juridico               0          5                19

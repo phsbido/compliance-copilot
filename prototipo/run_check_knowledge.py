@@ -1,9 +1,10 @@
 """
 Script de validação — Camada 5 (Conhecimento/RAG).
 
-Carrega a camada Gold (data/normativos/3_gold_indexed/) e testa a busca BM25
-com uma pergunta de teste, exibindo os trechos mais relevantes e suas fontes.
-Não usa o LLM.
+Carrega a camada Gold (data/normativos/3_gold_indexed/) e testa a busca —
+BM25 por padrão; embeddings ou híbrida com RECUPERACAO_MODO (v7) — com uma
+pergunta de teste, exibindo os trechos mais relevantes e suas fontes. Não
+usa o LLM (nos modos com embeddings, usa o modelo de embeddings do Ollama).
 
 Uso:
     python run_check_knowledge.py
@@ -16,7 +17,9 @@ if __name__ == "__main__":
 
     kb = KnowledgeBase()
     print(f"{len(kb.documentos)} trechos indexados de "
-          f"{len({d.titulo for d in kb.documentos})} normativo(s).\n")
+          f"{len({d.titulo for d in kb.documentos})} normativo(s).")
+    # v7: o que a Camada 8 registra em cada interação.
+    print(f"Recuperação: {kb.identificacao()}\n")
 
     pergunta = "Quais instituições devem participar do Open Finance de forma obrigatória?"
     print(f"Pergunta de teste: {pergunta}\n")

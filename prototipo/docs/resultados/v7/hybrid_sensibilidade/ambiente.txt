@@ -1,0 +1,29 @@
+recuperacao: hybrid
+modo: sensibilidade
+inicio: 2026-10-20T02:52:45-03:00
+fim: 2026-10-20T03:23:56-03:00
+retorno: 0
+
+$ ollama --version
+ollama version is 0.33.2
+
+$ ollama ps
+NAME               ID              SIZE      PROCESSOR    CONTEXT    UNTIL              
+bge-m3:latest      790764642607    1.2 GB    100% CPU     4096       4 minutes from now    
+llama3.1:latest    46e0c10c039e    5.3 GB    100% GPU     4096       4 minutes from now    
+
+$ nvidia-smi
+Tue Oct 20 03:23:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 610.88                 KMD Version: 610.88        CUDA UMD Version: 13.3     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4060 Ti   WDDM  |   00000000:07:00.0 Off |                  N/A |
+| 63%   54C    P2            108W /  160W |    6570MiB /   8188MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
+(tabela de processos do nvidia-smi removida antes da publicação)

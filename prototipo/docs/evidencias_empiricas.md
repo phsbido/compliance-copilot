@@ -1343,3 +1343,243 @@ atribuída ao estado do cache.
 - A conferência 3 dá uma forma de reportar a auditoria que não depende da
   reprodutibilidade das repetições: a contagem por execução, com a
   contagem por resposta distinta ao lado.
+
+## 2026-10-20 — v7: busca por embeddings e híbrida na Camada 5
+
+**Pergunta**: a busca por embeddings resolve o tipo de falha de
+recuperação que dominou a v5, a pergunta que usa outras palavras para o
+termo que a norma define? Decisão, alternativas e critérios
+pré-registrados em `docs/decisoes_arquitetura.md`, "Camada 5: embeddings e
+busca híbrida" (commit `1412787`, anterior a qualquer cálculo de cosseno).
+
+**Ambiente**: Ollama 0.33.2, `llama3.1` (`46e0c10c039e`, 100% GPU,
+contexto 4.096), `bge-m3` (`790764642607`, 100% CPU, porque na GPU de 8 GB
+não cabe junto com o llama3.1), seed 42, 66 casos × 3 repetições por modo.
+O servidor foi reiniciado antes de cada rodada (`scripts/rodar_v7.py`).
+Corpus de runtime: 17 normativos, 440 trechos, o mesmo nos três modos. A
+saída de `ollama ps` e o resumo do `nvidia-smi` (sem a tabela de
+processos da máquina), com hora de início e fim, estão em
+`docs/resultados/v7/<modo>/ambiente.txt`.
+
+**A linha de base é o bm25 da v7, não a v5**: o corpus passou de 3 para 17
+normativos em 2026-10-12, e o IDF de cada termo mudou com ele.
+
+### Resultado por modo (produção)
+
+| Grupo | Métrica | bm25 | embeddings | hybrid |
+|---|---|---|---|---|
+| normativo_corpus (39) | Acerto@3 | 0,795 | 0,821 | **0,872** |
+| | Recall@3 | 0,765 | 0,782 | **0,821** |
+| | MRR | 0,688 | 0,782 | **0,799** |
+| | sucesso (execuções) | 0,974 | **1,000** | 0,966 |
+| | casos com sucesso total | 38 | **39** | 37 |
+| norma_ausente (6) | sucesso (execuções) | 0,500 | 0,556 | 0,667 |
+| norma_ausente, só os 3 válidos | sucesso (execuções) | 1,000 | 1,000 | 1,000 |
+| parecer_juridico (7) | sucesso (execuções) | 0,714 | 0,714 | 0,714 |
+| fora_de_escopo (7) | sucesso (execuções) | 0,857 | 0,857 | 0,857 |
+| robustez (7; 5 rotulados) | Acerto@3 | 0,200 | 0,600 | 0,600 |
+| | sucesso (execuções) | 1,000 | 1,000 | 0,952 |
+| total (66; 44 rotulados) | Acerto@3 | 0,727 | 0,795 | **0,841** |
+| | Recall@3 | 0,701 | 0,761 | **0,795** |
+| | MRR | 0,633 | **0,746** | 0,735 |
+| | sucesso (execuções) | 0,894 | **0,914** | 0,899 |
+| | casos com sucesso total | 59 | **60** | 58 |
+
+Fonte: `docs/resultados/v7/comparacao_modos.csv`, com IC de Wilson e
+latências. Parecer e fora de escopo não mudam: a recusa decide antes da
+busca, e as falhas são erros de classificação da Camada 3, iguais nos três
+modos (`parecer_notificacao_multa`, `parecer_redigir_defesa`,
+`fora_codigo_python`). No grupo `norma_ausente`, a diferença entre os modos
+está toda nos 3 casos de premissa vencida. Neles, "sucesso" é declarar
+ausente uma norma que está no corpus, o que não é desejável. Esses números
+não devem ser lidos como melhora.
+
+**Modo sensibilidade** (temperatura 0,8, seed aleatória;
+`comparacao_modos_sensibilidade.csv`): a recuperação é a mesma, porque é
+determinística. Casos com sucesso total: 55 (bm25), 55 (embeddings) e 51
+(hybrid). Anomalia: no hybrid, uma classificação de
+`parecer_redigir_defesa` (repetição 3) gerou por 13 min 51 s, sem teto de
+tokens, e caiu no fallback "normativo". É o mesmo comportamento da
+amostragem alta visto na v6, sem relação com a recuperação. Ele infla a
+latência média dessa rodada.
+
+### Teste pareado (McNemar exato, Acerto@3 por caso, 39 normativos)
+
+| Comparação | Só o 1º acerta | Só o 2º acerta | p exato | p (Holm) |
+|---|---|---|---|---|
+| bm25 × embeddings | 2 | 3 | 1,000 | 1,00 |
+| bm25 × hybrid | 0 | 3 | 0,250 | 0,75 |
+| embeddings × hybrid | 1 | 3 | 0,625 | 1,00 |
+
+**Nenhuma diferença é distinguível de ruído com n = 39.** O limite não é o
+número de casos, é o de pares discordantes: com 3 a 5 casos que mudam,
+nenhum resultado alcança p < 0,05. Mesmo com todos para o mesmo lado,
+seriam precisos ≥ 6 discordantes (2/2⁶ = 0,031), ou ≥ 7 com a correção de
+Holm para três comparações. O que se pode dizer é descritivo: o hybrid não
+perdeu nenhum caso normativo que o bm25 acertava (0 contra 3).
+
+### Casos normativos cujo Acerto@3 mudou (`casos_mudaram_recuperacao.csv`)
+
+| Caso | Rótulo | bm25 | embeddings | hybrid |
+|---|---|---|---|---|
+| `rc1_definicao_open_finance` | RC 1, art. 2º | ✗ arts. 7º, IN 759 art. 1º, art. 1º | **✓ arts. 2º, 1º, 3º** | ✗ arts. 1º, 3º, IN 759 seção 1 |
+| `rc1_objetivos` | RC 1, art. 3º | ✗ IN 759 seção 1 (2×), art. 4º | ✓ arts. 3º, 2º, 1º | ✓ art. 3º, IN 759 seção 1 (2×) |
+| `rc1_consentimento_iniciacao` | RC 1, arts. 13 e 13-A | ✗ IN 759 seções 6.1.3, 7, 6.1 | ✓ arts. 13, 22, IN 759 seção 1 | ✓ art. 13, IN 759 seções 6.1.3, 6.1 |
+| `circ_canais_eletronicos` | Circ. 4.015 art. 2º; IN 759 seção 2.3 | ✗ RC 1 art. 5º (2×), IN 759 seção 2.5.1 | ✗ RC 1 art. 5º, IN 759 seção 1 (2×) | ✓ RC 1 art. 5º (2×), Circ. 4.015 art. 2º |
+| `rc1_etapas_solicitacao` | RC 1, art. 8º | ✓ art. 8º, IN 759 seções 1, 6.1.3 | ✗ arts. 5º, 6º, IN 759 seção 1 | ✓ IN 759 seção 1, art. 8º, IN 759 seção 1 |
+| `rc1_formato_interfaces` | RC 1, art. 23 | ✓ arts. 23, 30, 44 | ✗ IN 759 seção 1 (2×), RC 1 art. 5º | ✓ IN 759 seção 1 (2×), RC 1 art. 23 |
+
+**O caso da definição** (art. 2º) é resolvido só pelos embeddings. A
+resposta passou de "não há uma definição explícita do Open Finance na
+Resolução Conjunta nº 1/2020" (bm25, o mesmo erro da v5) para a
+transcrição do art. 2º, I: "compartilhamento padronizado de dados e
+serviços por meio de abertura e integração de sistemas". No hybrid, o
+art. 2º fica fora do top-3: ele é 1º no ranking por embeddings, mas 16º
+no BM25, e cai para 5º na fusão. Os arts. 1º (3º no BM25 e 2º nos
+embeddings) e 3º (6º e 3º) ficam à frente, porque estão bem colocados nos
+dois rankings. A resposta do hybrid apresenta
+os objetivos do art. 3º como definição e repete que a definição "não está
+disponível no contexto". A RRF corrige falhas de um ranking quando o outro
+também dá alguma posição ao trecho certo. Quando só um dos dois o acha,
+ela pode desfazer o acerto.
+
+**Achado: o trecho "hub"**. A seção 1 do anexo da IN BCB nº 759/2026
+(introdução genérica do manual do Open Finance) aparece no top-3 de muitas
+perguntas nos modos com embeddings. Nas duas perdas dos embeddings
+(`rc1_etapas_solicitacao` e `rc1_formato_interfaces`), ela ocupa uma ou
+duas das três posições. É o efeito conhecido de *hubness*: um texto
+genérico fica próximo de quase toda pergunta sobre o tema. O BM25 não tem
+esse problema, porque o IDF penaliza termos comuns.
+
+**Falhas novas do hybrid nos normativos** (sucesso 37 contra 38 do bm25):
+as duas vêm da Camada 7, não de erro de conteúdo. Em `caminho_feliz_rag_bacen`
+(repetição 1), o artigo 6º foi atribuído à "Resolução nº 4.553", citada
+dentro do próprio art. 6º. Em `rc1_indisponibilidade_crise`, o art. 25 da
+Resolução Conjunta nº 1 foi associado à Resolução CMN nº 4.893, que o
+hybrid trouxe ao contexto e a resposta também cita. Com duas normas no
+contexto e na mesma frase, a atribuição de artigo à norma da Camada 7 erra.
+É mais um caso do limite já registrado da validação por regex, que um
+contexto com mais normas expõe mais vezes.
+
+### Rótulos: há trechos relevantes nas 14 normas novas fora do rótulo?
+
+Conferi todos os trechos das 14 normas novas que entraram no top-3 de
+algum caso rotulado, em qualquer modo: 23 trechos distintos em 13 casos. **Nenhum
+responde à pergunta**. São distratores com o mesmo vocabulário em outra
+norma: cláusula de vigência da Carta Circular 4.001 e da Circular 3.978
+para "quando a Circular 4.015 entrou em vigor"; revogações das Resoluções
+BCB 85 e 96 para "qual norma a IN 759 revogou"; "diretor responsável" das
+Resoluções BCB 260 e CMN 4.968; prazos de guarda da Circular 3.978 (dez
+anos) e da Resolução BCB 343 (cinco anos) para a guarda dos consentimentos
+do Open Finance. O mais próximo de relevante é `rc1_continuidade_negocios`:
+os arts. 19 da Resolução CMN 4.893 e da Resolução BCB 85 tratam de
+continuidade de negócios, mas de incidentes cibernéticos em geral, não do
+Open Finance. Como só um trecho dentro do top-3 pode mudar Acerto@3 ou
+Recall@3, **os rótulos atuais não subestimam essas métricas em nenhum dos
+três modos**. O efeito das normas novas é o oposto: mais distratores
+plausíveis, o que explica parte da queda do bm25 desde a v5.
+
+### Limiar de cosseno (RF4)
+
+Critério aplicado uma vez (`scripts/calibrar_limiar_cosseno.py`;
+`calibracao_limiar_cosseno.csv`, `cosseno_casos.csv`,
+`limiar_cosseno_execucoes.csv`):
+
+| | Recusadas |
+|---|---|
+| limiar | **0,6733** (2ª menor respondível, `cal_r17`) |
+| respondíveis (calibração) | 1 de 20 |
+| sem resposta (calibração), as 20 | 16 de 20 |
+| sem as 3 cuja norma entrou no corpus | 15 de 17 |
+| sem essas 3 e as 2 talvez com resposta | 14 de 15 |
+| normativas nos 66 casos (execuções) | **24 de 117** (8 de 39 casos) |
+| norma ausente nos 66 casos (execuções) | 6 de 18 (só os 2 casos `ausente_res_339_duplicata` e `ausente_res_bcb_1_pix`) |
+| norma ausente, 3 válidos (execuções) | 6 de 9 |
+
+No conjunto de calibração, o limiar separa bem: cosseno médio de 0,742 nas
+respondíveis e 0,606 nas sem resposta. Nos 66 casos, recusaria 20,5% das
+execuções normativas, quatro vezes o teto pré-registrado. Entre os 8 casos
+recusados estão o caminho feliz, o prazo de adesão e os requisitos do
+consentimento. As perguntas de calibração respondíveis foram escritas
+olhando o dispositivo que as responde, e a bateria tem perguntas mais
+curtas e genéricas. O cosseno absoluto do `bge-m3` depende da forma da
+pergunta tanto quanto do conteúdo. **O limiar não deve ser ativado.** O
+achado repete, com outra escala, o da v6: um limiar global sobre a
+pontuação do melhor trecho não separa "sem resposta" de "pergunta
+genérica".
+
+### Custos
+
+- **Ingestão**: 440 vetores em 302 s na CPU (295 s numa segunda geração
+  com `--somente-embeddings`). Índice de 2,4 MB (`indice_embeddings.json`,
+  float32 em base64), contra 48 KB do `indice_bm25.json`.
+- **Memória**: GPU com 6,7 GB em uso só com o llama3.1, e 6,6 GB com o
+  llama3.1 na GPU e o bge-m3 na CPU (1,2 GB de RAM). Com o bge-m3 na GPU,
+  o processo do Ollama caiu com erro de CUDA.
+- **Latência da busca**: cerca de 1 ms no bm25 e cerca de 135 ms nos modos
+  com embeddings (embed da pergunta ~95 ms no servidor, mais o cosseno em
+  Python puro sobre 440 × 1024).
+- **Artefato de medição (achado)**: no Windows, cada conexão nova a
+  `http://localhost:11434` custa ~2.030 ms, porque o cliente tenta IPv6
+  (`::1`) antes de `127.0.0.1`; com `127.0.0.1`, 3 ms. O httpx do cliente
+  `ollama` descarta a conexão depois de 5 s ociosa. Por isso, 49 de 162
+  buscas (embeddings) e 59 de 162 (hybrid) mediram ~2,16 s, e a latência
+  total desses modos inclui o mesmo atraso na chamada da Camada 4.
+  Medição sem o artefato (`docs/resultados/v7/host_127/`,
+  `OLLAMA_HOST=http://127.0.0.1:11434`, mesmo protocolo): as 594 respostas
+  finais saíram idênticas, caractere a caractere, às das rodadas com
+  `localhost`, e as métricas também. O host muda só o tempo.
+
+  | Mediana (ms) | bm25 | embeddings | hybrid |
+  |---|---|---|---|
+  | busca | 0,9 | 132,5 | 134,4 |
+  | resposta completa, total | 1.593 | 1.837 | 1.973 |
+  | resposta completa, normativos | 2.259 | 2.636 | 2.769 |
+  | resposta completa, total, com `localhost` | 1.772 | 2.180 | 2.538 |
+
+  O acréscimo dos embeddings na resposta completa (+244 e +380 ms na
+  mediana) é a busca (~130 ms) mais sínteses um pouco mais longas, sobre
+  contextos diferentes. O artefato de `localhost` também atinge as
+  chamadas da Camada 2. As latências publicadas da v1 à v6, medidas na
+  mesma máquina com o mesmo `.env`, provavelmente o incluem; isso não foi
+  medido naquelas rodadas.
+
+### Recomendação (do assistente; a decisão é do usuário)
+
+Recomendo **`hybrid` como candidato a modo padrão, depois da auditoria
+do CSV pelo usuário**. Até lá, o padrão continua `bm25`.
+
+- **A favor do hybrid**: maior Acerto@3, Recall@3 e MRR nos normativos.
+  Nenhum caso que o bm25 acertava foi perdido (0 contra 3), enquanto os
+  embeddings puros perderam 2 para o trecho *hub*. Nas respostas dos 6
+  casos que mudaram, as sugestões de veredito (não auditadas) dão 5
+  corretas no hybrid, 3 nos embeddings e 2 no bm25.
+- **Contra, ou em aberto**: nenhuma diferença é distinguível de ruído
+  (McNemar). O sucesso automático do hybrid nos normativos é 37 de 39,
+  contra 38 do bm25, por dois falsos positivos da Camada 7 com duas normas
+  no contexto. O caso emblemático da definição (art. 2º) só é resolvido
+  pelos embeddings puros. As 220 respostas ainda não foram auditadas.
+- **Custo**: ~130 ms por busca, o `bge-m3` na CPU (1,2 GB de RAM), um
+  índice de 2,4 MB e o Ollama para regerar os vetores (~5 min) a cada
+  mudança da Gold.
+- **Leitura alternativa**: se o critério for resolver a paráfrase do termo
+  definido, o modo é `embeddings`; se for melhorar sem piorar nenhum caso,
+  é `hybrid`. A escolha é do usuário.
+
+**Em aberto**:
+
+- a auditoria manual do CSV `auditoria_respostas_v7.csv` (220 respostas
+  distintas; 18 das 149 dos modos com embeddings são idênticas a uma do
+  bm25). Há sugestões só para os 6 casos que mudaram, numa coluna
+  separada;
+- o *hub* "IN 759 seção 1": candidatos são reranking (previsto por Maia et
+  al., não implementado), um teto de trechos por norma ou seção, ou tirar
+  do índice a introdução do manual. Qualquer um exige nova rodada e não
+  foi testado;
+- RRF com k = 60 e pesos iguais, sem ajuste, por decisão: ajustar na
+  própria bateria seria otimizar no conjunto de teste;
+- a revisão dos 3 casos de `norma_ausente` com premissa vencida e das 5
+  perguntas de calibração afetadas (decisão do usuário);
+- o limiar de recusa sem base continua sem solução, em BM25 ou cosseno;
+- a atribuição de artigo à norma na Camada 7 quando o contexto traz mais
+  de uma norma.

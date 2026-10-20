@@ -39,7 +39,12 @@ cada uma, se entra no corpus de runtime (`corpus_runtime`).
   artigo) e a frequência de tokens pré-calculada; unidades revogadas não
   entram;
 - `indice_bm25.json`: estatísticas do corpus (N, tamanho médio, frequência
-  de documento por token) só dos normativos com `corpus_runtime: true`.
+  de documento por token) só dos normativos com `corpus_runtime: true`;
+- `indice_embeddings.json` (v7): vetor de cada trecho dos mesmos normativos,
+  gerado pelo modelo de embeddings do Ollama local (`bge-m3` por padrão),
+  com modelo, digest, dimensão, data e sha256 do texto de cada trecho (ver
+  `embeddings.py`). Precisa do Ollama rodando; `--sem-embeddings` pula e
+  mantém o índice existente.
 
 Uso:
     python -m src.layer5_knowledge.ingest_normativos
@@ -47,12 +52,19 @@ Uso:
     python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
         # não acessa a internet: regera Silver e Gold a partir da Bronze
         # versionada no repositório
+    python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze --sem-embeddings
+        # idem, sem Ollama: não gera os vetores e mantém o indice_embeddings.json
+        # existente, que a KnowledgeBase recusa se algum trecho tiver mudado
+    python -m src.layer5_knowledge.ingest_normativos --somente-embeddings
+        # não toca Bronze, Silver nem Gold: regera só indice_embeddings.json
+        # sobre a Gold atual (ex: depois de trocar o modelo de embeddings)
 """
 import argparse
 import io
 import json
 import re
 import sys
+import time
 import urllib.parse
 import urllib.request
 from collections import Counter
@@ -63,6 +75,8 @@ from pathlib import Path
 
 import pypdf
 
+from src.config import settings
+from src.layer5_knowledge.embeddings import INDICE_EMBEDDINGS_NOME, ClienteEmbeddings, gerar_indice
 from src.layer5_knowledge.texto import tokenizar
 from src.layer7_governance.governance import validar_fonte_publica
 
@@ -72,6 +86,7 @@ BRONZE_DIR = FONTE_DIR / "1_bronze_raw"
 SILVER_DIR = FONTE_DIR / "2_silver_cleaned"
 GOLD_DIR = FONTE_DIR / "3_gold_indexed"
 INDICE_FILE = GOLD_DIR / "indice_bm25.json"
+INDICE_EMBEDDINGS_FILE = GOLD_DIR / INDICE_EMBEDDINGS_NOME
 
 # Endpoint JSON consumido pela página pública exibenormativo do BCB, e local
 # dos anexos (PDFs) listados no campo `Documentos` da mesma resposta.
@@ -532,10 +547,14 @@ def _dividir(paragrafos: list[str], limite: int) -> list[list[str]]:
     return [p for p in partes if p]
 
 
-def etapa_gold(arquivos_silver: list[Path]) -> list[Path]:
+def etapa_gold(arquivos_silver: list[Path], preservar_embeddings: bool = False) -> list[Path]:
+    """`preservar_embeddings` (com --sem-embeddings): não apaga o índice de
+    embeddings existente. Ele não é atualizado, mas a `KnowledgeBase` o
+    recusa se algum texto da Gold nova diferir do que foi embedado."""
     GOLD_DIR.mkdir(parents=True, exist_ok=True)
     for antigo in GOLD_DIR.iterdir():
-        antigo.unlink()
+        if not (preservar_embeddings and antigo.name == INDICE_EMBEDDINGS_NOME):
+            antigo.unlink()
 
     gerados = []
     for silver_path in arquivos_silver:
@@ -594,9 +613,39 @@ def gerar_indice_bm25(arquivos_gold: list[Path]) -> dict:
     return indice
 
 
+def gerar_indice_embeddings(cliente: ClienteEmbeddings | None = None) -> dict:
+    """Vetores dos trechos dos normativos de runtime, na ordem do
+    `indice_bm25.json` (a mesma em que a `KnowledgeBase` os carrega). Sempre
+    regera o índice inteiro: vetores de modelos ou textos diferentes nunca
+    se misturam."""
+    cliente = cliente or ClienteEmbeddings(settings.modelo_embeddings, settings.ollama_host,
+                                           settings.embeddings_na_gpu)
+    indice_bm25 = json.loads(INDICE_FILE.read_text(encoding="utf-8"))
+    trechos = []
+    for arquivo in indice_bm25["arquivos"]:
+        gold = json.loads((GOLD_DIR / arquivo).read_text(encoding="utf-8"))
+        trechos.extend((t["id"], t["texto"]) for t in gold["trechos"])
+    indice = gerar_indice(trechos, cliente)
+    INDICE_EMBEDDINGS_FILE.write_text(json.dumps(indice, ensure_ascii=False, indent=1), encoding="utf-8")
+    return indice
+
+
+def _relatar_embeddings(indice: dict, segundos: float) -> None:
+    tamanho = INDICE_EMBEDDINGS_FILE.stat().st_size / 1024 / 1024
+    print(f"  Índice de embeddings: {indice['n_trechos']} vetores de {indice['dimensao']} dimensões, "
+          f"modelo {indice['modelo']} ({indice['digest'][:12]}), {segundos:.1f} s, {tamanho:.1f} MB")
+
+
 # --------------------------------------------------------------------------
 
-def executar(a_partir_da_bronze: bool = False) -> None:
+def executar(a_partir_da_bronze: bool = False, sem_embeddings: bool = False,
+             somente_embeddings: bool = False) -> None:
+    if somente_embeddings:
+        inicio = time.perf_counter()
+        indice = gerar_indice_embeddings()
+        _relatar_embeddings(indice, time.perf_counter() - inicio)
+        return
+
     if a_partir_da_bronze:
         if not any(BRONZE_DIR.glob("*.json")):
             print(f"Bronze vazia em {BRONZE_DIR} — rode sem --a-partir-da-bronze.", file=sys.stderr)
@@ -615,15 +664,24 @@ def executar(a_partir_da_bronze: bool = False) -> None:
         print(f"  Silver: {silver['titulo_curto']} — {len(unidades)} unidades "
               f"({revogadas} revogadas), fonte: {silver['fonte_texto']}")
 
-    arquivos_gold = etapa_gold(arquivos_silver)
+    arquivos_gold = etapa_gold(arquivos_silver, preservar_embeddings=sem_embeddings)
     indice = gerar_indice_bm25(arquivos_gold)
     print(f"  Gold: {len(arquivos_gold)} normativo(s) em {GOLD_DIR}")
     print(f"  Índice BM25 (runtime): {indice['n_trechos']} trechos de "
           f"{len(indice['arquivos'])} normativo(s): {', '.join(indice['arquivos'])}")
+    if not sem_embeddings:
+        inicio = time.perf_counter()
+        indice_emb = gerar_indice_embeddings()
+        _relatar_embeddings(indice_emb, time.perf_counter() - inicio)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingestão Bronze/Silver/Gold dos normativos do BCB.")
     parser.add_argument("--a-partir-da-bronze", action="store_true",
                         help="não acessa a internet; regera Silver e Gold a partir da Bronze existente")
-    executar(parser.parse_args().a_partir_da_bronze)
+    parser.add_argument("--sem-embeddings", action="store_true",
+                        help="não gera indice_embeddings.json (mantém o existente; não precisa do Ollama)")
+    parser.add_argument("--somente-embeddings", action="store_true",
+                        help="regera só indice_embeddings.json sobre a Gold atual")
+    args = parser.parse_args()
+    executar(args.a_partir_da_bronze, args.sem_embeddings, args.somente_embeddings)

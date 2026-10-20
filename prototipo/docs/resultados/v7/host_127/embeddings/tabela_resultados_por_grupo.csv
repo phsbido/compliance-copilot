@@ -1,0 +1,7 @@
+grupo,n_casos,n_execucoes,taxa_sucesso_execucoes,casos_sucesso_total,taxa_casos_sucesso_total,ic95_casos_sucesso_inf,ic95_casos_sucesso_sup,taxa_classificacao_correta,taxa_recusa,taxa_norma_nao_verificada,taxa_ausencia_declarada,taxa_artigo_nao_verificado,taxa_valor_nao_verificado,taxa_aviso_camada7,cobertura_termos_media,n_casos_rotulados_recuperacao,acerto_recuperacao_3,recall_recuperacao_3,mrr_3,latencia_media_ms,latencia_mediana_ms,latencia_p95_ms,casos_com_respostas_distintas,latencia_busca_mediana_ms
+normativo_corpus,39,117,1.0,39,1.0,0.91,1.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.684,39,0.821,0.782,0.782,3833.028,2635.8,10848.22,10,130.8
+norma_ausente,6,18,0.556,3,0.5,0.188,0.812,1.0,0.0,0.0,0.167,0.0,0.0,0.0,,0,,,,6852.389,6301.7,13939.24,3,142.9
+parecer_juridico,7,21,0.714,5,0.714,0.359,0.918,0.714,0.714,0.0,0.0,0.0,0.0,0.0,,0,,,,2375.843,151.7,15712.3,1,145.9
+fora_de_escopo,7,21,0.857,6,0.857,0.487,0.974,0.857,0.857,0.0,0.0,0.0,0.0,0.0,,0,,,,446.6,124.5,2320.5,0,122.0
+robustez,7,21,1.0,7,1.0,0.646,1.0,1.0,0.143,0.0,0.0,0.0,0.0,0.0,0.375,5,0.6,0.6,0.467,2297.629,1026.6,8109.6,3,140.9
+total,66,198,0.914,60,0.909,0.816,0.958,0.955,0.182,0.0,0.015,0.0,0.0,0.0,0.655,44,0.795,0.761,0.746,3430.954,1837.25,11804.72,17,132.85

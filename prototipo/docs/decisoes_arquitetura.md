@@ -636,6 +636,61 @@ diferença "distinguível de ruído" = p ajustado < 0,05.
 - mesmo viés declarado da v6: as perguntas foram redigidas pelo
   assistente, que também aplica o critério.
 
+**Implementação (depois do pré-registro, commit `1412787`)**:
+
+- `src/layer5_knowledge/embeddings.py` (novo): cliente do Ollama para
+  embeddings, sha256 do texto, geração e validação do índice. Vetores em
+  float32 codificados em base64, o que o Ollama devolve, sem arredondamento.
+  O índice usa a chave `vetores`, não `trechos`, para não ser confundido
+  com um arquivo Gold por quem percorre a pasta.
+- `knowledge_base.py`: `modo`, `limiar_cosseno`, RRF sobre os rankings
+  completos e `identificacao()`. O caminho `bm25` dá o mesmo ranking de
+  antes: top-10 idêntico, com a mesma pontuação, nas 106 perguntas (66
+  casos e 40 de calibração).
+- `ingest_normativos.py`: gera `indice_embeddings.json` depois do
+  `indice_bm25.json`. `--sem-embeddings` mantém o índice existente, sem
+  Ollama, e `--somente-embeddings` regera só os vetores.
+- O limiar BM25 (`limiar`) continua BM25 em qualquer modo. O de cosseno é
+  outro parâmetro, para que um valor numa escala nunca seja comparado com
+  a outra.
+
+**Trade-off da Camada 8 (decisão do usuário, 2026-10-20)**: o registro
+ganhou o campo `recuperacao`: modo, modelo e digest de embeddings e versão
+do(s) índice(s), como sha256 de 12 caracteres do arquivo. A Camada 8 pede a
+identificação à Camada 5 (`identificacao_recuperacao()`), em vez de
+recebê-la da Camada 3. Ganho: nenhuma mudança na orquestração. Custo: uma
+dependência da Camada 8 para a Camada 5. Ela é aceitável porque a Camada 8
+é transversal, e registrar proveniência é ler o estado das outras camadas.
+A alternativa, passar a identificação pela Camada 3, tornaria a dependência
+explícita no fluxo, mas mudaria a assinatura de `registrar_interacao` em
+todos os pontos de saída de `responder()`. Limite conhecido: a função
+devolve a identificação da base construída com a configuração padrão do
+processo, a mesma que a Camada 4 usa. Uma base criada com outro modo no
+mesmo processo, como num teste, não é a registrada.
+
+**Resultados (2026-10-20, depois do cálculo)**: os números estão em
+`docs/evidencias_empiricas.md` (v7) e em `docs/resultados/v7/`. Resumo:
+
+- Limiar de cosseno, aplicado uma vez: **0,6733** (2ª menor respondível,
+  `cal_r17`). Recusa 1 de 20 respondíveis e 16 de 20 sem resposta (15 de
+  17 e 14 de 15 nas versões declaradas). Nos 66 casos, porém, recusaria 24
+  de 117 execuções normativas (8 de 39 casos, 20,5%) e só 6 de 18 de norma
+  ausente. O critério de "no máximo 5% das respondíveis" não se transfere
+  do conjunto de calibração para a bateria. O limiar continua desligado, e
+  não é recomendado.
+- Nos 39 casos normativos, Acerto@3 de 0,795 (bm25), 0,821 (embeddings) e
+  0,872 (hybrid). Nenhuma diferença é distinguível de ruído (McNemar
+  exato, p ajustado ≥ 0,75): há só 3 a 5 casos discordantes por par.
+- O modo padrão continua `bm25` até decisão do usuário (recomendação e
+  ressalvas em `docs/evidencias_empiricas.md`, v7).
+- Fora do plano e sem critério pré-registrado: uma medição
+  extra de latência com `OLLAMA_HOST=http://127.0.0.1:11434`
+  (`docs/resultados/v7/host_127/`), depois de se descobrir que, no
+  Windows, cada conexão nova a `localhost` custa ~2 s. As 594 respostas
+  saíram idênticas às da rodada principal; só o tempo muda. O `.env` não
+  foi alterado. Figura: `docs/figuras/grafico_v7_recuperacao_modos.png`
+  (`scripts/plot_v7.py`).
+
 ---
 
 ## Camada 6 — Contexto e Memória
@@ -905,7 +960,9 @@ log de runtime **não registra** o prompt, os trechos recuperados (guardados
 só pelo benchmark, em `docs/resultados/`), os acessos à memória nem a
 versão do índice. Também não há monitoramento, alertas ou *feedback*. A
 ambiguidade registrada acima ("não distingue proveniência de telemetria")
-foi reclassificada naquela entrada como implementação parcial.
+foi reclassificada naquela entrada como implementação parcial. Desde a v7,
+o registro inclui a versão do índice e o modo de recuperação (campo
+`recuperacao`; ver "Camada 5: embeddings e busca híbrida").
 
 ---
 

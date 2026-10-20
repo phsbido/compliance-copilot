@@ -25,12 +25,22 @@ da v1/v2, para comparar versões com a mesma régua.
 v4 (2026-09-24): `parametros_llm` registra modelo, ID do modelo (digest),
 temperaturas de classificação e de síntese e seed — sem isso, não é possível
 saber depois com que configuração uma resposta foi gerada.
+
+v7 (2026-10-20): `recuperacao` registra o modo de recuperação da Camada 5
+(bm25, embeddings ou hybrid), o modelo e o digest de embeddings e a versão
+do(s) índice(s). A Camada 8 pede essa identificação diretamente à Camada 5
+(`identificacao_recuperacao()`), em vez de recebê-la da Camada 3: assim a
+orquestração não muda, ao custo de uma dependência da Camada 8 (transversal)
+para a Camada 5 — trade-off registrado em docs/decisoes_arquitetura.md,
+"Camada 5: embeddings e busca híbrida".
 """
 import json
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+
+from src.layer5_knowledge.knowledge_base import identificacao_recuperacao
 
 LOG_DIR = Path(__file__).resolve().parents[2] / "logs"
 LOG_FILE = LOG_DIR / "interacoes.jsonl"
@@ -49,6 +59,7 @@ class RegistroInteracao:
     desfecho: str = "resposta"  # "resposta" | "recusa_parecer_juridico" | "recusa_fora_de_escopo" | "recusa_sem_base"
     validacao: dict = field(default_factory=dict)
     parametros_llm: dict = field(default_factory=dict)
+    recuperacao: dict = field(default_factory=dict)
 
 
 def _extrair_fontes(normativo: str) -> list[dict]:
@@ -88,6 +99,7 @@ def registrar_interacao(
         desfecho=desfecho,
         validacao=validacao or {},
         parametros_llm=parametros_llm or {},
+        recuperacao=identificacao_recuperacao(),
     )
     destino = arquivo or LOG_FILE
     destino.parent.mkdir(parents=True, exist_ok=True)

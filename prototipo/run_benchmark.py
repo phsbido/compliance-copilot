@@ -71,6 +71,10 @@ Uso:
     python run_benchmark.py --saida docs/resultados/v6 [...]
         # v6 em diante: todos os artefatos (JSON, CSVs e tabela de
         # recuperação) numa pasta própria; a linha de base v5 não é tocada
+    $env:RECUPERACAO_MODO="hybrid"; python run_benchmark.py --saida docs/resultados/v7/hybrid
+        # v7: o modo de recuperação da Camada 5 vem do ambiente (a Camada 4
+        # carrega a base na importação); cada execução registra o modo, o
+        # modelo/digest de embeddings, a versão do índice e a latência da busca
     python run_benchmark.py --revalidar [--modo ...]
         # não chama o LLM: reaplica a Camada 7 atual (e os rótulos atuais de
         # tests/casos_teste.json) à resposta do LLM e ao contexto guardados
@@ -80,6 +84,7 @@ import argparse
 import dataclasses
 import json
 import math
+import os
 import time
 import unicodedata
 from datetime import datetime, timezone
@@ -245,7 +250,16 @@ def recuperar(pergunta: str, limiar: float | None = None) -> list[dict]:
             for d in _kb().buscar(pergunta, top_k=TOP_K, limiar=limiar)]
 
 
+def recuperar_cronometrado(pergunta: str, limiar: float | None = None) -> tuple[list[dict], float]:
+    """`recuperar` e o tempo da busca em ms (v7: nos modos com embeddings,
+    inclui gerar o vetor da pergunta no Ollama)."""
+    inicio = time.perf_counter()
+    recuperados = recuperar(pergunta, limiar)
+    return recuperados, round((time.perf_counter() - inicio) * 1000, 1)
+
+
 def pontuacao_melhor_trecho(pergunta: str) -> float:
+    """Pontuação do melhor trecho no modo da Camada 5 (BM25, cosseno ou RRF)."""
     pontuados = _kb().buscar_pontuado(pergunta, top_k=1)
     return round(pontuados[0][0], 4) if pontuados else 0.0
 
@@ -302,6 +316,7 @@ def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None 
     latencia_ms = (time.perf_counter() - inicio) * 1000
 
     registro = orchestrator.ultimo_registro
+    trechos_recuperados, latencia_busca_ms = recuperar_cronometrado(caso["pergunta"], orchestrator.limiar_bm25)
     r = {
         "caso_id": caso["id"],
         "modo": modo,
@@ -322,7 +337,12 @@ def rodar_caso(caso: dict, repeticao: int, modo: str, limiar_bm25: float | None 
         "contexto_normativo": orchestrator.ultimo_contexto,
         # Os mesmos top-3 da Camada 4, identificados por norma + trecho, para
         # as métricas de recuperação (a busca é determinística).
-        "trechos_recuperados": recuperar(caso["pergunta"], orchestrator.limiar_bm25),
+        "trechos_recuperados": trechos_recuperados,
+        # v7: modo de recuperação, modelo/digest de embeddings e versão do
+        # índice (o que a Camada 8 registrou) e tempo da busca, medido numa
+        # segunda chamada idêntica à da Camada 4.
+        "recuperacao": registro.recuperacao if registro else {},
+        "latencia_busca_ms": latencia_busca_ms,
         # v6: limiar efetivo da Camada 5 e pontuação do melhor trecho.
         "limiar_bm25": orchestrator.limiar_bm25,
         "pontuacao_melhor_trecho": pontuacao_melhor_trecho(caso["pergunta"]),
@@ -360,10 +380,23 @@ def revalidar(resultados: list[dict], casos: dict[str, dict]) -> int:
 # Tabelas
 # --------------------------------------------------------------------------
 
-def salvar_resultados_json(resultados: list[dict], destino: Path) -> None:
+def salvar_resultados_json(resultados: list[dict], destino: Path, tentativas: int = 5) -> None:
+    """Grava num temporário e substitui o destino. No Windows, a regravação
+    direta falhou uma vez com OSError 22 (arquivo momentaneamente travado
+    por outro processo, v7): tenta de novo antes de desistir, para uma
+    rodada longa não cair por isso."""
     destino.parent.mkdir(parents=True, exist_ok=True)
-    with destino.open("w", encoding="utf-8") as f:
-        json.dump(resultados, f, ensure_ascii=False, indent=2)
+    temporario = destino.with_name(destino.name + ".tmp")
+    for tentativa in range(1, tentativas + 1):
+        try:
+            with temporario.open("w", encoding="utf-8") as f:
+                json.dump(resultados, f, ensure_ascii=False, indent=2)
+            os.replace(temporario, destino)
+            return
+        except OSError:
+            if tentativa == tentativas:
+                raise
+            time.sleep(0.5 * tentativa)
 
 
 def tabela_por_caso(df: pd.DataFrame) -> pd.DataFrame:
@@ -419,6 +452,8 @@ def _linha_grupo(nome: str, df: pd.DataFrame, por_caso: pd.DataFrame) -> dict:
         "latencia_p95_ms": df["latencia_ms"].quantile(0.95),
         "casos_com_respostas_distintas": int((por_caso["n_respostas_distintas"] > 1).sum()),
     }
+    if "latencia_busca_ms" in df:  # v7 em diante
+        linha["latencia_busca_mediana_ms"] = df["latencia_busca_ms"].median()
     return linha
 
 
@@ -515,6 +550,7 @@ if __name__ == "__main__":
     else:
         selecionados = filtrar_casos(casos, args.grupo, args.casos)
         total = len(selecionados) * args.repeticoes
+        print(f"Recuperação da Camada 5: {_kb().identificacao()}")
         print(f"Modo: {args.modo} (amostragem: {amostragem_do_modo(args.modo).como_dict()}; "
               f"limiar BM25: {limiar if limiar is not None else 'desligado'}; "
               f"ablação da Camada 7: {args.ablacao or 'não'}; "

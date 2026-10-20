@@ -70,6 +70,13 @@ Capítulo 1, Seção 5 — Metodologia).
    ```bash
    ollama pull llama3.1
    ```
+5. Opcional (v7): o modelo de embeddings `bge-m3` (1,2 GB), só para os
+   modos de recuperação `embeddings` e `hybrid` e para gerar os vetores na
+   ingestão. O modo padrão (`bm25`) não precisa dele.
+
+   ```bash
+   ollama pull bge-m3
+   ```
 
 ## 3. Instalação
 
@@ -106,6 +113,10 @@ O `.env` define:
 | `OLLAMA_TEMPERATURA_CLASSIFICACAO` | `0` | Classificação da pergunta (normativo / parecer / fora de escopo) |
 | `OLLAMA_TEMPERATURA_SINTESE` | `0.1` | Síntese da resposta |
 | `OLLAMA_SEED` | `42` | Seed (vazio = aleatória) |
+| `RECUPERACAO_MODO` | `bm25` | Recuperação da Camada 5 (v7): `bm25`, `embeddings` ou `hybrid` |
+| `OLLAMA_MODELO_EMBEDDINGS` | `bge-m3` | Modelo de embeddings dos modos `embeddings` e `hybrid` |
+| `OLLAMA_EMBEDDINGS_GPU` | vazio | `1` tenta a GPU; vazio = CPU (na GPU de 8 GB o `bge-m3` não cabe junto com o `llama3.1`) |
+| `LIMIAR_COSSENO` | vazio | Cosseno mínimo do melhor trecho nos modos com embeddings (v7; vazio = desligado) |
 
 Temperatura e seed são explícitas desde a v4 (antes valia o padrão do
 Ollama: 0,8 e seed aleatória); a justificativa está em
@@ -248,13 +259,19 @@ LLM:
 
 ```bash
 python -m unittest discover -s tests
-python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze
+python -m src.layer5_knowledge.ingest_normativos --a-partir-da-bronze --sem-embeddings
 python run_benchmark.py --revalidar
 python run_benchmark.py --revalidar --modo sensibilidade
 python scripts/auditoria_v5.py
 python scripts/conferencias_pos_v6.py
 python scripts/plot_benchmark.py
 ```
+
+`--sem-embeddings` mantém o índice de embeddings versionado
+(`indice_embeddings.json`) em vez de regerá-lo, o que exigiria o Ollama; a
+busca recusa esse índice se algum trecho da Gold regerada tiver mudado. Para
+regerar só os vetores: `python -m src.layer5_knowledge.ingest_normativos
+--somente-embeddings` (com o Ollama e o `bge-m3`, ~5 min na CPU).
 
 `--revalidar` reaplica a Camada 7 à resposta do LLM e ao contexto guardados
 em cada execução, recalcula as métricas com os rótulos atuais de
@@ -368,13 +385,36 @@ Como cada camada funciona:
   rodapés e anotações de alteração) e estruturado por artigo ou seção de
   anexo.
 - **Gold** (`3_gold_indexed/`): trechos de até 2.500 caracteres com
-  cabeçalho de contexto (norma, capítulo/seção, artigo) e índice BM25. É a
-  única camada lida pelo protótipo.
+  cabeçalho de contexto (norma, capítulo/seção, artigo), índice BM25 e
+  (v7) índice de embeddings `indice_embeddings.json`, com modelo, digest e
+  hash do texto de cada trecho. É a única camada lida pelo protótipo.
 
 **Resultado esperado**: 4 normativos em cada camada e um índice BM25 com as
 3 normas de runtime. O BCB publica sempre a versão vigente, então o texto
 baixado pode diferir do versionado se alguma norma for alterada depois de
 2026-09-24. A versão usada fica registrada no JSON bruto em `1_bronze_raw/`.
+
+### Passo 5 (opcional) — v7: busca por embeddings e híbrida (~1 h 30 min)
+
+Precisa do `bge-m3` (`ollama pull bge-m3`). O primeiro comando roda os três
+modos de recuperação (`bm25`, `embeddings`, `hybrid`) em modo produção.
+Antes de cada rodada, ele encerra e sobe de novo o servidor Ollama, e grava
+tudo em `docs/resultados/v7/<modo>/`, com `ollama ps` e o resumo do `nvidia-smi`. Os
+outros geram, sem LLM, o limiar de cosseno, a comparação (McNemar, casos que
+mudaram, CSV de auditoria) e a figura:
+
+```bash
+python scripts/rodar_v7.py                      # ATENÇÃO: encerra os processos do Ollama
+python scripts/rodar_v7.py --modo sensibilidade # opcional
+python scripts/calibrar_limiar_cosseno.py
+python scripts/comparar_v7.py
+python scripts/comparar_v7.py --modo sensibilidade
+python scripts/plot_v7.py
+```
+
+Para usar um modo no protótipo, defina `RECUPERACAO_MODO` no `.env`. A
+decisão e os resultados estão em `docs/decisoes_arquitetura.md` ("Camada 5:
+embeddings e busca híbrida") e em `docs/evidencias_empiricas.md` (v7).
 
 ### Problemas comuns
 
@@ -383,7 +423,10 @@ baixado pode diferir do versionado se alguma norma for alterada depois de
 | `python` não encontrado ou abre a Microsoft Store (Windows) | Ative o venv (`venv\Scripts\activate`) ou abra um novo terminal após instalar o Python |
 | `ConnectionError` / `connection refused` | Ollama não está rodando: `ollama serve` |
 | `model "llama3.1" not found` | `ollama pull llama3.1` |
+| `Modelo de embeddings bge-m3:latest não está instalado` | `ollama pull bge-m3`, ou `RECUPERACAO_MODO=bm25` |
+| `O índice de embeddings não corresponde à Gold atual` / `Digest do modelo ... mudou` | `python -m src.layer5_knowledge.ingest_normativos --somente-embeddings` |
 | Primeira resposta muito lenta | Carregamento do modelo; rode `ollama run llama3.1 "oi"` antes |
+| Chamadas ao Ollama com ~2 s a mais depois de uma pausa (Windows) | Cada conexão nova a `localhost` tenta IPv6 (`::1`) antes de `127.0.0.1`, e o cliente descarta a conexão depois de 5 s ociosa; use `OLLAMA_HOST=http://127.0.0.1:11434` no `.env`. Medido na v7: ~2.030 ms contra 3 ms por conexão (`docs/evidencias_empiricas.md`) |
 | `pip install -r requirements-lock.txt` falha | Python < 3.12; use `requirements.txt` |
 
 ## 7. Estrutura de pastas
@@ -415,7 +458,7 @@ prototipo_esqueleto/
     │   ├── layer2_llm_core/           # Camada 2 — Núcleo de Raciocínio do LLM
     │   ├── layer3_orchestration/      # Camada 3 — Orquestração e Fluxo de Trabalho
     │   ├── layer4_tools/              # Camada 4 — Integração de Ferramentas e Serviços
-    │   ├── layer5_knowledge/          # Camada 5 — busca BM25 na Gold (knowledge_base.py), ingestão (ingest_normativos.py), tokenização (texto.py)
+    │   ├── layer5_knowledge/          # Camada 5 — busca BM25, embeddings ou híbrida na Gold (knowledge_base.py), vetores (embeddings.py), ingestão (ingest_normativos.py), tokenização (texto.py)
     │   ├── layer6_memory/             # Camada 6 — Contexto e Memória
     │   ├── layer7_governance/         # Camada 7 — Governança e Segurança
     │   └── layer8_observability/      # Camada 8 — Observabilidade e Proveniência

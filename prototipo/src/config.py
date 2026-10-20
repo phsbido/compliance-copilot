@@ -31,6 +31,13 @@ def _limiar_do_ambiente() -> float | None:
     return float(valor) if valor else None
 
 
+def _limiar_cosseno_do_ambiente() -> float | None:
+    """LIMIAR_COSSENO (v7): cosseno mínimo do melhor trecho nos modos
+    `embeddings` e `hybrid` da Camada 5; vazio ou ausente = desligado."""
+    valor = os.getenv("LIMIAR_COSSENO", "").strip()
+    return float(valor) if valor else None
+
+
 def _seed_do_ambiente() -> int | None:
     valor = os.getenv("OLLAMA_SEED", "42").strip()
     return int(valor) if valor else None  # vazio = seed aleatória
@@ -77,6 +84,15 @@ class Settings:
         seed=_seed_do_ambiente(),
     )
     limiar_bm25: float | None = _limiar_do_ambiente()
+    # Recuperação da Camada 5 (v7, ver docs/decisoes_arquitetura.md, "Camada
+    # 5: embeddings e busca híbrida"): "bm25" (padrão), "embeddings" ou
+    # "hybrid". O modelo de embeddings roda no mesmo Ollama, na CPU por
+    # padrão (OLLAMA_EMBEDDINGS_GPU=1 para tentar a GPU): na GPU de 8 GB ele
+    # não cabe junto com o llama3.1.
+    recuperacao_modo: str = os.getenv("RECUPERACAO_MODO", "bm25").strip() or "bm25"
+    modelo_embeddings: str = os.getenv("OLLAMA_MODELO_EMBEDDINGS", "bge-m3").strip() or "bge-m3"
+    embeddings_na_gpu: bool = os.getenv("OLLAMA_EMBEDDINGS_GPU", "").strip() == "1"
+    limiar_cosseno: float | None = _limiar_cosseno_do_ambiente()
 
 
 settings = Settings()

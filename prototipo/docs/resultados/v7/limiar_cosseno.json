@@ -1,0 +1,11 @@
+{
+  "limiar_cosseno": 0.673293,
+  "k": 1,
+  "modelo": {
+    "modo": "embeddings",
+    "modelo_embeddings": "bge-m3",
+    "digest_embeddings": "790764642607",
+    "versao_indice": "emb:2582f8a0c876",
+    "limiar_cosseno": null
+  }
+}
