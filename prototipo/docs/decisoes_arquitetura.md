@@ -548,7 +548,93 @@ perguntam sobre normas que agora estão no corpus — a premissa desses casos
 deixou de valer. A bateria não foi alterada (rótulos fixados antes da
 execução); revisá-la é decisão pendente do usuário, antes de qualquer nova
 rodada do benchmark. Os resultados v5/v6 continuam válidos para o corpus de
-três normativos em que foram medidos.
+três normativos em que foram medidos. Decisão do usuário (2026-10-20): ver
+"Camada 5: embeddings e busca híbrida".
+
+### Camada 5: embeddings e busca híbrida (2026-10-20)
+
+Plano apresentado e aprovado pelo usuário antes do código. Esta parte
+(até "Resultados") foi escrita e commitada **antes** de qualquer
+similaridade de cosseno ser calculada sobre as perguntas de avaliação ou de
+calibração.
+
+**Problema**: na v5, a recuperação foi a principal fonte de falha (Acerto@3
+0,79 nos normativos; 36 das 67 execuções com falha nasceram na recuperação).
+Caso típico: "Como o Open Finance é definido na Resolução Conjunta nº
+1/2020?" trouxe os arts. 46, 51 e 6º, e não o art. 2º, que define o termo
+com outras palavras. É o trade-off assumido na primeira decisão desta
+camada ("buscas por paráfrase tendem a falhar"). Maia et al. (2026, p. 16)
+preveem "embedding generation, hybrid retrieval, reranking" na camada de
+conhecimento.
+
+**Decisão (planejada)**:
+
+- Três modos na Camada 5, escolhidos por `RECUPERACAO_MODO`: `bm25` (o
+  atual, que continua sendo o padrão até decisão do usuário),
+  `embeddings` (similaridade de cosseno entre a pergunta e cada trecho) e
+  `hybrid` (BM25 + embeddings combinados por Reciprocal Rank Fusion, k = 60,
+  sobre os rankings completos dos dois).
+- Modelo `bge-m3` (BAAI; 567M parâmetros, F16, 1024 dimensões, 8K tokens de
+  contexto, multilíngue, licença MIT), servido pelo próprio Ollama local
+  (digest `790764642607`). Os vetores dos trechos são gerados na etapa Gold
+  da ingestão, num índice próprio (`indice_embeddings.json`) com modelo,
+  digest, dimensão, data e o sha256 do texto de cada trecho. Se o modelo ou
+  algum texto mudar, a `KnowledgeBase` recusa o índice; ele é regerado
+  inteiro, nunca misturado.
+- Interface intacta: `buscar()` e o retorno de `buscar_normativo` não
+  mudam; Camadas 1, 2, 3, 4, 6 e 7 não mudam. A Camada 8 passa a registrar
+  modo, modelo, digest e versão do índice, obtidos da Camada 5 por
+  `identificacao_recuperacao()`.
+
+**Alternativas descartadas**: `nomic-embed-text-v2-moe` (contexto de 512
+tokens, menor que um trecho de 2.500 caracteres com cabeçalho);
+`qwen3-embedding:0.6b` fica como reserva (exige instrução na consulta);
+qualquer API paga ou serviço externo (fora das regras do projeto).
+
+**GPU (medido em 2026-10-20, antes do código)**: com o llama3.1 carregado
+(5,3 GB, 100% GPU, contexto de 4.096), a GPU de 8 GB fica com 6,9 GB em
+uso, e carregar o `bge-m3` na GPU derrubou o processo do Ollama (erro de
+CUDA). Pela regra aprovada — o llama3.1 precisa ficar 100% na GPU, para a
+síntese continuar comparável com a v5/v6 —, o `bge-m3` roda na CPU
+(`num_gpu: 0`): ~110 ms por pergunta depois de carregado, com o llama3.1
+ainda 100% na GPU.
+
+**Protocolo da rodada v7** (`docs/resultados/v7/<modo>/`): modo produção,
+3 repetições, os 66 casos com os rótulos atuais, sem alteração. O modo
+`bm25` roda de novo como linha de base, porque o corpus mudou desde a v5/v6
+(17 normativos, 440 trechos). Servidor Ollama reiniciado antes de cada
+rodada; saída de `ollama ps` e `nvidia-smi` gravada na pasta da rodada.
+
+**Rótulos (decisão do usuário)**: mantidos. O grupo `norma_ausente` é
+reportado com os 6 casos e com os 3 cuja premissa continua válida (fora:
+`ausente_res_cmn_4893`, `ausente_circ_3978_pld`,
+`ausente_res_bcb_96_contas`). Os casos normativos que passaram a ter
+trechos relevantes nas 14 normas novas, fora do rótulo, são só listados.
+
+**Comparação pareada (pré-registrada)**: teste de McNemar exato (binomial
+bilateral sobre os pares discordantes) do Acerto@3 por caso, nos 39 casos
+normativos, para bm25 × embeddings, bm25 × hybrid e embeddings × hybrid.
+Reporta-se o p bruto e o p ajustado por Holm para as três comparações;
+diferença "distinguível de ruído" = p ajustado < 0,05.
+
+**Limiar de cosseno (RF4), critério pré-registrado**:
+
+- conjunto: as mesmas 40 perguntas de `tests/calibracao_limiar.json`;
+- pontuação: cosseno do melhor trecho do corpus (top-1 do ranking por
+  embeddings), a mesma nos modos `embeddings` e `hybrid`;
+- **critério**: limiar = cosseno do melhor trecho da (k+1)-ésima menor
+  pergunta respondível, com k = ⌊0,05 × 20⌋ = 1 (a 2ª menor). É o maior
+  limiar que recusa no máximo 5% das 20 respondíveis. Recusa = cosseno
+  estritamente menor que o limiar. Aplicado uma única vez;
+- reportado como consequência, não critério: quantas das 20 "sem resposta"
+  ele recusa, também em duas versões declaradas aqui — sem as 3 cuja norma
+  entrou no corpus (`cal_s04`, `cal_s09`, `cal_s12`) e sem essas 3 mais as 2
+  que talvez tenham resposta nas normas novas (`cal_s15`, conta de MEI;
+  `cal_s17`, comunicação ao COAF); e, offline, nos 66 casos, quantas
+  execuções de `norma_ausente` e quantas normativas ele recusaria;
+- o limiar **não** é ativado por padrão (`LIMIAR_COSSENO` vazio);
+- mesmo viés declarado da v6: as perguntas foram redigidas pelo
+  assistente, que também aplica o critério.
 
 ---
 
