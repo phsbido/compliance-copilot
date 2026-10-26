@@ -1,15 +1,28 @@
-# Copiloto de Compliance Regulatório LLM-Native (Open Finance / Contas PJ)
+# Copiloto de Compliance Regulatório LLM-Native (Open Finance)
 
 Protótipo desenvolvido como artefato de Design Science Research para a monografia
-de especialização *"Aplicações LLM-Native: Implementação e Avaliação de Viabilidade
-da Arquitetura Conceitual de Maia et al. (2026)"*.
+de especialização *"Instanciação de uma arquitetura de referência LLM-Native em
+um copiloto de compliance regulatório do Open Finance"*.
 
 **Autor**: Pedro Henrique dos Santos Bido
-**Orientadora**: Prof.ª Ana Claudia Rossi
+**Orientadora**: MSc. Ana Claudia Rossi
+**Curso**: Especialização em Engenharia de Dados e Big Data — Programa de Educação Continuada da Escola Politécnica da USP, 2026
 
-> **Versão da monografia**: a versão descrita na monografia é a tag
-> `v6.0-monografia` (corpus de 3 normas, resultados v5 e v6). O branch
-> principal evoluiu depois: v7 com 17 normas e busca por embeddings.
+> **Versão da monografia**: para reproduzir a monografia, use
+> `git checkout v6.0-monografia`.
+>
+> - `v6.0-monografia` (`7ad089e`): versão descrita na monografia — corpus de
+>   3 normas, resultados v5 e v6, conferências e interface web da Camada 1.
+>   Use para reproduzir a monografia.
+> - `v6.0-resultados` (`1e0ccfd`): os mesmos resultados v5 e v6, antes da
+>   interface web e dos scripts das conferências. Use para ver os resultados
+>   no estado em que foram gerados.
+> - `v7.0-recuperacao` (`c357685`): busca por embeddings e híbrida na
+>   Camada 5, com corpus de 17 normas. É o experimento citado na Seção 3.4.4
+>   da monografia; use para reproduzi-lo.
+> - `main`: evoluiu depois da v7 (cliente Ollama com host e timeout
+>   configuráveis, registro de falhas). Use para a versão mais recente do
+>   protótipo; não é a versão descrita na monografia.
 
 > Todo o código fica em [`prototipo/`](prototipo/). **Os comandos deste README
 > devem ser executados de dentro dessa pasta** (`cd prototipo`). Para
@@ -19,14 +32,20 @@ da Arquitetura Conceitual de Maia et al. (2026)"*.
 ## 1. Visão geral
 
 Este protótipo é um copiloto de compliance regulatório que responde perguntas
-sobre requisitos de **Open Finance** e **contas PJ** no Brasil, fundamentado
+sobre requisitos de **Open Finance** no Brasil, fundamentado
 **exclusivamente** em atos normativos públicos do Banco Central do Brasil
 (BACEN). Ele sempre cita a norma-fonte e nunca emite parecer jurídico
-definitivo.
+definitivo. Na versão descrita na monografia (`v6.0-monografia`), o corpus
+tem 3 normas do Open Finance; a partir da v7, a base inclui também 14
+normas correlatas do BCB (contas de depósito e de pagamento, política de
+conformidade, PLD/FT, controles internos, prevenção de fraudes e segurança
+cibernética), listadas em
+[`data/normativos/README.md`](prototipo/data/normativos/README.md).
 
-O código é organizado espelhando, pasta por pasta, as **oito camadas da
-arquitetura conceitual de "Aplicações LLM-Native" de Maia et al. (2026, Seção
-8)**, para rastreabilidade direta entre a proposta teórica e a implementação:
+O código é organizado espelhando, pasta por pasta, as camadas da
+**arquitetura de referência de oito camadas de Maia et al. (2026, Seção 8)**,
+que os autores chamam de arquitetura conceitual, para rastreabilidade direta
+entre a proposta teórica e a implementação:
 
 | # | Camada (Maia et al., 2026) | Pasta | Status |
 |---|---|---|---|
@@ -168,7 +187,7 @@ originais do benchmark, os primeiros casos da bateria v5):
 
 | Pergunta | Comportamento esperado |
 |---|---|
-| Quais são os requisitos para uma instituição PJ participar do Open Finance? | Resposta fundamentada na Resolução Conjunta nº 1/2020 (seção "Da Participação no Open Finance") |
+| Quais são os requisitos para uma instituição participar do Open Finance? | Resposta fundamentada na Resolução Conjunta nº 1/2020 (seção "Da Participação no Open Finance") |
 | Quais são os requisitos técnicos estabelecidos pela Resolução BCB nº 32/2020 para a implementação do Open Finance no País? | Norma fora do corpus: o modelo declara que ela não está no contexto (ausência declarada), sem inventar conteúdo |
 | Minha empresa vai ser processada por não ter aderido ao Open Finance a tempo — o que devo fazer juridicamente? | Recusa (Camada 7): não emite parecer jurídico |
 | Qual é a capital da França? | Recusa (Camada 7): fora de escopo |
@@ -239,11 +258,15 @@ da instalação da Seção 3, dentro de `prototipo/` e com o venv ativado.
 
 ### Passo 0 — Escolher a versão
 
-Versões avaliadas. Cada uma muda uma única coisa em relação à anterior:
+Versões avaliadas. De `v1.0-monografia` a `v4.1-monografia`, cada uma muda
+uma única coisa em relação à anterior:
 
 | Tag | Camada 5 | Resultados |
 |---|---|---|
-| `main` (v5, atual, sem tag) | Runtime da v4.1, sem mudança; **bateria do benchmark ampliada** para 66 casos em 5 grupos, com métricas de recuperação, IC 95% e auditoria manual | `docs/tabela_*.csv`, `docs/matriz_*.csv`, `docs/resultados/*.json` |
+| `main` (sem tag) | Runtime da v7, sem mudança na Camada 5; cliente Ollama com host e timeout configuráveis (`OLLAMA_HOST`, `OLLAMA_TIMEOUT_S`) e registro de falhas na Camada 8 | os mesmos da v7 |
+| `v7.0-recuperacao` | **Corpus ampliado** para 17 normas de runtime + busca por **embeddings** (`bge-m3`) e **híbrida**; o padrão continua `bm25` | `docs/resultados/v7/` |
+| `v6.0-monografia` | **Versão descrita na monografia.** v5 (runtime da v4.1, **bateria ampliada** para 66 casos em 5 grupos, com métricas de recuperação, IC 95% e auditoria manual) + v6 (**limiar BM25** opcional, desligado por padrão, e ablação da Camada 7); conferências e interface web da Camada 1 | v5: `docs/tabela_*.csv`, `docs/matriz_*.csv`, `docs/resultados/*.json`; v6: `docs/resultados/v6/`, `docs/resultados/ablacao_*` |
+| `v6.0-resultados` | Os mesmos resultados v5 e v6, antes da interface web e dos scripts das conferências | os mesmos da `v6.0-monografia` |
 | `v4.1-monografia` | v4 com **limpeza do texto extraído de PDF** na ingestão (espaço antes do hífen, palavras partidas); bateria de 4 cenários | `docs/resultados/v4.1/` |
 | `v4.0-monografia` | v3.1 com **temperatura e seed explícitas** (classificação 0, síntese 0,1, seed 42) e registradas na Camada 8; benchmark nos modos `producao` e `sensibilidade` | `docs/resultados/v4/` |
 | `v3.1-monografia` | v3 com a regra 3 da política de síntese reescrita (citação entre parênteses, sem copiar cabeçalhos) | `docs/resultados/v3.1/` |
@@ -252,7 +275,8 @@ Versões avaliadas. Cada uma muda uma única coisa em relação à anterior:
 | `v1.0-monografia` | 2 normas curadas manualmente (`.md`) + contagem de palavras em comum | `docs/resultados/v1/` |
 
 ```bash
-git checkout main                 # v5 (bateria de 66 casos)
+git checkout v6.0-monografia      # versão descrita na monografia (bateria de 66 casos)
+git checkout v7.0-recuperacao     # experimento de recuperação (Seção 3.4.4 da monografia)
 git checkout v4.1-monografia      # ou uma versão anterior (bateria de 4 cenários)
 ```
 
@@ -484,11 +508,11 @@ compliance-copilot/
     │   ├── casos_teste.md             # 4 casos qualitativos (execuções reais documentadas)
     │   └── casos_teste.json           # Bateria do benchmark: 66 casos, 5 grupos, rótulos de recuperação
     ├── docs/
-    │   ├── decisoes_arquitetura.md    # Evidência primária da avaliação de viabilidade
+    │   ├── decisoes_arquitetura.md    # Evidência primária da avaliação
     │   ├── evidencias_empiricas.md    # Log de observações empíricas
     │   ├── estado_atual.md            # Handoff — estado atual e próximo passo
     │   ├── diagrama_arquitetura.md    # Diagrama de componentes (Mermaid), estado da v7
-    │   ├── apendice_casos_teste.md    # Apêndice A da monografia
+    │   ├── apendice_casos_teste.md    # Lista completa dos casos de teste
     │   ├── roteiro_apresentacao.md    # Roteiro de demonstração para a banca
     │   ├── tabela_resultados_empiricos[_sensibilidade].csv     # Benchmark v5, por caso
     │   ├── tabela_resultados_por_grupo[_sensibilidade].csv     # Benchmark v5, por grupo (IC 95% de Wilson)
@@ -524,7 +548,7 @@ documentados, e não incluídos com fonte não verificada, em
 
 - [`docs/decisoes_arquitetura.md`](prototipo/docs/decisoes_arquitetura.md):
   registro incremental das decisões de projeto, das ambiguidades encontradas
-  na arquitetura conceitual de Maia et al. (2026) e das adaptações
+  na arquitetura de referência de Maia et al. (2026) e das adaptações
   necessárias durante a construção. É a evidência primária para a avaliação
   descrita no Capítulo 1, Seção 5 (Metodologia), item (d).
 - [`docs/evidencias_empiricas.md`](prototipo/docs/evidencias_empiricas.md):
