@@ -1,8 +1,7 @@
 # Copiloto de Compliance Regulatório LLM-Native (Open Finance)
 
 Protótipo desenvolvido como artefato de Design Science Research para a monografia
-de especialização *"Instanciação de uma arquitetura de referência LLM-Native em
-um copiloto de compliance regulatório do Open Finance"*.
+de especialização *"Aplicação de uma arquitetura de referência LLM-Native em um copiloto de compliance regulatório do Open Finance"*.
 
 **Autor**: Pedro Henrique dos Santos Bido
 **Orientadora**: MSc. Ana Claudia Rossi
