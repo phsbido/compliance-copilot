@@ -87,8 +87,8 @@ Capítulo 1, Seção 5 — Metodologia).
 ## 3. Instalação
 
 ```bash
-git clone https://github.com/phsbido/prototipo_esqueleto.git
-cd prototipo_esqueleto/prototipo
+git clone https://github.com/phsbido/compliance-copilot.git
+cd compliance-copilot/prototipo
 
 python -m venv venv
 # Windows (PowerShell):  venv\Scripts\activate
@@ -439,7 +439,7 @@ embeddings e busca híbrida") e em `docs/evidencias_empiricas.md` (v7).
 ## 7. Estrutura de pastas
 
 ```
-prototipo_esqueleto/
+compliance-copilot/
 ├── README.md                          # Este arquivo
 └── prototipo/
     ├── main.py                        # Ponto de entrada (Camada 1 — CLI)
