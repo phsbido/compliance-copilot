@@ -78,8 +78,7 @@ repositório inclui os artefatos de avaliação empírica:
 - o diagrama de arquitetura: [`docs/diagrama_arquitetura.md`](prototipo/docs/diagrama_arquitetura.md)
   (versão em figura: `docs/figuras/diagrama_arquitetura.png`).
 
-Aspectos multimodais da Camada 1 estão explicitamente fora de escopo (ver
-Capítulo 1, Seção 5 — Metodologia).
+Aspectos multimodais da Camada 1 estão explicitamente fora de escopo.
 
 ## 2. Pré-requisitos
 
@@ -539,7 +538,7 @@ A base de conhecimento (Camada 5) é construída **exclusivamente** a partir de
 fontes públicas e oficiais do Banco Central do Brasil (ver
 [`data/normativos/README.md`](prototipo/data/normativos/README.md)). Nenhuma
 informação interna ou proprietária de qualquer instituição financeira é
-utilizada (ver Capítulo 1, Seção 3 — Objetivo). Normativos pendentes de
+utilizada. Normativos pendentes de
 inclusão (texto oficial ainda não localizado com segurança) estão
 documentados, e não incluídos com fonte não verificada, em
 [`data/normativos/PENDENTES.md`](prototipo/data/normativos/PENDENTES.md).
@@ -550,7 +549,7 @@ documentados, e não incluídos com fonte não verificada, em
   registro incremental das decisões de projeto, das ambiguidades encontradas
   na arquitetura de referência de Maia et al. (2026) e das adaptações
   necessárias durante a construção. É a evidência primária para a avaliação
-  descrita no Capítulo 1, Seção 5 (Metodologia), item (d).
+  da arquitetura na monografia.
 - [`docs/evidencias_empiricas.md`](prototipo/docs/evidencias_empiricas.md):
   observações empíricas feitas ao testar o sistema (comportamentos
   inesperados do modelo, falhas, acertos).
